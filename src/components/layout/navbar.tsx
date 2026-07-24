@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { IconChevronDown, IconMenu2, IconMoon, IconSun, IconX } from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
 import { useAuth } from "@/contexts/auth-context";
@@ -129,7 +129,9 @@ export function Navbar() {
               <span className="text-sm font-semibold tracking-[-0.3px] sm:text-base">RAFFLE<span className="text-rr-green">RADAR</span></span>
             </Link>
             <div className="hidden min-w-0 sm:block sm:flex-1 max-w-[420px] md:max-w-[520px]">
-              <CompetitionSearch />
+              <Suspense fallback={null}>
+                <CompetitionSearch />
+              </Suspense>
             </div>
             <div className="ml-auto shrink-0 flex items-center gap-2">
               <Button variant="icon" className="shrink-0 cursor-pointer" aria-label="Toggle theme" onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}>
@@ -153,7 +155,9 @@ export function Navbar() {
           </Link>
 
           <div className="hidden min-w-0 sm:block sm:flex-1 max-w-[420px] md:max-w-[520px]">
-            <CompetitionSearch />
+            <Suspense fallback={null}>
+              <CompetitionSearch />
+            </Suspense>
           </div>
 
           <div className="hidden md:ml-8 md:flex md:gap-1 ml-4">
@@ -235,7 +239,9 @@ export function Navbar() {
         </nav>
 
         <div className="w-full min-w-0 max-w-full px-4 pb-3 sm:hidden">
-          <CompetitionSearch />
+          <Suspense fallback={null}>
+            <CompetitionSearch />
+          </Suspense>
         </div>
       </div>
 
