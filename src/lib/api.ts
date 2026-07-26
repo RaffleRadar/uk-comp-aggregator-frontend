@@ -499,3 +499,20 @@ export async function unsubscribeFromNewsletter(token: string) {
     body: { token },
   });
 }
+
+export type CommentAuthor = { displayName: string };
+
+export type CommentNode = {
+  id: string;
+  body: string | null;
+  createdAt: string;
+  isDeleted: boolean;
+  author: CommentAuthor | null;
+  replies: CommentNode[];
+};
+
+export async function getComments(competitionId: string) {
+  return apiFetch<CommentNode[]>(
+    `/comments?competitionId=${encodeURIComponent(competitionId)}`,
+  );
+}
