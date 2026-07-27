@@ -24,7 +24,6 @@ export type HeroStats = {
 
 export function Hero({ stats }: { stats: HeroStats }) {
   const liveDraws = stats.competitionsCount ?? 0;
-  const operators = stats.operatorsCount ?? 0;
   const updated = formatRelativeTime(stats.lastUpdatedAt);
 
   return (
@@ -47,11 +46,6 @@ export function Hero({ stats }: { stats: HeroStats }) {
             {liveDraws.toLocaleString("en-GB")}
           </span>
           <span>draws</span>
-          <span className="px-1">·</span>
-          <span className="font-semibold text-rr-green">
-            {operators.toLocaleString("en-GB")}
-          </span>
-          <span>active operators</span>
         </div>
 
         <div className="hidden mt-7 flex-wrap items-center justify-center gap-6 lg:flex">
@@ -60,15 +54,6 @@ export function Hero({ stats }: { stats: HeroStats }) {
               {liveDraws}
             </p>
             <p className="mt-1 text-sm text-rr-muted">Live draws</p>
-          </div>
-
-          <div className="h-8 w-px bg-rr-border" />
-
-          <div>
-            <p className="text-rr-green text-lg font-semibold leading-none">
-              {operators}
-            </p>
-            <p className="mt-1 text-sm text-rr-muted">Active operators</p>
           </div>
 
           <div className="h-8 w-px bg-rr-border" />
