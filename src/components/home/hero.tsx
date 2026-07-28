@@ -24,6 +24,7 @@ export type HeroStats = {
 
 export function Hero({ stats }: { stats: HeroStats }) {
   const liveDraws = stats.competitionsCount ?? 0;
+  const operators = stats.operatorsCount ?? 0;
   const updated = formatRelativeTime(stats.lastUpdatedAt);
 
   return (
@@ -41,11 +42,27 @@ export function Hero({ stats }: { stats: HeroStats }) {
           Track undersold competitions, spot real value and enter at the right time.
         </p>
 
-        <div className="flex items-center justify-center gap-2 whitespace-nowrap text-sm text-rr-muted lg:hidden">
-          <span className="font-semibold text-rr-green">
-            {liveDraws.toLocaleString("en-GB")}
-          </span>
-          <span>draws</span>
+        <div className="grid grid-cols-3 gap-2 text-center lg:hidden">
+          <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
+            <p className="text-sm font-semibold leading-none text-rr-green">
+              {liveDraws.toLocaleString("en-GB")}
+            </p>
+            <p className="mt-1 text-[11px] text-rr-muted">Live draws</p>
+          </div>
+
+          <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
+            <p className="text-sm font-semibold leading-none text-rr-green">
+              {operators.toLocaleString("en-GB")}
+            </p>
+            <p className="mt-1 text-[11px] text-rr-muted">Operators</p>
+          </div>
+
+          <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
+            <p className="text-sm font-semibold leading-none text-rr-green">
+              {updated}
+            </p>
+            <p className="mt-1 text-[11px] text-rr-muted">Last updated</p>
+          </div>
         </div>
 
         <div className="hidden mt-7 flex-wrap items-center justify-center gap-6 lg:flex">
