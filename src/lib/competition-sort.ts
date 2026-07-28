@@ -7,24 +7,27 @@ export type CompetitionSortState = {
 
 export type CompetitionSortIdentity =
   | "bestValue"
+  | "topOpportunities"
   | "mostUndersold"
   | "bestOdds"
   | "sellingFast"
   | "topPrizes"
   | "endingSoon"
   | "mostTicketsLeft"
-  | "lowestPrice";
+  | "lowestPrice"
+  | "latest";
 
 export function getCompetitionSortIdentity(
   state: CompetitionSortState,
 ): CompetitionSortIdentity | null {
   const { sortBy, sortOrder, excludeInstant = false, excludeFree = false } = state;
 
-  if (
-    (sortBy === "bestValue" || sortBy === "valueRatio" || sortBy === "opportunityScore") &&
-    sortOrder === "desc"
-  ) {
+  if ((sortBy === "bestValue" || sortBy === "valueRatio") && sortOrder === "desc") {
     return "bestValue";
+  }
+
+  if (sortBy === "opportunityScore" && sortOrder === "desc") {
+    return "topOpportunities";
   }
 
   if (sortBy === "percentSold" && sortOrder === "asc") {
@@ -55,6 +58,10 @@ export function getCompetitionSortIdentity(
     return "lowestPrice";
   }
 
+  if (sortBy === "createdAt" && sortOrder === "desc") {
+    return "latest";
+  }
+
   return null;
 }
 
@@ -68,6 +75,12 @@ export function getCompetitionSortPresentation(state: CompetitionSortState) {
   switch (identity) {
     case "bestValue":
       return { identity, label: "Best value", headingSuffix: "By Value" };
+    case "topOpportunities":
+      return {
+        identity,
+        label: "Top opportunities",
+        headingSuffix: "By Opportunity",
+      };
     case "mostUndersold":
       return {
         identity,
@@ -90,5 +103,7 @@ export function getCompetitionSortPresentation(state: CompetitionSortState) {
       };
     case "lowestPrice":
       return { identity, label: "Lowest price", headingSuffix: "By Price" };
+    case "latest":
+      return { identity, label: "Latest", headingSuffix: "By Newest" };
   }
 }

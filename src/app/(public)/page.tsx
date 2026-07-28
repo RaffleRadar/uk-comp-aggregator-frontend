@@ -182,7 +182,7 @@ export default async function Page({
         titleStart="Top"
         titleAccent="Opportunities"
         subtitle="Best chances to win right now"
-        viewAllHref="/competitions?section=top-opportunities&sortBy=bestValue&sortOrder=desc&excludeInstant=true&excludeFree=true"
+        viewAllHref="/competitions?section=top-opportunities&sortBy=opportunityScore&sortOrder=desc&excludeInstant=true&excludeFree=true"
         competitions={topOpportunities}
       />
       <CompetitionSection

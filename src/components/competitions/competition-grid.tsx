@@ -35,7 +35,7 @@ const sectionDefaultSorts: Record<
   { sortBy: string; sortOrder: "asc" | "desc" }
 > = {
   "most-undersold": { sortBy: "percentSold", sortOrder: "asc" },
-  "top-opportunities": { sortBy: "bestValue", sortOrder: "desc" },
+  "top-opportunities": { sortBy: "opportunityScore", sortOrder: "desc" },
   "top-prizes": { sortBy: "prizeValue", sortOrder: "desc" },
   "selling-fast": { sortBy: "percentSold", sortOrder: "desc" },
   "ending-today": { sortBy: "endsAt", sortOrder: "asc" },
@@ -141,7 +141,7 @@ export function CompetitionResultsHeading({
   showBackButton?: boolean;
   backHref?: string;
 }) {
-  const sortBy = params.sortBy ?? "bestValue";
+  const sortBy = params.sortBy ?? "valueRatio";
   const sortOrder = (params.sortOrder as "asc" | "desc" | undefined) ?? "desc";
   const section = params.section?.trim() || "";
   const searchTerm = params.search?.trim() || undefined;

@@ -50,6 +50,19 @@ export async function getStats() {
   }>("/stats");
 }
 
+export type CompetitionSortField =
+  | "prizeValue"
+  | "endsAt"
+  | "ticketPrice"
+  | "ticketsSold"
+  | "ticketsLeft"
+  | "percentSold"
+  | "totalTickets"
+  | "valueRatio"
+  | "bestValue"
+  | "opportunityScore"
+  | "createdAt";
+
 export type GetCompetitionsParams = {
   limit?: number;
   page?: number;
@@ -76,6 +89,7 @@ export type CompetitionDetail = {
   ticketsLeft?: number | null;
   percentSold: number | string | null;
   endsAt: string | null;
+  createdAt: string;
   category: string | null;
   instantPrizes: boolean | null;
   availableToBuy: boolean | null;

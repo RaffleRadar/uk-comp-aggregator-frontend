@@ -32,6 +32,7 @@ function toCompetition(item: CompetitionDetail): Competition {
     ticketsLeft: item.ticketsLeft,
     percentSold: item.percentSold,
     endsAt: item.endsAt,
+    createdAt: item.createdAt,
     category: item.category,
     instantPrizes: item.instantPrizes,
     availableToBuy: item.availableToBuy,

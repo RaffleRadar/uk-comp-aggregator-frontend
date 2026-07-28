@@ -40,16 +40,18 @@ export default async function CompetitionsPage({
   const defaultSortOrderBySortBy: Record<string, "asc" | "desc"> = {
     bestValue: "desc",
     valueRatio: "desc",
+    opportunityScore: "desc",
     prizeValue: "desc",
     endsAt: "asc",
     ticketsLeft: "desc",
     ticketPrice: "asc",
     percentSold: "asc",
+    createdAt: "desc",
   };
 
   const closing = params.closing ?? "";
   const searchTerm = params.search?.trim() || undefined;
-  const sortBy = params.sortBy ?? "bestValue";
+  const sortBy = params.sortBy ?? "valueRatio";
   const sortOrder =
     (params.sortOrder as "asc" | "desc" | undefined) ??
     defaultSortOrderBySortBy[sortBy] ??

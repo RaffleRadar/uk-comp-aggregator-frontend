@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   IconCar,
@@ -45,9 +46,26 @@ interface Props {
 }
 
 const ticketCountFormatter = new Intl.NumberFormat("en-GB");
+const NEW_BADGE_WINDOW_MS = 48 * 60 * 60 * 1000;
 
-export function CompetitionCard({ competition, featured, variant = "default" }: Props) {
+export function CompetitionCard({
+  competition,
+  featured,
+  variant = "default",
+}: Props) {
   const pathname = usePathname();
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setNow(Date.now());
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
+
   const isCompetitionDetailPage = pathname.startsWith("/competitions/");
   const {
     id,
@@ -59,6 +77,7 @@ export function CompetitionCard({ competition, featured, variant = "default" }: 
     percentSold,
     finalPercentSold,
     endsAt,
+    createdAt,
     closedAt,
     category,
     instantPrizes,
@@ -66,7 +85,7 @@ export function CompetitionCard({ competition, featured, variant = "default" }: 
   } = competition;
 
   const isEnded = variant === "ended";
-  const percentRaw = isEnded ? finalPercentSold ?? percentSold : percentSold;
+  const percentRaw = isEnded ? (finalPercentSold ?? percentSold) : percentSold;
   const percent =
     typeof percentRaw === "number"
       ? Number.isFinite(percentRaw)
@@ -81,15 +100,26 @@ export function CompetitionCard({ competition, featured, variant = "default" }: 
   const statusBadge = isEnded
     ? null
     : getStatusBadge(endsAt, availableToBuy, featured, null);
-  const timingLabel = isEnded ? getEndedLabel(endsAt, closedAt) : getEndsLabel(endsAt);
+  const timingLabel = isEnded
+    ? getEndedLabel(endsAt, closedAt)
+    : getEndsLabel(endsAt);
   const badgeShowsTime =
     statusBadge?.variant === "red" || statusBadge?.variant === "amber";
+  const createdAtTime = Date.parse(createdAt);
+  const isNew =
+    !isEnded &&
+    now !== null &&
+    Number.isFinite(createdAtTime) &&
+    now - createdAtTime >= 0 &&
+    now - createdAtTime <= NEW_BADGE_WINDOW_MS;
 
   const cardClassName = [
     "block overflow-hidden rounded-[10px] border",
     "bg-rr-surface border-rr-border",
     featured ? "border-rr-green-border" : "",
-    isEnded ? "cursor-default" : "cursor-pointer transition-opacity hover:opacity-90",
+    isEnded
+      ? "cursor-default"
+      : "cursor-pointer transition-opacity hover:opacity-90",
   ].join(" ");
 
   const cardContent = (
@@ -107,14 +137,15 @@ export function CompetitionCard({ competition, featured, variant = "default" }: 
         ) : (
           <PlaceholderIcon category={category} />
         )}
-        <div className="absolute inset-x-1.5 top-1.5 flex flex-col items-start gap-1 md:inset-x-auto md:left-1.5 md:right-1.5 md:flex-row md:items-start md:justify-between">
-          <span className="max-w-full md:max-w-[calc(100%-90px)]">
+        <div className="absolute inset-x-1.5 top-1.5 flex items-start justify-between gap-1.5">
+          <span className="flex min-w-0 max-w-[calc(100%-74px)] flex-wrap items-start gap-1">
             <Badge variant="operator">
               {competition.operator?.name ?? "Unknown"}
             </Badge>
+            {isNew ? <Badge variant="green">New</Badge> : null}
           </span>
           {statusBadge && (
-            <span className="self-end md:self-auto">
+            <span className="shrink-0">
               <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
             </span>
           )}
@@ -130,7 +161,7 @@ export function CompetitionCard({ competition, featured, variant = "default" }: 
           </span>
           <span className="text-[10px] text-rr-muted">
             {isEnded
-              ? timingLabel ?? "Ended"
+              ? (timingLabel ?? "Ended")
               : typeof ticketsLeft === "number"
                 ? `${ticketCountFormatter.format(ticketsLeft)} left`
                 : typeof ticketsTotal === "number"
@@ -143,7 +174,9 @@ export function CompetitionCard({ competition, featured, variant = "default" }: 
           {percent !== null ? (
             <span className="text-[10px] text-rr-muted">
               {percent.toFixed(0)}% sold
-              {timingLabel && !isEnded && !badgeShowsTime ? ` · ${timingLabel}` : ""}
+              {timingLabel && !isEnded && !badgeShowsTime
+                ? ` · ${timingLabel}`
+                : ""}
             </span>
           ) : timingLabel && !isEnded && !badgeShowsTime ? (
             <span className="text-[10px] text-rr-muted">{timingLabel}</span>
@@ -153,7 +186,9 @@ export function CompetitionCard({ competition, featured, variant = "default" }: 
           {isEnded ? (
             <Badge variant="neutral">Draw complete</Badge>
           ) : instantPrizes ? (
-            <span className="text-[10px] font-medium text-rr-green">Auto draw</span>
+            <span className="text-[10px] font-medium text-rr-green">
+              Auto draw
+            </span>
           ) : null}
         </div>
       </div>

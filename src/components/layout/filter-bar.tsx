@@ -44,7 +44,8 @@ const defaultClosingOptions: FilterOption[] = [
 ];
 
 const defaultSortOptions: SortOption[] = [
-  { label: "Best value", sortBy: "bestValue", sortOrder: "desc" },
+  { label: "Best value", sortBy: "valueRatio", sortOrder: "desc" },
+  { label: "Top opportunities", sortBy: "opportunityScore", sortOrder: "desc" },
   {
     label: "Most Undersold",
     sortBy: "percentSold",
@@ -66,6 +67,7 @@ const defaultSortOptions: SortOption[] = [
   { label: "Ending soon", sortBy: "endsAt", sortOrder: "asc" },
   { label: "Most tickets left", sortBy: "ticketsLeft", sortOrder: "desc" },
   { label: "Lowest price", sortBy: "ticketPrice", sortOrder: "asc" },
+  { label: "Latest", sortBy: "createdAt", sortOrder: "desc" },
 ];
 
 const otherSubcategoryOptions: FilterOption[] = [
@@ -151,7 +153,7 @@ export function FilterBar({
   const closing = currentClosing ?? "";
   const excludeInstant = searchParams.get("excludeInstant") === "true";
   const excludeFree = searchParams.get("excludeFree") === "true";
-  const sortBy = searchParams.get("sortBy") ?? "bestValue";
+  const sortBy = searchParams.get("sortBy") ?? "valueRatio";
   const sortOrder = (searchParams.get("sortOrder") ?? "desc") as "asc" | "desc";
 
   const showCategory = categoryOpts.length > 0;
