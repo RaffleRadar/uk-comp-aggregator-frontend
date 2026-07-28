@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CompetitionCard } from "@/components/competitions/competition-card";
+import { OperatorCompetitions } from "@/components/operators/operator-competitions";
 import { TrackedOperatorLink } from "@/components/operators/tracked-operator-link";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -331,14 +331,7 @@ export default async function OperatorPage({
             </div>
 
             {competitionsWithOperator.length ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {competitionsWithOperator.map((competition) => (
-                  <CompetitionCard
-                    key={competition.id}
-                    competition={competition}
-                  />
-                ))}
-              </div>
+              <OperatorCompetitions competitions={competitionsWithOperator} />
             ) : (
               <div className="rounded-xl border border-rr-border bg-rr-surface px-4 py-8 text-center text-sm text-rr-muted">
                 No live competitions available for this operator right now.

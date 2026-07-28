@@ -24,7 +24,7 @@ export type HeroStats = {
 
 export function Hero({ stats }: { stats: HeroStats }) {
   const liveDraws = stats.competitionsCount ?? 0;
-  const operators = stats.operatorsCount ?? 0;
+ 
   const updated = formatRelativeTime(stats.lastUpdatedAt);
 
   return (
@@ -42,19 +42,12 @@ export function Hero({ stats }: { stats: HeroStats }) {
           Track undersold competitions, spot real value and enter at the right time.
         </p>
 
-        <div className="grid grid-cols-3 gap-2 text-center lg:hidden">
+        <div className="grid grid-cols-2 gap-2 text-center lg:hidden">
           <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
             <p className="text-sm font-semibold leading-none text-rr-green">
               {liveDraws.toLocaleString("en-GB")}
             </p>
             <p className="mt-1 text-[11px] text-rr-muted">Live draws</p>
-          </div>
-
-          <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
-            <p className="text-sm font-semibold leading-none text-rr-green">
-              {operators.toLocaleString("en-GB")}
-            </p>
-            <p className="mt-1 text-[11px] text-rr-muted">Operators</p>
           </div>
 
           <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
