@@ -2,6 +2,7 @@ export type AuthUser = {
   id: string;
   email: string;
   emailVerified: boolean;
+  hasPassword: boolean;
   displayName: string | null;
   avatarUrl: string | null;
   role: string;

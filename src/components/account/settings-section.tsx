@@ -15,7 +15,6 @@ type MeResponse = AuthUser & {
 
 const cardClass = "rounded-2xl border border-rr-border bg-rr-surface p-6";
 const titleClass = "mb-1 text-base font-medium text-rr-primary";
-const subtitleClass = "text-sm text-rr-secondary";
 
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
@@ -63,7 +62,7 @@ export function SettingsSection() {
   const methods = useMemo(() => {
     const googleConnected = Boolean(me?.googleId);
     const facebookConnected = Boolean(me?.facebookId);
-    const passwordSet = Boolean(me) && !googleConnected && !facebookConnected;
+    const passwordSet = Boolean(me?.hasPassword);
 
     return {
       passwordSet,
@@ -122,7 +121,11 @@ export function SettingsSection() {
         </div>
       </section>
 
-      <ChangePasswordForm isAvailable={methods.passwordSet} />
+      <ChangePasswordForm
+        hasPassword={me ? methods.passwordSet : null}
+        email={me?.email ?? null}
+        providerLabel={methods.googleConnected ? "Google" : methods.facebookConnected ? "Facebook" : null}
+      />
 
       <NewsletterSettings />
 

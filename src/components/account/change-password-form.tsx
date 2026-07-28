@@ -18,7 +18,9 @@ type FormErrors = Partial<Record<keyof FormValues, string>>;
 type SubmitEvent = Parameters<NonNullable<ComponentProps<"form">["onSubmit"]>>[0];
 
 type ChangePasswordFormProps = {
-  isAvailable: boolean;
+  hasPassword: boolean | null;
+  email: string | null;
+  providerLabel: string | null;
 };
 
 const cardClass = "rounded-2xl border border-rr-border bg-rr-surface p-6";
@@ -60,7 +62,11 @@ function validate(values: FormValues): FormErrors {
   return errors;
 }
 
-export function ChangePasswordForm({ isAvailable }: ChangePasswordFormProps) {
+export function ChangePasswordForm({
+  hasPassword,
+  email,
+  providerLabel,
+}: ChangePasswordFormProps) {
   const router = useRouter();
   const { logout } = useAuth();
 
@@ -68,6 +74,9 @@ export function ChangePasswordForm({ isAvailable }: ChangePasswordFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [setPasswordError, setSetPasswordError] = useState("");
+  const [setPasswordSuccess, setSetPasswordSuccess] = useState(false);
+  const [isRequestingSetPassword, setIsRequestingSetPassword] = useState(false);
 
   function handleChange<K extends keyof FormValues>(field: K, value: FormValues[K]) {
     setValues((current) => ({ ...current, [field]: value }));
@@ -80,6 +89,30 @@ export function ChangePasswordForm({ isAvailable }: ChangePasswordFormProps) {
       return next;
     });
     setSubmitError("");
+  }
+
+  async function handleSetPasswordRequest() {
+    setSetPasswordError("");
+    setIsRequestingSetPassword(true);
+
+    try {
+      await authFetch("/set-password/request", {
+        method: "POST",
+      });
+      setSetPasswordSuccess(true);
+    } catch (error) {
+      if (error instanceof AuthClientError) {
+        if (error.status === 429) {
+          setSetPasswordError("Too many attempts. Please wait a moment and try again.");
+        } else {
+          setSetPasswordError(error.message || "Failed to send set password email.");
+        }
+      } else {
+        setSetPasswordError("Failed to send set password email.");
+      }
+    } finally {
+      setIsRequestingSetPassword(false);
+    }
   }
 
   async function handleSubmit(event: SubmitEvent) {
@@ -137,9 +170,49 @@ export function ChangePasswordForm({ isAvailable }: ChangePasswordFormProps) {
         New password must be at least 8 characters. This signs you out everywhere.
       </p>
 
-      {!isAvailable ? (
+      {hasPassword === null ? (
         <div className="mt-4 rounded-xl border border-rr-border bg-rr-elevated px-4 py-3 text-sm text-rr-secondary">
-          This account does not have a password set. Password change is unavailable.
+          Loading password settings...
+        </div>
+      ) : !hasPassword ? (
+        <div className="mt-4 space-y-4">
+          <div className="rounded-xl border border-rr-border bg-rr-elevated px-4 py-3 text-sm text-rr-secondary">
+            {providerLabel
+              ? `This account signs in with ${providerLabel}. You can add a password by email and then use either sign-in method.`
+              : "This account does not have a password yet. You can add one by email and then sign in with either method."}
+          </div>
+
+          {setPasswordSuccess ? (
+            <div className="rounded-xl border border-rr-border bg-rr-elevated px-4 py-3 text-sm text-rr-secondary">
+              {email
+                ? `We sent a set password link to ${email}.`
+                : "We sent a set password link to your account email."}
+            </div>
+          ) : null}
+
+          {setPasswordError ? (
+            <div
+              role="alert"
+              className="rounded-xl border border-red-300 bg-red-50 px-4 py-2.5 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300"
+            >
+              {setPasswordError}
+            </div>
+          ) : null}
+
+          <div className="flex items-center justify-end gap-3">
+            <Button
+              type="button"
+              className="w-full sm:w-auto"
+              disabled={isRequestingSetPassword || setPasswordSuccess}
+              onClick={handleSetPasswordRequest}
+            >
+              {setPasswordSuccess
+                ? "Link sent"
+                : isRequestingSetPassword
+                  ? "Sending..."
+                  : "Email me a set password link"}
+            </Button>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-4">
