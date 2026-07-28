@@ -18,6 +18,7 @@ type SavedSearchResponse = {
 
 type FeedbackState =
   | { type: "success"; message: string; hint: string }
+  | { type: "info"; message: string }
   | { type: "error"; message: string };
 
 const stringParams = [
@@ -164,6 +165,14 @@ export function SaveSearchButton() {
       const body = await readResponseBody(response);
 
       if (!response.ok) {
+        if (response.status === 409) {
+          setFeedback({
+            type: "info",
+            message: body?.message?.trim() || "You have already saved this search",
+          });
+          return;
+        }
+
         const message =
           body?.message?.trim() ||
           (response.status === 400
@@ -247,6 +256,8 @@ export function SaveSearchButton() {
               "rounded-xl border px-4 py-3 text-sm",
               feedback.type === "success"
                 ? "border-rr-border bg-rr-elevated text-rr-primary"
+                : feedback.type === "info"
+                  ? "border-rr-border bg-rr-elevated text-rr-primary"
                 : "border-red-300 bg-red-50 text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300",
             )}
           >
