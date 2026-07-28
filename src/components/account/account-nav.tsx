@@ -22,7 +22,7 @@ const sections: { id: AccountSection; label: string; icon: typeof IconHeart }[] 
 
 export function AccountNav({ active, onChange }: AccountNavProps) {
   return (
-    <nav className="rounded-2xl border border-rr-border bg-rr-surface md:w-52">
+    <nav className="overflow-hidden rounded-2xl border border-rr-border bg-rr-surface md:w-52">
       <div className="flex flex-wrap gap-2 p-2 md:flex-col md:gap-0 md:p-0">
         {sections.map((section) => {
           const Icon = section.icon;
