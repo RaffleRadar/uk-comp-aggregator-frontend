@@ -31,16 +31,30 @@ export function DrawCountdown({ endsAt }: DrawCountdownProps) {
     return Number.isFinite(t) ? t : null;
   }, [endsAt]);
 
-  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState<number | null>(null);
 
   useEffect(() => {
     if (!targetMs) return;
-    const id = window.setInterval(() => setNowMs(Date.now()), 1000);
-    return () => window.clearInterval(id);
+
+    const syncNow = () => {
+      setNowMs(Date.now());
+    };
+
+    const timeoutId = window.setTimeout(syncNow, 0);
+    const intervalId = window.setInterval(syncNow, 1000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.clearInterval(intervalId);
+    };
   }, [targetMs]);
 
   if (!targetMs) {
     return <span className="text-rr-muted text-[13px] font-normal whitespace-nowrap md:text-sm">TBC</span>;
+  }
+
+  if (nowMs === null) {
+    return <span className="text-rr-muted text-[13px] font-normal whitespace-nowrap md:text-sm">Calculating...</span>;
   }
 
   const diff = targetMs - nowMs;
