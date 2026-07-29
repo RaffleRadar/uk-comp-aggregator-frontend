@@ -93,16 +93,6 @@ function getLondonDayKey(date: Date): string {
   }).format(date);
 }
 
-function getValidDate(primary: string | null, fallback?: string | null): Date | null {
-  const primaryDate = primary ? new Date(primary) : null;
-  if (primaryDate && !Number.isNaN(primaryDate.getTime())) return primaryDate;
-
-  const fallbackDate = fallback ? new Date(fallback) : null;
-  if (fallbackDate && !Number.isNaN(fallbackDate.getTime())) return fallbackDate;
-
-  return null;
-}
-
 export function getEndedLabel(endsAt: string | null, closedAt?: string | null): string | null {
   const now = new Date();
   const parsedEndsAt = endsAt ? new Date(endsAt) : null;

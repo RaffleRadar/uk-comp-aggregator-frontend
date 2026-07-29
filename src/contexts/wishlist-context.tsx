@@ -36,7 +36,10 @@ function resetWishlistCache() {
   cachedRequest = null;
 }
 
-async function wishlistRequest<T>(path: string, init?: RequestInit): Promise<T> {
+async function wishlistRequest<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
   const response = await fetch(path, {
     ...init,
     credentials: "same-origin",
@@ -80,6 +83,7 @@ async function fetchWishlistIdsForUser(userId: string) {
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const { status, user } = useAuth();
+  const userId = user?.id ?? null;
   const [ids, setIds] = useState<Set<string>>(() => cloneIds(cachedIds));
   const [isLoading, setIsLoading] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
@@ -120,23 +124,37 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (status === "unauthenticated") {
       inFlightIdsRef.current.clear();
-      setIsLoading(false);
-      setIds(new Set());
-      closeSignInModal({ restoreFocus: false });
       resetWishlistCache();
-      return;
+      const timeoutId = window.setTimeout(() => {
+        setIsLoading(false);
+        setIds(new Set());
+        closeSignInModal({ restoreFocus: false });
+      }, 0);
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
     }
 
-    if (status !== "authenticated" || !user?.id) {
-      setIsLoading(false);
-      return;
+    if (status !== "authenticated" || !userId) {
+      const timeoutId = window.setTimeout(() => {
+        setIsLoading(false);
+      }, 0);
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
     }
 
     const currentVersion = loadVersionRef.current + 1;
     loadVersionRef.current = currentVersion;
-    setIsLoading(true);
+    const timeoutId = window.setTimeout(() => {
+      if (loadVersionRef.current !== currentVersion) {
+        return;
+      }
 
-    void fetchWishlistIdsForUser(user.id)
+      setIsLoading(true);
+    }, 0);
+
+    void fetchWishlistIdsForUser(userId)
       .then((nextIds) => {
         if (loadVersionRef.current !== currentVersion) {
           return;
@@ -152,17 +170,23 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         setIds(new Set());
       })
       .finally(() => {
+        window.clearTimeout(timeoutId);
+
         if (loadVersionRef.current !== currentVersion) {
           return;
         }
 
         setIsLoading(false);
       });
-  }, [closeSignInModal, status, user?.id]);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [closeSignInModal, status, userId]);
 
   const toggle = useCallback(
     async (competitionId: string) => {
-      if (status !== "authenticated" || !user?.id) {
+      if (status !== "authenticated" || !userId) {
         return;
       }
 
@@ -183,14 +207,17 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       inFlightIdsRef.current.add(competitionId);
       idsRef.current = nextIds;
       setIds(nextIds);
-      cachedUserId = user.id;
+      cachedUserId = userId;
       cachedIds = cloneIds(nextIds);
 
       try {
         if (wasSaved) {
-          await wishlistRequest(`/api/wishlists/${encodeURIComponent(competitionId)}`, {
-            method: "DELETE",
-          });
+          await wishlistRequest(
+            `/api/wishlists/${encodeURIComponent(competitionId)}`,
+            {
+              method: "DELETE",
+            },
+          );
         } else {
           await wishlistRequest("/api/wishlists", {
             method: "POST",
@@ -203,13 +230,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       } catch {
         idsRef.current = previousIds;
         setIds(previousIds);
-        cachedUserId = user.id;
+        cachedUserId = userId;
         cachedIds = cloneIds(previousIds);
       } finally {
         inFlightIdsRef.current.delete(competitionId);
       }
     },
-    [isLoading, status, user?.id],
+    [isLoading, status, userId],
   );
 
   const value = useMemo<WishlistContextValue>(

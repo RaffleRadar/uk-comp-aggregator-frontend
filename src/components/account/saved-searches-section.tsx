@@ -214,7 +214,8 @@ export function SavedSearchesSection() {
   const itemsRef = useRef<SavedSearchRecord[]>([]);
   const inFlightIdsRef = useRef(new Set<string>());
   const deletingIdsRef = useRef(new Set<string>());
-  const [, forceRender] = useState(0);
+  const [inFlightIds, setInFlightIds] = useState<Set<string>>(() => new Set());
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     itemsRef.current = items;
@@ -258,10 +259,10 @@ export function SavedSearchesSection() {
         ...item,
         summary: buildFiltersSummary(item.filters),
         lastSentLabel: formatLastSentAt(item.lastSentAt),
-        isToggling: inFlightIdsRef.current.has(item.id),
-        isDeleting: deletingIdsRef.current.has(item.id),
+        isToggling: inFlightIds.has(item.id),
+        isDeleting: deletingIds.has(item.id),
       })),
-    [items],
+    [deletingIds, inFlightIds, items],
   );
 
   async function handleToggle(id: string, nextAlertsEnabled: boolean) {
@@ -276,9 +277,9 @@ export function SavedSearchesSection() {
     );
 
     inFlightIdsRef.current.add(id);
+    setInFlightIds(new Set(inFlightIdsRef.current));
     itemsRef.current = nextItems;
     setItems(nextItems);
-    forceRender((value) => value + 1);
 
     try {
       await savedSearchRequest<SavedSearchRecord>(`/api/saved-searches/${encodeURIComponent(id)}`, {
@@ -294,7 +295,7 @@ export function SavedSearchesSection() {
       setActionError("We could not update this alert right now. Please try again.");
     } finally {
       inFlightIdsRef.current.delete(id);
-      forceRender((value) => value + 1);
+      setInFlightIds(new Set(inFlightIdsRef.current));
     }
   }
 
@@ -313,7 +314,7 @@ export function SavedSearchesSection() {
 
     setActionError("");
     deletingIdsRef.current.add(id);
-    forceRender((value) => value + 1);
+    setDeletingIds(new Set(deletingIdsRef.current));
 
     try {
       await savedSearchRequest<{ message: string }>(
@@ -330,7 +331,7 @@ export function SavedSearchesSection() {
       setActionError("We could not delete this saved search right now. Please try again.");
     } finally {
       deletingIdsRef.current.delete(id);
-      forceRender((value) => value + 1);
+      setDeletingIds(new Set(deletingIdsRef.current));
     }
   }
 
