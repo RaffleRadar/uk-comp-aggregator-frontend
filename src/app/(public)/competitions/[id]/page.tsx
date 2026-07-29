@@ -20,10 +20,12 @@ import { TicketSalesChart } from "@/components/competitions/ticket-sales-chart";
 import { CompetitionCard } from "@/components/competitions/competition-card";
 import { CompetitionImage } from "@/components/ui/CompetitionImage";
 import { ViewAllLink } from "@/components/ui/view-all-link";
+import { CommentsSection } from "@/components/comments/comments-section";
 import {
   getCompetition,
   getCompetitionHistory,
   getCompetitions,
+  getComments,
   type CompetitionDetail,
 } from "@/lib/api";
 import type { Competition } from "@/types/competition";
@@ -118,6 +120,7 @@ async function fetchCompetitionData(id: string) {
   try {
     const competitionPromise = getCompetition(id);
     const historyPromise = getCompetitionHistory(id);
+    const commentsPromise = getComments(id).catch(() => []);
     const moreFromOperatorPromise = competitionPromise.then((value) => {
       if (!value || typeof value !== "object") return [];
       const comp = value as Competition;
@@ -130,11 +133,13 @@ async function fetchCompetitionData(id: string) {
         limit: 5,
       });
     });
-    const [competition, historyData, moreFromOperatorData] = await Promise.all([
-      competitionPromise,
-      historyPromise,
-      moreFromOperatorPromise,
-    ]);
+    const [competition, historyData, moreFromOperatorData, comments] =
+      await Promise.all([
+        competitionPromise,
+        historyPromise,
+        moreFromOperatorPromise,
+        commentsPromise,
+      ]);
     if (!competition || typeof competition !== "object") {
       notFound();
     }
@@ -147,6 +152,7 @@ async function fetchCompetitionData(id: string) {
       ticketsLeft,
       percentSold,
       endsAt,
+      hasEnded,
       category,
       instantPrizes,
       valueRatio,
@@ -215,6 +221,8 @@ async function fetchCompetitionData(id: string) {
       priceValue,
       history,
       moreFromOperator,
+      comments,
+      hasEnded,
     };
   } catch (error) {
     console.error("Failed to load competition page:", error);
@@ -238,6 +246,7 @@ export default async function Page({
     category,
     operator,
     endsAt,
+    hasEnded,
     priceValue,
     totalTicketsValue,
     remainingTickets,
@@ -257,6 +266,7 @@ export default async function Page({
     sourceUrl,
     history,
     moreFromOperator,
+    comments,
   } = data;
   const prizeValueNum = prizeValue ? Number(prizeValue) : null;
   const cashAltNum = cashAlternative ? Number(cashAlternative) : null;
@@ -370,6 +380,13 @@ export default async function Page({
       </div>
     </div>
   ) : null;
+  const endedLabel = endsAt
+    ? new Date(endsAt).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : null;
   const aboutBlock = (
     <div>
       <h2 className="text-lg font-semibold text-rr-primary mb-4">
@@ -409,6 +426,16 @@ export default async function Page({
         operator={operator?.name ?? undefined}
       />
       <div className="container py-6 md:py-8">
+        {hasEnded ? (
+          <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-3 mb-6">
+            <div className="text-rr-primary font-medium">
+              This competition has ended
+            </div>
+            {endedLabel ? (
+              <div className="text-rr-muted text-sm">{endedLabel}</div>
+            ) : null}
+          </div>
+        ) : null}
         <div className="mb-4 hidden md:block">
           <nav className="flex items-center gap-2 text-sm text-rr-muted">
             <Link href="/" className="hover:text-rr-primary transition-colors">
@@ -595,11 +622,13 @@ export default async function Page({
               />
             ) : null}
             <div className="flex gap-3 mt-6 mb-6">
-              <EnterButton
-                competitionId={id}
-                sourceUrl={sourceUrl}
-                operatorName={operator?.name ?? "Operator"}
-              />
+              {!hasEnded ? (
+                <EnterButton
+                  competitionId={id}
+                  sourceUrl={sourceUrl}
+                  operatorName={operator?.name ?? "Operator"}
+                />
+              ) : null}
               <SaveActions />
             </div>
             {(cashAltNum || endsAt) && (
@@ -653,6 +682,7 @@ export default async function Page({
             </div>
           </div>
         )}
+        <CommentsSection competitionId={id} initialComments={comments} />
       </div>
     </main>
   );

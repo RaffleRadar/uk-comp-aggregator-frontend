@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
 import type { CommentNode } from "@/lib/api";
 import { deleteComment } from "@/lib/comments-client";
 import { CommentForm } from "@/components/comments/comment-form";
@@ -9,7 +8,7 @@ import { CommentForm } from "@/components/comments/comment-form";
 type CommentItemProps = {
   comment: CommentNode;
   competitionId: string;
-  currentUserDisplayName: string | null;
+  currentUserId: string | null;
   isAuthenticated: boolean;
   isReply: boolean;
   onReplyPosted: (parentId: string, reply: CommentNode) => void;
@@ -19,6 +18,9 @@ type CommentItemProps = {
 const relativeTimeFormatter = new Intl.RelativeTimeFormat("en-GB", {
   numeric: "auto",
 });
+
+const actionClassName =
+  "rounded-md text-xs font-medium text-rr-muted transition hover:text-rr-primary disabled:cursor-not-allowed disabled:opacity-50";
 
 function getRelativeTimestamp(value: string) {
   const date = new Date(value);
@@ -76,7 +78,7 @@ function getRelativeTimestamp(value: string) {
 export function CommentItem({
   comment,
   competitionId,
-  currentUserDisplayName,
+  currentUserId,
   isAuthenticated,
   isReply,
   onReplyPosted,
@@ -93,8 +95,8 @@ export function CommentItem({
   const canReply = !isReply && isAuthenticated;
   const canDelete =
     isAuthenticated &&
-    comment.author?.displayName !== null &&
-    comment.author?.displayName === currentUserDisplayName;
+    currentUserId !== null &&
+    comment.author?.id === currentUserId;
   const hasReplies = !isReply && comment.replies.length > 0;
 
   async function handleDelete() {
@@ -124,13 +126,13 @@ export function CommentItem({
   }
 
   return (
-    <div className="space-y-3">
+    <div>
       {comment.isDeleted ? (
-        <div className="text-sm italic text-rr-muted">Comment removed</div>
+        <p className="text-sm italic text-rr-muted">Comment removed</p>
       ) : (
-        <div className="space-y-3 rounded-2xl border border-rr-border bg-rr-surface p-4">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="text-sm font-medium text-rr-primary">
+        <div>
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="text-sm font-semibold text-rr-primary">
               {comment.author?.displayName ?? "Unknown"}
             </span>
             <time
@@ -142,72 +144,72 @@ export function CommentItem({
             </time>
           </div>
 
-          <div className="whitespace-pre-wrap break-words text-sm text-rr-secondary">
+          <p className="mt-1.5 whitespace-pre-wrap break-words text-sm leading-relaxed text-rr-secondary">
             {comment.body}
-          </div>
+          </p>
 
-          {(canReply || canDelete) ? (
-            <div className="flex flex-wrap gap-2">
+          {canReply || canDelete ? (
+            <div className="mt-2 flex flex-wrap items-center gap-4">
               {canReply ? (
-                <Button
+                <button
                   type="button"
-                  variant="secondary"
-                  className="h-8 px-3"
+                  className={actionClassName}
                   onClick={() => {
                     setDeleteError("");
                     setIsReplyFormOpen((current) => !current);
                   }}
                 >
                   {isReplyFormOpen ? "Close" : "Reply"}
-                </Button>
+                </button>
               ) : null}
 
               {canDelete ? (
-                <Button
+                <button
                   type="button"
-                  variant="secondary"
-                  className="h-8 px-3"
+                  className={actionClassName}
                   onClick={() => {
                     void handleDelete();
                   }}
                   disabled={isDeleting}
                 >
                   Delete
-                </Button>
+                </button>
               ) : null}
             </div>
           ) : null}
 
           {isReplyFormOpen ? (
-            <CommentForm
-              competitionId={competitionId}
-              parentId={comment.id}
-              autoFocus
-              onCancel={() => {
-                setIsReplyFormOpen(false);
-              }}
-              onPosted={(reply) => {
-                setDeleteError("");
-                setIsReplyFormOpen(false);
-                onReplyPosted(comment.id, reply);
-              }}
-            />
+            <div className="mt-3">
+              <CommentForm
+                competitionId={competitionId}
+                parentId={comment.id}
+                autoFocus
+                onCancel={() => {
+                  setIsReplyFormOpen(false);
+                }}
+                onPosted={(reply) => {
+                  setDeleteError("");
+                  setIsReplyFormOpen(false);
+                  onReplyPosted(comment.id, reply);
+                }}
+              />
+            </div>
           ) : null}
 
           {deleteError ? (
-            <div className="text-sm text-rr-danger">{deleteError}</div>
+            <p className="mt-2 text-xs text-rr-danger">{deleteError}</p>
           ) : null}
         </div>
       )}
 
       {hasReplies ? (
-        <div className="space-y-4 border-l border-rr-border pl-4">
+        <div className="mt-4 space-y-4 border-l-2 border-rr-border pl-4">
           {comment.replies.map((reply) => (
             <CommentItem
               key={reply.id}
               comment={reply}
               competitionId={competitionId}
-              currentUserDisplayName={currentUserDisplayName}
+              currentUserId={currentUserId}
               isAuthenticated={isAuthenticated}
               isReply
               onReplyPosted={onReplyPosted}

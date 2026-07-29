@@ -89,6 +89,7 @@ export type CompetitionDetail = {
   ticketsLeft?: number | null;
   percentSold: number | string | null;
   endsAt: string | null;
+  hasEnded: boolean;
   createdAt: string;
   category: string | null;
   instantPrizes: boolean | null;
@@ -514,7 +515,7 @@ export async function unsubscribeFromNewsletter(token: string) {
   });
 }
 
-export type CommentAuthor = { displayName: string };
+export type CommentAuthor = { id: string; displayName: string };
 
 export type CommentNode = {
   id: string;

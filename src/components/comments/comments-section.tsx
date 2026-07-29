@@ -129,7 +129,7 @@ export function CommentsSection({
   }, [initialComments]);
 
   const isAuthenticated = status === "authenticated";
-  const currentUserDisplayName = user?.displayName ?? null;
+  const currentUserId = user?.id ?? null;
   const visibleCount = useMemo(
     () => countVisibleComments(comments),
     [comments],
@@ -181,7 +181,7 @@ export function CommentsSection({
                 key={comment.id}
                 comment={comment}
                 competitionId={competitionId}
-                currentUserDisplayName={currentUserDisplayName}
+                currentUserId={currentUserId}
                 isAuthenticated={isAuthenticated}
                 isReply={false}
                 onReplyPosted={(parentId, reply) => {
