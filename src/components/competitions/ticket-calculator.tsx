@@ -14,6 +14,13 @@ function clampTicketCount(value: number, buyable: number) {
   return Math.min(buyable, Math.max(1, Math.floor(value)));
 }
 
+function formatWinChance(value: number) {
+  if (value === 0) return "0%";
+  if (value < 0.01) return "<0.01%";
+  if (value < 1) return `${value.toFixed(2)}%`;
+  return `${value.toFixed(1)}%`;
+}
+
 export function TicketCalculator({
   ticketsSold,
   ticketsTotal,
@@ -48,9 +55,9 @@ export function TicketCalculator({
     ticketPrice !== null && ticketPrice > 0
       ? `£${(currentTicketCount * ticketPrice).toFixed(2)}`
       : "Free";
-  const winChance = Number(
-    ((currentTicketCount / (ticketsSold + currentTicketCount)) * 100).toPrecision(2),
-  );
+  const winChanceValue =
+    (currentTicketCount / (ticketsSold + currentTicketCount)) * 100;
+  const winChance = formatWinChance(winChanceValue);
 
   return (
     <div className="mb-6 rounded-xl border border-rr-border bg-rr-elevated p-4 shadow-sm">
@@ -106,7 +113,7 @@ export function TicketCalculator({
         </div>
         <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-3 text-center">
           <p className="mb-1 text-[11px] uppercase tracking-wide text-rr-muted">Win chance</p>
-          <p className="text-sm font-semibold text-rr-primary">{winChance}%</p>
+          <p className="text-sm font-semibold text-rr-primary">{winChance}</p>
         </div>
       </div>
     </div>

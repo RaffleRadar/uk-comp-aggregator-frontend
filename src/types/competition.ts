@@ -16,6 +16,7 @@ export type Competition = {
   finalPercentSold?: number | string | null;
   endsAt: string | null;
   createdAt: string;
+  isActive?: boolean;
   closedAt?: string | null;
   category: string | null;
   instantPrizes: boolean | null;
