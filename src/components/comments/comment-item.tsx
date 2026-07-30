@@ -135,6 +135,11 @@ export function CommentItem({
             <span className="text-sm font-semibold text-rr-primary">
               {comment.author?.displayName ?? "Unknown"}
             </span>
+            {comment.author?.isStaff ? (
+              <span className="whitespace-nowrap rounded-full border border-rr-green-border bg-rr-green-bg px-2 py-0.5 text-[11px] font-medium text-rr-green">
+                RaffleRadar
+              </span>
+            ) : null}
             <time
               dateTime={comment.createdAt}
               title={timestamp.title}

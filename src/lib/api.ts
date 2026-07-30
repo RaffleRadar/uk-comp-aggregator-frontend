@@ -515,7 +515,7 @@ export async function unsubscribeFromNewsletter(token: string) {
   });
 }
 
-export type CommentAuthor = { id: string; displayName: string };
+export type CommentAuthor = { id: string; displayName: string; isStaff: boolean };
 
 export type CommentNode = {
   id: string;
