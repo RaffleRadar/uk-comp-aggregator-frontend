@@ -36,6 +36,7 @@ export function CompetitionGridClient({
             key={competition.id}
             competition={competition}
             featured={featuredSet.has(competition.id)}
+            variant={competition.isActive === false ? "ended" : "default"}
           />
         ))}
       </div>
