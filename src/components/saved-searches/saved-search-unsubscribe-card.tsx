@@ -29,7 +29,7 @@ export function SavedSearchUnsubscribeCard({
   return (
     <TokenActionCard
       token={token}
-      backHref="/account?section=searches"
+      backHref="/profile"
       backLabel="Go to account"
       copy={{
         badge: "Saved Search Alerts",
