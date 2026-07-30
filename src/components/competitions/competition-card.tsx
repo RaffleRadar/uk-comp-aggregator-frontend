@@ -43,6 +43,7 @@ interface Props {
   competition: Competition;
   featured?: boolean;
   variant?: "default" | "ended";
+  interactiveWhenEnded?: boolean;
 }
 
 const ticketCountFormatter = new Intl.NumberFormat("en-GB");
@@ -52,6 +53,7 @@ export function CompetitionCard({
   competition,
   featured,
   variant = "default",
+  interactiveWhenEnded = false,
 }: Props) {
   const pathname = usePathname();
   const [now, setNow] = useState<number | null>(null);
@@ -85,6 +87,7 @@ export function CompetitionCard({
   } = competition;
 
   const isEnded = variant === "ended";
+  const isInteractive = !isEnded || interactiveWhenEnded;
   const percentRaw = isEnded ? (finalPercentSold ?? percentSold) : percentSold;
   const percent =
     typeof percentRaw === "number"
@@ -117,9 +120,9 @@ export function CompetitionCard({
     "block overflow-hidden rounded-[10px] border",
     "bg-rr-surface border-rr-border",
     featured ? "border-rr-green-border" : "",
-    isEnded
-      ? "cursor-default"
-      : "cursor-pointer transition-opacity hover:opacity-90",
+    isInteractive
+      ? "cursor-pointer transition-opacity hover:opacity-90"
+      : "cursor-default",
   ].join(" ");
 
   const cardContent = (
@@ -195,7 +198,7 @@ export function CompetitionCard({
     </>
   );
 
-  if (isEnded) {
+  if (!isInteractive) {
     return <div className={cardClassName}>{cardContent}</div>;
   }
 

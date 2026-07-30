@@ -148,6 +148,7 @@ function WishlistSection() {
           featuredIds={[]}
           pageSize={Math.max(visibleItems.length, 1)}
           embedded
+          interactiveWhenEnded
         />
       ) : (
         <WishlistPlaceholder />

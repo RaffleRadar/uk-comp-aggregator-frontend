@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SignInModal } from "@/components/auth/sign-in-modal";
@@ -94,6 +94,52 @@ function hasMeaningfulFilters(payload: Record<string, string | number | boolean>
   return Object.keys(payload).some((key) => !nonMeaningfulOnlyParams.has(key));
 }
 
+function normalizeFilterValue(value: string | number | boolean) {
+  if (typeof value === "string") {
+    const compactedValue = value.trim().toLowerCase();
+
+    if (compactedValue === "true") {
+      return true;
+    }
+
+    if (compactedValue === "false") {
+      return false;
+    }
+
+    const numericValue = Number(compactedValue);
+
+    if (compactedValue !== "" && Number.isFinite(numericValue)) {
+      return numericValue;
+    }
+
+    return compactedValue;
+  }
+
+  return value;
+}
+
+function buildFiltersComparisonKey(
+  filters: Record<string, string | number | boolean | null | undefined>,
+) {
+  const normalizedEntries = Object.entries(filters).reduce<
+    Array<readonly [string, string | number | boolean]>
+  >((entries, [key, value]) => {
+      if (value === undefined || value === null) {
+        return entries;
+      }
+
+      if (key === "sortBy" || key === "sortOrder") {
+        return entries;
+      }
+
+      entries.push([key, normalizeFilterValue(value)] as const);
+      return entries;
+    }, [])
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey));
+
+  return JSON.stringify(Object.fromEntries(normalizedEntries));
+}
+
 async function readResponseBody(response: Response) {
   const rawBody = await response.text();
 
@@ -110,11 +156,14 @@ async function readResponseBody(response: Response) {
 
 export function SaveSearchButton() {
   const searchParams = useSearchParams();
-  const { status } = useAuth();
+  const { status, user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [savedSearches, setSavedSearches] = useState<SavedSearchResponse[] | null>(null);
+  const [savedSearchesUserId, setSavedSearchesUserId] = useState<string | null>(null);
   const restoreFocusRef = useRef<HTMLButtonElement | null>(null);
+  const lastFetchedSavedSearchesUserIdRef = useRef<string | null>(null);
 
   const payload = useMemo(
     () => parseSavedSearchParams(searchParams),
@@ -122,7 +171,65 @@ export function SaveSearchButton() {
   );
   const canSave = useMemo(() => hasMeaningfulFilters(payload), [payload]);
   const isSignedIn = status === "authenticated";
-  const isDisabled = !canSave;
+  const userId = user?.id ?? null;
+  const payloadComparisonKey = useMemo(
+    () => buildFiltersComparisonKey(payload),
+    [payload],
+  );
+  const isAlreadySaved = useMemo(
+    () =>
+      isSignedIn &&
+      canSave &&
+      userId !== null &&
+      savedSearchesUserId === userId &&
+      savedSearches !== null &&
+      savedSearches.some(
+        (savedSearch) =>
+          buildFiltersComparisonKey(savedSearch.filters) === payloadComparisonKey,
+      ),
+    [canSave, isSignedIn, payloadComparisonKey, savedSearches, savedSearchesUserId, userId],
+  );
+  const isDisabled = !canSave || isSubmitting || isAlreadySaved;
+
+  useEffect(() => {
+    if (!isSignedIn || !userId) {
+      lastFetchedSavedSearchesUserIdRef.current = null;
+      return;
+    }
+
+    if (lastFetchedSavedSearchesUserIdRef.current === userId) {
+      return;
+    }
+
+    lastFetchedSavedSearchesUserIdRef.current = userId;
+
+    let cancelled = false;
+
+    void fetch("/api/saved-searches", {
+      method: "GET",
+      credentials: "same-origin",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          return null;
+        }
+
+        return (await response.json()) as SavedSearchResponse[];
+      })
+      .then((responseBody) => {
+        if (cancelled || !responseBody) {
+          return;
+        }
+
+        setSavedSearchesUserId(userId);
+        setSavedSearches(responseBody);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isSignedIn, userId]);
 
   const closeSignInModal = useCallback(
     (options?: { restoreFocus?: boolean }) => {
@@ -189,6 +296,17 @@ export function SaveSearchButton() {
       const savedSearch = body as SavedSearchResponse | null;
       const savedName = savedSearch?.name?.trim() || "this search";
 
+      if (savedSearch) {
+        setSavedSearchesUserId(userId);
+        setSavedSearches((current) => {
+          if (!current) {
+            return [savedSearch];
+          }
+
+          return [savedSearch, ...current.filter((item) => item.id !== savedSearch.id)];
+        });
+      }
+
       setFeedback({
         type: "success",
         message: `Saved as "${savedName}". We'll email you when something new matches.`,
@@ -205,6 +323,10 @@ export function SaveSearchButton() {
     }
   }
 
+  if (!canSave) {
+    return null;
+  }
+
   return (
     <div className="container py-3">
       <div className="flex flex-col gap-3 rounded-2xl border border-rr-border bg-rr-surface p-2.5 shadow-sm sm:p-4">
@@ -219,15 +341,18 @@ export function SaveSearchButton() {
 
           <Button
             type="button"
-            disabled={isDisabled || isSubmitting}
+            disabled={isDisabled}
             className={cn(
               "w-full sm:w-auto",
-              isDisabled
+              !canSave
                 ? "cursor-not-allowed opacity-60"
+                : "",
+              isAlreadySaved
+                ? "border-rr-green-border bg-rr-green-bg text-rr-green opacity-100 hover:opacity-100 disabled:cursor-default disabled:opacity-100"
                 : "",
             )}
             onClick={(event) => {
-              if (!canSave || isSubmitting) {
+              if (!canSave || isSubmitting || isAlreadySaved) {
                 return;
               }
 
@@ -239,15 +364,9 @@ export function SaveSearchButton() {
               void handleSave();
             }}
           >
-            {isSubmitting ? "Saving..." : "Save this search"}
+            {isAlreadySaved ? "Alert live" : isSubmitting ? "Saving..." : "Save this search"}
           </Button>
         </div>
-
-        {isSignedIn && !canSave ? (
-          <p className="hidden text-sm text-rr-secondary sm:block">
-            Set at least one real filter before saving this search.
-          </p>
-        ) : null}
 
         {feedback ? (
           <div

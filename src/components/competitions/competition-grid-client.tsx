@@ -10,6 +10,7 @@ type CompetitionGridClientProps = {
   featuredIds: string[];
   pageSize?: number;
   embedded?: boolean;
+  interactiveWhenEnded?: boolean;
 };
 
 export function CompetitionGridClient({
@@ -17,6 +18,7 @@ export function CompetitionGridClient({
   featuredIds,
   pageSize = 20,
   embedded = false,
+  interactiveWhenEnded = false,
 }: CompetitionGridClientProps) {
   const { visibleItems, hasMore, loadMoreRef } = useInfinitePagination({
     items: competitions,
@@ -37,6 +39,7 @@ export function CompetitionGridClient({
             competition={competition}
             featured={featuredSet.has(competition.id)}
             variant={competition.isActive === false ? "ended" : "default"}
+            interactiveWhenEnded={interactiveWhenEnded}
           />
         ))}
       </div>
