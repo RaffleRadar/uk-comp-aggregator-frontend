@@ -175,11 +175,21 @@ export function CompetitionCard({
                     : "— tickets"}
           </span>
         </div>
-        {percent !== null ? <ProgressBar value={percent} /> : null}
-        <div className="flex justify-between mt-1">
+        <div className="h-2">
+          {percent !== null ? <ProgressBar value={percent} /> : null}
+        </div>
+        <div className="flex min-h-[15px] justify-between mt-1">
           {percent !== null ? (
             <span className="text-[10px] text-rr-muted">
               {percent.toFixed(0)}% sold
+              {timingLabel && !isEnded && !badgeShowsTime
+                ? ` · ${timingLabel}`
+                : ""}
+            </span>
+          ) : typeof ticketsTotal !== "number" &&
+            typeof ticketsSold === "number" ? (
+            <span className="text-[10px] text-rr-muted">
+              Total tickets not disclosed
               {timingLabel && !isEnded && !badgeShowsTime
                 ? ` · ${timingLabel}`
                 : ""}
