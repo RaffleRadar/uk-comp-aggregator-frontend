@@ -44,7 +44,7 @@ export function getOperatorFairness(
       badgeVariant: "green",
       label: "Best value",
       vrLabel: `VR ${value.toFixed(1)}`,
-      description: "Among the most player-friendly pricing we track.",
+      description: "Top-value pricing.",
       value,
     };
   }
