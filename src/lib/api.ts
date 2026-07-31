@@ -87,6 +87,7 @@ export type CompetitionDetail = {
   ticketPrice: number | string | null;
   ticketsTotal: number | null;
   ticketsLeft?: number | null;
+  ticketsSold?: number | null;
   percentSold: number | string | null;
   finalPercentSold?: number | string | null;
   endsAt: string | null;

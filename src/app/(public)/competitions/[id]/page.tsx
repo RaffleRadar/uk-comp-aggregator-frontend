@@ -150,6 +150,7 @@ async function fetchCompetitionData(id: string) {
       ticketPrice,
       ticketsTotal,
       ticketsLeft,
+      ticketsSold,
       percentSold,
       endsAt,
       hasEnded,
@@ -172,9 +173,11 @@ async function fetchCompetitionData(id: string) {
     const percentSoldValue = toFiniteNumber(percentSold);
 
     const soldTickets =
-      totalTicketsValue !== null && ticketsLeftValue !== null
-        ? Math.max(0, totalTicketsValue - ticketsLeftValue)
-        : null;
+      typeof ticketsSold === "number"
+        ? ticketsSold
+        : totalTicketsValue !== null && ticketsLeftValue !== null
+          ? Math.max(0, totalTicketsValue - ticketsLeftValue)
+          : null;
     const remainingTickets = ticketsLeftValue;
     const ticketsSoldForOdds = soldTickets;
 

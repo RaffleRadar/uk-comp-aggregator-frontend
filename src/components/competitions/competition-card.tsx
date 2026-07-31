@@ -76,6 +76,7 @@ export function CompetitionCard({
     ticketPrice,
     ticketsTotal,
     ticketsLeft,
+    ticketsSold,
     percentSold,
     finalPercentSold,
     endsAt,
@@ -169,7 +170,9 @@ export function CompetitionCard({
                 ? `${ticketCountFormatter.format(ticketsLeft)} left`
                 : typeof ticketsTotal === "number"
                   ? `${ticketCountFormatter.format(ticketsTotal)} tickets`
-                  : "— tickets"}
+                  : typeof ticketsSold === "number"
+                    ? `${ticketCountFormatter.format(ticketsSold)} sold`
+                    : "— tickets"}
           </span>
         </div>
         {percent !== null ? <ProgressBar value={percent} /> : null}
