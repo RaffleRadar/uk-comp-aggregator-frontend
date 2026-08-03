@@ -116,6 +116,13 @@ export async function generateMetadata({
   }
 }
 
+function isCompetitionNotFoundError(error: unknown) {
+  return (
+    error instanceof Error &&
+    (error.message === "Competition not found" || error.message === "HTTP 404")
+  );
+}
+
 async function fetchCompetitionData(id: string) {
   try {
     const competitionPromise = getCompetition(id);
@@ -228,7 +235,9 @@ async function fetchCompetitionData(id: string) {
       hasEnded,
     };
   } catch (error) {
-    console.error("Failed to load competition page:", error);
+    if (!isCompetitionNotFoundError(error)) {
+      console.error("Failed to load competition page:", error);
+    }
     notFound();
   }
 }

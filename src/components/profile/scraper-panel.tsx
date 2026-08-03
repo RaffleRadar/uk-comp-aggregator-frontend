@@ -339,9 +339,9 @@ export function ScraperPanel() {
         </p>
       ) : null}
 
-      <div className="mt-4 overflow-x-auto rounded-2xl border border-rr-border">
+      <div className="mt-4 rounded-2xl border border-rr-border">
         <table className="w-full text-sm">
-          <thead className="bg-rr-elevated">
+          <thead className="hidden bg-rr-elevated md:table-header-group">
             <tr>
               <th className="px-4 py-3 text-left font-medium text-rr-primary">Operator name</th>
               <th className="px-4 py-3 text-left font-medium text-rr-primary">Last scraped</th>
@@ -349,50 +349,30 @@ export function ScraperPanel() {
               <th className="px-4 py-3 text-left font-medium text-rr-primary">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="block divide-y divide-rr-border md:table-row-group md:divide-y-0">
             {items.map((item) => {
               const isRunning = Boolean(runningIds[item.id]);
               const runMessage = runMessages[item.id];
 
               return (
-                <tr key={item.id} className="border-t border-rr-border">
-                  <td className="px-4 py-3 text-rr-primary">
-                    <div className="min-w-0 truncate">{item.name}</div>
+                <tr key={item.id} className="block px-4 py-4 md:table-row md:border-t md:border-rr-border md:p-0">
+                  <td className="block pb-3 text-base font-medium text-rr-primary md:table-cell md:px-4 md:py-3 md:text-sm md:font-normal">
+                    <div className="min-w-0 break-words md:truncate">{item.name}</div>
                   </td>
-                  <td className="px-4 py-3 text-rr-secondary whitespace-nowrap">
-                    {formatLastScraped(item.lastScrapedAt)}
+                  <td data-label="Last scraped" className="flex items-center justify-between gap-4 py-2 text-rr-secondary md:table-cell md:px-4 md:py-3 md:whitespace-nowrap before:text-xs before:font-medium before:uppercase before:tracking-wide before:text-rr-secondary before:content-[attr(data-label)] md:before:hidden">
+                    <span className="text-right md:text-left">{formatLastScraped(item.lastScrapedAt)}</span>
                   </td>
-                  <td
-                    className={cn(
-                      "px-4 py-3 whitespace-nowrap",
-                      getStatusClass(item.scraperStatus),
-                    )}
-                  >
-                    {item.scraperStatus ?? "—"}
+                  <td data-label="Status" className={cn("flex items-center justify-between gap-4 py-2 md:table-cell md:px-4 md:py-3 md:whitespace-nowrap before:text-xs before:font-medium before:uppercase before:tracking-wide before:text-rr-secondary before:content-[attr(data-label)] md:before:hidden", getStatusClass(item.scraperStatus))}>
+                    <span className="text-right md:text-left">{item.scraperStatus ?? "—"}</span>
                   </td>
-                  <td className="px-4 py-3 text-rr-primary">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                      <Button
-                        type="button"
-                        onClick={() => void runScraper(item.id)}
-                        disabled={isRunning}
-                        className="w-[88px] justify-center disabled:cursor-not-allowed disabled:opacity-60"
-                      >
+                  <td className="block pt-3 text-rr-primary md:table-cell md:px-4 md:py-3">
+                    <div className="mb-2 text-xs font-medium uppercase tracking-wide text-rr-secondary md:hidden">Action</div>
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                      <Button type="button" onClick={() => void runScraper(item.id)} disabled={isRunning} className="w-full justify-center md:w-[88px] disabled:cursor-not-allowed disabled:opacity-60">
                         {isRunning ? <RunningSpinner /> : null}
                         Run
                       </Button>
-                      {runMessage ? (
-                        <span
-                          className={cn(
-                            "text-sm",
-                            runMessage.tone === "error"
-                              ? "text-red-700 dark:text-red-300"
-                              : "text-rr-secondary",
-                          )}
-                        >
-                          {runMessage.text}
-                        </span>
-                      ) : null}
+                      {runMessage ? <span className={cn("text-sm", runMessage.tone === "error" ? "text-red-700 dark:text-red-300" : "text-rr-secondary")}>{runMessage.text}</span> : null}
                     </div>
                   </td>
                 </tr>

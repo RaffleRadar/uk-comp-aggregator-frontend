@@ -12,6 +12,7 @@ import { NewsletterBanner } from "@/components/account/newsletter-banner";
 import { SavedSearchesSection } from "@/components/account/saved-searches-section";
 import { SettingsSection } from "@/components/account/settings-section";
 import { CompetitionGridClient } from "@/components/competitions/competition-grid-client";
+import { CompetitionAdmin } from "@/components/profile/competition-admin";
 import { ScraperPanel } from "@/components/profile/scraper-panel";
 import { RadarLoader } from "@/components/ui/RadarLoader";
 import { useAuth } from "@/contexts/auth-context";
@@ -184,7 +185,12 @@ function SectionContent({ section }: { section: AccountSection }) {
     case "searches":
       return <SavedSearchesSection />;
     case "scrapers":
-      return <ScraperPanel />;
+      return (
+        <div className="space-y-6">
+          <ScraperPanel />
+          <CompetitionAdmin />
+        </div>
+      );
     case "settings":
       return <SettingsSection />;
     default:
