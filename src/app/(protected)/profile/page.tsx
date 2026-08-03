@@ -1,22 +1,42 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import {
+  IconClock,
+  IconHeart,
+  IconSearch,
+  IconSettings,
+} from "@tabler/icons-react";
 import { AccountGreeting } from "@/components/account/account-greeting";
-import { AccountNav, type AccountSection } from "@/components/account/account-nav";
 import { NewsletterBanner } from "@/components/account/newsletter-banner";
 import { SavedSearchesSection } from "@/components/account/saved-searches-section";
 import { SettingsSection } from "@/components/account/settings-section";
 import { CompetitionGridClient } from "@/components/competitions/competition-grid-client";
+import { ScraperPanel } from "@/components/profile/scraper-panel";
 import { RadarLoader } from "@/components/ui/RadarLoader";
 import { useAuth } from "@/contexts/auth-context";
 import { useWishlist } from "@/contexts/wishlist-context";
 import { getCompetition, type CompetitionDetail } from "@/lib/api";
+import { cn } from "@/lib/cn";
 import type { Competition } from "@/types/competition";
 
 type WishlistItem = {
   id: string;
   addedAt: string;
 };
+
+type AccountSection = "wishlist" | "searches" | "scrapers" | "settings";
+
+const sections: {
+  id: AccountSection;
+  label: string;
+  icon: typeof IconHeart;
+}[] = [
+  { id: "wishlist", label: "Wishlist", icon: IconHeart },
+  { id: "searches", label: "Saved searches", icon: IconSearch },
+  { id: "scrapers", label: "Scrapers", icon: IconClock },
+  { id: "settings", label: "Settings", icon: IconSettings },
+];
 
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
@@ -163,6 +183,8 @@ function SectionContent({ section }: { section: AccountSection }) {
       return <WishlistSection />;
     case "searches":
       return <SavedSearchesSection />;
+    case "scrapers":
+      return <ScraperPanel />;
     case "settings":
       return <SettingsSection />;
     default:
@@ -184,7 +206,31 @@ export default function ProfilePage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-[14rem_1fr]">
-        <AccountNav active={activeSection} onChange={setActiveSection} />
+        <nav className="overflow-hidden rounded-2xl border border-rr-border bg-rr-surface md:w-52">
+          <div className="flex flex-wrap gap-2 p-2 md:flex-col md:gap-0 md:p-0">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              const isActive = activeSection === section.id;
+
+              return (
+                <button
+                  key={section.id}
+                  type="button"
+                  onClick={() => setActiveSection(section.id)}
+                  className={cn(
+                    "flex min-w-0 basis-[calc(50%-0.25rem)] items-center gap-2 rounded-xl border px-4 py-3 text-left text-sm transition md:w-full md:basis-auto md:rounded-none md:border-x-0 md:border-y-0 md:border-l-2 md:px-3",
+                    isActive
+                      ? "border-rr-green bg-rr-elevated font-medium text-rr-primary md:border-l-rr-green"
+                      : "border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary md:border-l-transparent",
+                  )}
+                >
+                  <Icon size={18} className="shrink-0" />
+                  <span className="min-w-0 break-words md:truncate">{section.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
         <SectionContent section={activeSection} />
       </div>
     </div>
