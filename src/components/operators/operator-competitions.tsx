@@ -47,14 +47,14 @@ export function OperatorCompetitions({
   return (
     <div>
       <div className="mb-4 flex">
-        <div className="inline-flex h-10 w-full max-w-[220px] items-center rounded-xl border border-rr-border bg-rr-surface p-0.5 shadow-sm lg:h-9 lg:rounded-[7px] lg:bg-rr-elevated lg:shadow-none">
+        <div className="inline-flex h-10 w-full max-w-[220px] items-center rounded-xl border border-rr-border bg-rr-surface p-0.5 shadow-sm lg:h-9 lg:rounded-[7px] lg:bg-rr-surface lg:shadow-none">
           <button
             type="button"
             className={cn(
               "flex-1 whitespace-nowrap rounded-[10px] px-3 text-sm font-medium transition lg:rounded-[5px] lg:px-2.5",
               sort === "default"
-                ? "bg-rr-elevated text-rr-primary lg:bg-rr-surface"
-                : "text-rr-secondary hover:text-rr-primary",
+                ? "bg-rr-card text-rr-primary shadow-sm lg:bg-rr-card"
+                : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
             )}
             aria-pressed={sort === "default"}
             onClick={() => setSort("default")}
@@ -67,8 +67,8 @@ export function OperatorCompetitions({
             className={cn(
               "flex-1 whitespace-nowrap rounded-[10px] px-3 text-sm font-medium transition lg:rounded-[5px] lg:px-2.5",
               sort === "newest"
-                ? "bg-rr-elevated text-rr-primary lg:bg-rr-surface"
-                : "text-rr-secondary hover:text-rr-primary",
+                ? "bg-rr-card text-rr-primary shadow-sm lg:bg-rr-card"
+                : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
             )}
             aria-pressed={sort === "newest"}
             onClick={() => setSort("newest")}
