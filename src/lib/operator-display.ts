@@ -34,7 +34,7 @@ export function getOperatorFairness(
       badgeVariant: "neutral",
       label: "Not enough data",
       vrLabel: "VR —",
-      description: "We need a larger sample before rating this operator fairly.",
+      description: "More data needed for a fair rating.",
       value: null,
     };
   }
