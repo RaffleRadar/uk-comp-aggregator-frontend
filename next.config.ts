@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "redline-competitions.com", pathname: "/**" },
       { protocol: "https", hostname: "www.redline-competitions.com", pathname: "/**" },
       { protocol: "https", hostname: "images.elitecompetitions.co.uk", pathname: "/**" },
+      { protocol: "https", hostname: "www.stormcompetitions.co.uk", pathname: "/**" },
       { protocol: "https", hostname: "cdn.sanity.io", pathname: "/**" },
     ],
   },
