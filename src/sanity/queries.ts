@@ -199,7 +199,7 @@ type OgImageSettingsData = {
 
 export async function getSiteContent(): Promise<SiteContentData | null> {
   try {
-    return await sanityClient.fetch<SiteContentData | null>(SITE_CONTENT, {}, { next: { revalidate: 3600 } });
+    return await sanityClient.fetch<SiteContentData | null>(SITE_CONTENT, {}, { next: { revalidate: 60 } });
   } catch {
     return null;
   }

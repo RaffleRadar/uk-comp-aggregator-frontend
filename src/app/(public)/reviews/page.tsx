@@ -76,8 +76,8 @@ export default async function ReviewsPage({
               Operator Reviews
             </p>
             <h1 className="text-2xl font-medium leading-[1.1] tracking-[-0.03em] text-rr-primary md:text-6xl md:leading-[1.05]">
-              We do the <span className="text-rr-green">digging</span>{" "}
-              so you don&apos;t lose the bet.
+              We find the <span className="text-rr-green">facts</span>{" "}
+              so you can enter smarter.
             </h1>
             <p className="mt-3 hidden max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:block md:text-lg">
               {reviewsIntro}
