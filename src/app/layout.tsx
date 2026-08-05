@@ -1,10 +1,15 @@
 import "@fontsource/inter/latin.css";
 import type { Metadata } from "next";
+import { CANONICAL_ORIGIN } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(CANONICAL_ORIGIN),
   title: "RaffleRadar",
   description: "Find the best UK prize draws in one place.",
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "/favnew.svg",
     shortcut: "/favnew.svg",
