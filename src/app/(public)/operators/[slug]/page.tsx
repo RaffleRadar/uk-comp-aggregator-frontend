@@ -214,7 +214,7 @@ export default async function OperatorPage({
                 </div>
 
                 <p className="mt-4 max-w-[760px] text-sm leading-6 text-rr-secondary md:text-base">
-                  Fairness is based on the operator&apos;s average value ratio across
+                  Fairness is based on the operator&apos;s median value ratio across
                   sampled competitions. Lower VR generally means more player-friendly
                   pricing.
                 </p>
@@ -235,7 +235,7 @@ export default async function OperatorPage({
             <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
               <div className="rounded-xl border border-rr-border bg-rr-surface p-4">
                 <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
-                  Avg VR
+                  Median VR
                 </p>
                 <p className="mt-2 text-xl font-medium text-rr-primary">
                   {fairness.value !== null ? fairness.value.toFixed(1) : "—"}
