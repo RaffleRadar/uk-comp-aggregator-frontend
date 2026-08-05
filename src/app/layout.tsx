@@ -7,9 +7,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(CANONICAL_ORIGIN),
   title: "RaffleRadar",
   description: "Find the best UK prize draws in one place.",
-  alternates: {
-    canonical: "/",
-  },
   icons: {
     icon: "/favnew.svg",
     shortcut: "/favnew.svg",
