@@ -13,13 +13,14 @@ import { FilterBar } from "@/components/layout/filter-bar";
 import { getSiteContent } from "@/sanity/queries";
 
 export const metadata: Metadata = {
-  title: "All UK prize competitions",
+  title: "UK Prize Competitions & Draws | RaffleRadar",
   description:
-    "Browse every live UK prize competition, sorted by value, odds and time remaining. Filter by category, operator and prize value.",
+    "Find live UK prize competitions in one place. Compare entry prices, prize values, tickets remaining and closing dates across leading competition sites.",
   alternates: { canonical: "/competitions" },
   openGraph: {
-    title: "All UK prize competitions",
-    description: "Browse every live UK prize competition, sorted by value, odds and time remaining.",
+    title: "UK Prize Competitions & Draws | RaffleRadar",
+    description:
+      "Find live UK prize competitions in one place. Compare entry prices, prize values, tickets remaining and closing dates across leading competition sites.",
     url: "/competitions",
   },
 };

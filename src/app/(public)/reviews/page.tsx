@@ -25,9 +25,9 @@ type ReviewListItem = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Reviews — RaffleRadar",
+    title: "UK Competition Site Reviews | RaffleRadar",
     description:
-      "In-depth, independent reviews of UK competition operators — pricing, odds, and whether they're worth entering.",
+      "Independent reviews of UK competition websites. Compare ticket prices, prize ranges, transparency and value before deciding which sites are right for you.",
     alternates: { canonical: "/reviews" },
   };
 }

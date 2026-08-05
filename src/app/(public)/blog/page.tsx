@@ -27,8 +27,9 @@ type PostListItem = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Blog — RaffleRadar",
-    description: "Analysis, industry news, and tips on UK competitions.",
+    title: "UK Prize Competition News & Guides | RaffleRadar",
+    description:
+      "Read the latest UK prize competition news, practical guides and independent analysis. Learn how competition sites work and make informed choices.",
     alternates: { canonical: "/blog" },
   };
 }

@@ -12,9 +12,9 @@ export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Operators — RaffleRadar",
+    title: "Compare UK Competition Websites | RaffleRadar",
     description:
-      "Compare UK competition operators by fairness, active competitions, and median value ratio.",
+      "Compare UK competition websites by live draws, prize value and Value Ratio. See which operators offer better value before deciding where to enter.",
     alternates: { canonical: "/operators" },
   };
 }
