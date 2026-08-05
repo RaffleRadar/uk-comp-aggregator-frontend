@@ -18,6 +18,7 @@ type SiteSettingsData = {
   footerLinks?: FooterLink[] | null;
   footerCopyright?: string | null;
   footerDisclaimer?: string | null;
+  footerTagline?: string | null;
 };
 
 function isExternalHref(href: string) {
@@ -25,7 +26,17 @@ function isExternalHref(href: string) {
 }
 
 export async function Footer() {
-  const settings = await sanityClient.fetch<SiteSettingsData | null>(SITE_SETTINGS);
+  let settings: SiteSettingsData | null = null;
+
+  try {
+    settings = await sanityClient.fetch<SiteSettingsData | null>(
+      SITE_SETTINGS,
+      {},
+      { next: { revalidate: 3600 } },
+    );
+  } catch {
+    settings = null;
+  }
 
   const footerColumns =
     settings?.footerColumns?.filter((column) => (column.links?.length ?? 0) > 0) ?? [];
@@ -45,6 +56,9 @@ export async function Footer() {
   const footerCopyright =
     settings?.footerCopyright?.trim() || `© ${currentYear} RaffleRadar. All rights reserved.`;
   const footerDisclaimer = settings?.footerDisclaimer?.trim() || "";
+  const footerTagline =
+    settings?.footerTagline?.trim() ||
+    "Track every UK prize competition in one place — real odds, real value, no noise.";
 
   return (
     <footer className="mt-20 border-t border-rr-border bg-rr-bg">
@@ -69,7 +83,7 @@ export async function Footer() {
               </span>
             </Link>
             <p className="mt-4 text-sm leading-6 text-rr-muted">
-              Track every UK prize competition in one place — real odds, real value, no noise.
+              {footerTagline}
             </p>
           </div>
 

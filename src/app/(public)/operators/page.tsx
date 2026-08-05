@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { getOperators } from "@/lib/api";
 import type { OperatorSummary } from "@/lib/api";
 import { getOperatorFairness } from "@/lib/operator-display";
+import { getSiteContent } from "@/sanity/queries";
 
 export const revalidate = 60;
 
@@ -47,11 +48,21 @@ function OperatorLogo({
 
 export default async function OperatorsPage() {
   let operators: OperatorSummary[] = [];
+  let operatorsIntro = "";
 
   try {
-    operators = await getOperators();
+    const [operatorsResult, siteContent] = await Promise.all([
+      getOperators(),
+      getSiteContent(),
+    ]);
+    operators = operatorsResult;
+    operatorsIntro =
+      siteContent?.operatorsIntro?.trim() ||
+      "See who is offering better value, how many live competitions they have, and where each operator sits on fairness.";
   } catch {
     operators = [];
+    operatorsIntro =
+      "See who is offering better value, how many live competitions they have, and where each operator sits on fairness.";
   }
 
   const sortedOperators = [...operators]
@@ -105,8 +116,7 @@ export default async function OperatorsPage() {
                 behind the draws.
               </h1>
               <p className="mt-3 hidden max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:block md:text-lg">
-                See who is offering better value, how many live competitions
-                they have, and where each operator sits on fairness.
+                {operatorsIntro}
               </p>
             </div>
             <div className="mt-4 w-full rounded-xl border border-rr-border bg-rr-elevated p-4">

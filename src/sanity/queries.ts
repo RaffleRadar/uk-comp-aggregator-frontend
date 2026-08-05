@@ -1,3 +1,5 @@
+import { sanityClient, urlFor } from "@/sanity/client";
+
 export const PAGE_BY_SLUG = `*[_type == "page" && slug.current == $slug][0]{
   title,
   heroEyebrow,
@@ -122,7 +124,38 @@ export const SITE_SETTINGS = `*[_type == "siteSettings"][0]{
   },
   footerCopyright,
   footerDisclaimer,
+  footerTagline,
+  ogImage,
   maintenanceMessage
+}`;
+
+export const SITE_CONTENT = `*[_type == "siteContent"][0]{
+  heroEyebrow,
+  heroHeadingMobile,
+  heroHeadingDesktop,
+  heroSubheading,
+  section1TitleStart,
+  section1TitleAccent,
+  section1Subtitle,
+  section2TitleStart,
+  section2TitleAccent,
+  section2Subtitle,
+  section3TitleStart,
+  section3TitleAccent,
+  section3Subtitle,
+  section4TitleStart,
+  section4TitleAccent,
+  section4Subtitle,
+  section5TitleStart,
+  section5TitleAccent,
+  section5Subtitle,
+  section6TitleStart,
+  section6TitleAccent,
+  section6Subtitle,
+  competitionsIntro,
+  operatorsIntro,
+  reviewsIntro,
+  blogIntro
 }`;
 
 export const HOW_IT_WORKS_PAGE = `*[_type == "howItWorksPage"][0]{
@@ -130,3 +163,62 @@ export const HOW_IT_WORKS_PAGE = `*[_type == "howItWorksPage"][0]{
   richTitle,
   body
 }`;
+
+type SiteContentData = {
+  heroEyebrow?: string | null;
+  heroHeadingMobile?: string | null;
+  heroHeadingDesktop?: string | null;
+  heroSubheading?: string | null;
+  section1TitleStart?: string | null;
+  section1TitleAccent?: string | null;
+  section1Subtitle?: string | null;
+  section2TitleStart?: string | null;
+  section2TitleAccent?: string | null;
+  section2Subtitle?: string | null;
+  section3TitleStart?: string | null;
+  section3TitleAccent?: string | null;
+  section3Subtitle?: string | null;
+  section4TitleStart?: string | null;
+  section4TitleAccent?: string | null;
+  section4Subtitle?: string | null;
+  section5TitleStart?: string | null;
+  section5TitleAccent?: string | null;
+  section5Subtitle?: string | null;
+  section6TitleStart?: string | null;
+  section6TitleAccent?: string | null;
+  section6Subtitle?: string | null;
+  competitionsIntro?: string | null;
+  operatorsIntro?: string | null;
+  reviewsIntro?: string | null;
+  blogIntro?: string | null;
+};
+
+type OgImageSettingsData = {
+  ogImage?: unknown;
+};
+
+export async function getSiteContent(): Promise<SiteContentData | null> {
+  try {
+    return await sanityClient.fetch<SiteContentData | null>(SITE_CONTENT, {}, { next: { revalidate: 3600 } });
+  } catch {
+    return null;
+  }
+}
+
+export async function getOgImageUrl(): Promise<string | null> {
+  try {
+    const settings = await sanityClient.fetch<OgImageSettingsData | null>(
+      SITE_SETTINGS,
+      {},
+      { next: { revalidate: 3600 } },
+    );
+
+    if (!settings?.ogImage) {
+      return null;
+    }
+
+    return urlFor(settings.ogImage).width(1200).height(630).fit("crop").auto("format").url();
+  } catch {
+    return null;
+  }
+}

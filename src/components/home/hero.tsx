@@ -8,6 +8,7 @@ function formatRelativeTime(value: string | null): string {
 
   return formatDistanceToNow(date, { addSuffix: true })
     .replace("less than a minute ago", "just now")
+    .replace("about ", "")
     .replace(" minute ago", " min ago")
     .replace(" minutes ago", " min ago")
     .replace(" hour ago", " hr ago")
@@ -16,35 +17,85 @@ function formatRelativeTime(value: string | null): string {
     .replace(" days ago", " d ago");
 }
 
+function getTrimmedValue(value?: string | null): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
+function splitLastWord(value: string): { start: string; accent: string } {
+  const trimmed = value.trim();
+  const lastSpaceIndex = trimmed.lastIndexOf(" ");
+
+  if (lastSpaceIndex === -1) {
+    return { start: "", accent: trimmed };
+  }
+
+  return {
+    start: trimmed.slice(0, lastSpaceIndex),
+    accent: trimmed.slice(lastSpaceIndex + 1),
+  };
+}
+
 export type HeroStats = {
   competitionsCount: number;
   operatorsCount: number;
   lastUpdatedAt: string | null;
 };
 
-export function Hero({ stats }: { stats: HeroStats }) {
+type HeroCopy = {
+  heroEyebrow?: string;
+  heroHeadingMobile?: string;
+  heroHeadingDesktop?: string;
+  heroSubheading?: string;
+};
+
+export function Hero({ stats, copy }: { stats: HeroStats; copy?: HeroCopy }) {
   const liveDraws = stats.competitionsCount ?? 0;
  
   const updated = formatRelativeTime(stats.lastUpdatedAt);
+  const eyebrow = getTrimmedValue(copy?.heroEyebrow);
+  const mobileHeading = getTrimmedValue(copy?.heroHeadingMobile);
+  const desktopHeading = getTrimmedValue(copy?.heroHeadingDesktop);
+  const subheading = getTrimmedValue(copy?.heroSubheading);
+  const mobileHeadingParts = mobileHeading ? splitLastWord(mobileHeading) : null;
+  const desktopHeadingParts = desktopHeading ? splitLastWord(desktopHeading) : null;
 
   return (
     <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
       <div className="container py-4 lg:py-14 text-center">
         <p className="hidden text-sm font-medium text-rr-green lg:block">
-          UK competitions and prize draws, ranked by real value
+          {eyebrow ?? "UK competitions and prize draws, ranked by real value"}
         </p>
 
         <h1 className="mt-0 lg:mt-2 mx-auto max-w-3xl text-lg lg:text-5xl font-semibold tracking-[-0.02em] text-rr-primary leading-tight lg:leading-[1.05]">
           <span className="lg:hidden">
-            UK Competitions &amp; <span className="text-rr-green">Prize Draws</span>
+            {mobileHeadingParts ? (
+              <>
+                {mobileHeadingParts.start ? `${mobileHeadingParts.start} ` : null}
+                <span className="text-rr-green">{mobileHeadingParts.accent}</span>
+              </>
+            ) : (
+              <>
+                UK Competitions &amp; <span className="text-rr-green">Prize Draws</span>
+              </>
+            )}
           </span>
           <span className="hidden lg:inline">
-            Find better draws. <span className="text-rr-green">Win smarter.</span>
+            {desktopHeadingParts ? (
+              <>
+                {desktopHeadingParts.start ? `${desktopHeadingParts.start} ` : null}
+                <span className="text-rr-green">{desktopHeadingParts.accent}</span>
+              </>
+            ) : (
+              <>
+                Find better draws. <span className="text-rr-green">Win smarter.</span>
+              </>
+            )}
           </span>
         </h1>
 
         <p className="hidden mt-3 mx-auto max-w-[650px] text-sm lg:text-base text-rr-muted lg:block">
-          Track undersold competitions, spot real value and enter at the right time.
+          {subheading ?? "Track undersold competitions, spot real value and enter at the right time."}
         </p>
 
         <div className="mt-2 grid grid-cols-2 gap-2 text-center lg:hidden">

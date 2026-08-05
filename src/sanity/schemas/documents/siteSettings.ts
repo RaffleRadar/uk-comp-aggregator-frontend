@@ -139,6 +139,21 @@ export const siteSettings = defineType(
       rows: 2,
     }),
     defineField({
+      name: "footerTagline",
+      title: "Footer tagline (under the logo)",
+      type: "text",
+      rows: 2,
+      validation: (rule) => rule.max(120),
+    }),
+    defineField({
+      name: "ogImage",
+      title: "Social share image (1200x630)",
+      description:
+        "Shown when a link to the site is shared on WhatsApp, Facebook, X or Slack. Upload a 1200x630 image. Keep the centre clear and avoid small text, as it displays very small in some apps.",
+      type: "image",
+      options: { hotspot: true },
+    }),
+    defineField({
       name: "maintenanceMode",
       title: "Maintenance mode (show holding page to visitors)",
       type: "boolean",

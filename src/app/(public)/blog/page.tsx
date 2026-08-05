@@ -5,6 +5,7 @@ import { ClassicPagination } from "@/components/ui/ClassicPagination";
 import { paginate } from "@/lib/classic-pagination";
 import { sanityClient } from "@/sanity/client";
 import { ALL_POSTS } from "@/sanity/queries";
+import { getSiteContent } from "@/sanity/queries";
 
 export const revalidate = 60;
 
@@ -45,7 +46,23 @@ export default async function BlogPage({
 }) {
   const sp = await searchParams;
   const page = Number(sp?.page) || 1;
-  const posts = await sanityClient.fetch<PostListItem[]>(ALL_POSTS);
+  let blogIntro =
+    "Honest analysis, industry news and practical tips on UK prize competitions — so you know which draws are worth entering, and which to walk past.";
+  let posts: PostListItem[] = [];
+
+  try {
+    const [postsResult, siteContent] = await Promise.all([
+      sanityClient.fetch<PostListItem[]>(ALL_POSTS, {}, { next: { revalidate: 3600 } }),
+      getSiteContent(),
+    ]);
+    posts = postsResult;
+    blogIntro =
+      siteContent?.blogIntro?.trim() ||
+      "Honest analysis, industry news and practical tips on UK prize competitions — so you know which draws are worth entering, and which to walk past.";
+  } catch {
+    posts = [];
+  }
+
   const [featuredPost, ...previousPosts] = posts;
   const mobilePagination = paginate(posts, page, PAGE_SIZE);
   const desktopPagination = paginate(previousPosts, page, PAGE_SIZE);
@@ -64,8 +81,7 @@ export default async function BlogPage({
               Read the <span className="text-rr-green">small print</span> before you buy a ticket.
             </h1>
             <p className="mt-3 hidden max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:block md:text-lg">
-              Honest analysis, industry news and practical tips on UK prize competitions — so you
-              know which draws are worth entering, and which to walk past.
+              {blogIntro}
             </p>
             </div>
           </div>

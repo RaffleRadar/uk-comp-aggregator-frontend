@@ -4,6 +4,7 @@ import { ClassicPagination } from "@/components/ui/ClassicPagination";
 import { paginate } from "@/lib/classic-pagination";
 import { sanityClient } from "@/sanity/client";
 import { ALL_REVIEWS } from "@/sanity/queries";
+import { getSiteContent } from "@/sanity/queries";
 
 export const revalidate = 60;
 
@@ -44,7 +45,23 @@ export default async function ReviewsPage({
 }) {
   const sp = await searchParams;
   const page = Number(sp?.page) || 1;
-  const reviewsResponse = await sanityClient.fetch<ReviewListItem[] | null>(ALL_REVIEWS);
+  let reviewsIntro =
+    "Independent reviews of every major UK competition operator — what they run, how they price their tickets, the odds behind the headline, and whether they're actually worth your money.";
+  let reviewsResponse: ReviewListItem[] | null = null;
+
+  try {
+    const [reviewsResult, siteContent] = await Promise.all([
+      sanityClient.fetch<ReviewListItem[] | null>(ALL_REVIEWS, {}, { next: { revalidate: 3600 } }),
+      getSiteContent(),
+    ]);
+    reviewsResponse = reviewsResult;
+    reviewsIntro =
+      siteContent?.reviewsIntro?.trim() ||
+      "Independent reviews of every major UK competition operator — what they run, how they price their tickets, the odds behind the headline, and whether they're actually worth your money.";
+  } catch {
+    reviewsResponse = null;
+  }
+
   const reviews = Array.isArray(reviewsResponse) ? reviewsResponse : [];
   const pagination = paginate(reviews, page, PAGE_SIZE);
 
@@ -63,9 +80,7 @@ export default async function ReviewsPage({
               so you don&apos;t lose the bet.
             </h1>
             <p className="mt-3 hidden max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:block md:text-lg">
-              Independent reviews of every major UK competition operator — what they run, how they
-              price their tickets, the odds behind the headline, and whether they&apos;re actually
-              worth your money.
+              {reviewsIntro}
             </p>
             </div>
           </div>

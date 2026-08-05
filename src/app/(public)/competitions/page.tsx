@@ -10,6 +10,7 @@ import {
 import { NewsletterSignupBanner } from "@/components/competitions/newsletter-signup-banner";
 import { SaveSearchButton } from "@/components/competitions/save-search-button";
 import { FilterBar } from "@/components/layout/filter-bar";
+import { getSiteContent } from "@/sanity/queries";
 
 export const metadata: Metadata = {
   title: "All UK prize competitions",
@@ -42,6 +43,7 @@ export default async function CompetitionsPage({
 }: {
   searchParams: Promise<CompetitionsPageSearchParams>;
 }) {
+  let competitionsIntro: string | null = null;
   const params = await searchParams;
   const suspenseKey = JSON.stringify(params);
   const operatorSlug = params.operator?.trim() || undefined;
@@ -136,8 +138,22 @@ export default async function CompetitionsPage({
     ? `/competitions?${resetOperatorParams.toString()}`
     : "/competitions";
 
+  try {
+    const siteContent = await getSiteContent();
+    competitionsIntro = siteContent?.competitionsIntro?.trim() || null;
+  } catch {
+    competitionsIntro = null;
+  }
+
   return (
     <main>
+      {competitionsIntro ? (
+        <div className="container">
+          <p className="mt-3 hidden max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:block md:text-lg">
+            {competitionsIntro}
+          </p>
+        </div>
+      ) : null}
       <Suspense fallback={null}>
         <FilterBar />
       </Suspense>
