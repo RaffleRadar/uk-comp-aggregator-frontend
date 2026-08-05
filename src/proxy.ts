@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { CANONICAL_HOST } from "@/lib/site";
 
+const PRODUCTION_ALIAS = "uk-comp-aggregator-frontend.vercel.app";
 const SANITY_PROJECT_ID = "j33ifgtf";
 const SANITY_DATASET = "production";
 const SANITY_API_VERSION = "v2023-01-01";
@@ -74,25 +76,44 @@ async function fetchMaintenanceMode() {
 }
 
 export async function proxy(request: NextRequest) {
+  const host = (request.headers.get("host") || "").toLowerCase().split(":")[0];
+
+  if (host === PRODUCTION_ALIAS) {
+    const url = request.nextUrl.clone();
+    url.protocol = "https";
+    url.host = CANONICAL_HOST;
+    url.port = "";
+    return NextResponse.redirect(url, 308);
+  }
+
+  const isVercelPreviewHost = host.endsWith(".vercel.app");
+
+  const withPreviewRobotsHeader = (response: NextResponse) => {
+    if (isVercelPreviewHost) {
+      response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    }
+    return response;
+  };
+
   const { pathname } = request.nextUrl;
 
   if (shouldBypass(pathname)) {
-    return NextResponse.next();
+    return withPreviewRobotsHeader(NextResponse.next());
   }
 
   const maintenanceMode = await fetchMaintenanceMode();
 
   if (!maintenanceMode) {
-    return NextResponse.next();
+    return withPreviewRobotsHeader(NextResponse.next());
   }
 
   const url = request.nextUrl.clone();
   url.pathname = "/maintenance";
   url.search = "";
 
-  return NextResponse.rewrite(url);
+  return withPreviewRobotsHeader(NextResponse.rewrite(url));
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|studio|maintenance|api).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.svg$).*)"],
 };
