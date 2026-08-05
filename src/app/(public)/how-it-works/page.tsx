@@ -1,10 +1,17 @@
 import { PortableText } from "@portabletext/react";
+import type { Metadata } from "next";
 import { RichTitle } from "@/components/sanity/RichTitle";
 import { portableTextComponents } from "@/components/sanity/portableTextComponents";
 import { sanityClient } from "@/sanity/client";
 import { HOW_IT_WORKS_PAGE } from "@/sanity/queries";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "How RaffleRadar works",
+  description: "How we calculate real odds, value ratios and opportunity scores for UK prize competitions.",
+  alternates: { canonical: "/how-it-works" },
+};
 
 type HowItWorksPageData = {
   title?: string | null;

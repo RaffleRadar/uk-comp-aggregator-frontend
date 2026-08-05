@@ -7,6 +7,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(CANONICAL_ORIGIN),
   title: "RaffleRadar",
   description: "Find the best UK prize draws in one place.",
+  openGraph: {
+    siteName: "RaffleRadar",
+    locale: "en_GB",
+    type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og-default.png"],
+  },
   icons: {
     icon: "/favnew.svg",
     shortcut: "/favnew.svg",

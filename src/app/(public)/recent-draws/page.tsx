@@ -8,6 +8,7 @@ export const revalidate = 60;
 export const metadata = {
   title: "Recent Draws",
   description: "Recently ended competitions and how they sold before the draw.",
+  alternates: { canonical: "/recent-draws" },
 };
 
 export default async function RecentDrawsPage() {

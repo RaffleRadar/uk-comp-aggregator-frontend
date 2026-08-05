@@ -81,6 +81,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: pageUrl },
     openGraph: imageUrl ? { title, description, url: pageUrl, images: [{ url: imageUrl }] } : { title, description, url: pageUrl },
     twitter: imageUrl
       ? { card: "summary_large_image", title, description, images: [imageUrl] }

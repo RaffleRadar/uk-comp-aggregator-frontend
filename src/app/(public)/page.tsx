@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import {
   CompetitionGrid,
   CompetitionResultsHeading,
@@ -7,6 +8,7 @@ import {
 import { CompetitionSection } from "@/components/home/competition-section";
 import { Hero, type HeroStats } from "@/components/home/hero";
 import { FilterBar } from "@/components/layout/filter-bar";
+import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/structured-data";
 import {
   getCompetitions,
   getMostUndersold,
@@ -16,6 +18,18 @@ import {
   getTopOpportunities,
 } from "@/lib/api";
 import type { Competition } from "@/types/competition";
+
+export const metadata: Metadata = {
+  title: "RaffleRadar | UK Competitions & Prize Draw Finder",
+  description:
+    "Compare live UK prize draws by real odds and real value. See which competitions are undersold, which are closing soon, and which offer the best value for money.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "RaffleRadar | UK Competitions & Prize Draw Finder",
+    description: "Compare live UK prize draws by real odds and real value. No noise, just the numbers.",
+    url: "/",
+  },
+};
 
 type HomePageSearchParams = {
   category?: string;
@@ -59,6 +73,8 @@ export default async function Page({
 
     return (
       <main>
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
         <Suspense fallback={null}>
           <FilterBar />
         </Suspense>
@@ -174,6 +190,8 @@ export default async function Page({
 
   return (
     <main>
+      <OrganizationJsonLd />
+      <WebSiteJsonLd />
       <Suspense fallback={null}>
         <FilterBar />
       </Suspense>

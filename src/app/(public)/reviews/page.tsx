@@ -27,6 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Reviews — RaffleRadar",
     description:
       "In-depth, independent reviews of UK competition operators — pricing, odds, and whether they're worth entering.",
+    alternates: { canonical: "/reviews" },
   };
 }
 

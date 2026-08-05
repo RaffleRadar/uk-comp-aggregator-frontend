@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { RadarLoader } from "@/components/ui/RadarLoader";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import {
   CompetitionGrid,
   CompetitionResultsHeading,
@@ -9,6 +10,18 @@ import {
 import { NewsletterSignupBanner } from "@/components/competitions/newsletter-signup-banner";
 import { SaveSearchButton } from "@/components/competitions/save-search-button";
 import { FilterBar } from "@/components/layout/filter-bar";
+
+export const metadata: Metadata = {
+  title: "All UK prize competitions",
+  description:
+    "Browse every live UK prize competition, sorted by value, odds and time remaining. Filter by category, operator and prize value.",
+  alternates: { canonical: "/competitions" },
+  openGraph: {
+    title: "All UK prize competitions",
+    description: "Browse every live UK prize competition, sorted by value, odds and time remaining.",
+    url: "/competitions",
+  },
+};
 
 type CompetitionsPageSearchParams = {
   category?: string;

@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Operators — RaffleRadar",
     description:
       "Compare UK competition operators by fairness, active competitions, and average value ratio.",
+    alternates: { canonical: "/operators" },
   };
 }
 

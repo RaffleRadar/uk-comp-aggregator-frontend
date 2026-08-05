@@ -3,6 +3,7 @@ import { ContactForm } from "@/components/contact/contact-form";
 export const metadata = {
   title: "Contact",
   description: "Get in touch with RaffleRadar.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

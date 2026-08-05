@@ -31,18 +31,23 @@ export function Hero({ stats }: { stats: HeroStats }) {
     <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
       <div className="container py-4 lg:py-14 text-center">
         <p className="hidden text-sm font-medium text-rr-green lg:block">
-          The UK&apos;s competition intelligence hub
+          UK competitions and prize draws, ranked by real value
         </p>
 
-        <h1 className="hidden mt-2 mx-auto max-w-3xl text-3xl lg:text-5xl font-semibold tracking-[-0.02em] text-rr-primary leading-[1.05] lg:block">
-          Find better draws. <span className="text-rr-green">Win smarter.</span>
+        <h1 className="mt-0 lg:mt-2 mx-auto max-w-3xl text-lg lg:text-5xl font-semibold tracking-[-0.02em] text-rr-primary leading-tight lg:leading-[1.05]">
+          <span className="lg:hidden">
+            UK Competitions &amp; <span className="text-rr-green">Prize Draws</span>
+          </span>
+          <span className="hidden lg:inline">
+            Find better draws. <span className="text-rr-green">Win smarter.</span>
+          </span>
         </h1>
 
         <p className="hidden mt-3 mx-auto max-w-[650px] text-sm lg:text-base text-rr-muted lg:block">
           Track undersold competitions, spot real value and enter at the right time.
         </p>
 
-        <div className="grid grid-cols-2 gap-2 text-center lg:hidden">
+        <div className="mt-2 grid grid-cols-2 gap-2 text-center lg:hidden">
           <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
             <p className="text-sm font-semibold leading-none text-rr-green">
               {liveDraws.toLocaleString("en-GB")}

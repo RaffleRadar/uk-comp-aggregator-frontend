@@ -28,6 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Blog — RaffleRadar",
     description: "Analysis, industry news, and tips on UK competitions.",
+    alternates: { canonical: "/blog" },
   };
 }
 
