@@ -51,6 +51,12 @@ const sanityConfig = defineConfig({
                 .schemaType("siteSettings")
                 .documentId("siteSettings"),
             ),
+            S.listItem().title("Site Content").child(
+              S.editor()
+                .id("siteContent")
+                .schemaType("siteContent")
+                .documentId("siteContent"),
+            ),
             S.listItem().title("How It Works Page").child(
               S.editor()
                 .id("howItWorksPage")
