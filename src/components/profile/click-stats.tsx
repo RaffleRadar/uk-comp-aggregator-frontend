@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+  CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 type ClickTotals = {
   today: number;
@@ -487,25 +487,6 @@ export function ClickStats() {
                 labelFormatter={(label) =>
                   dateAxisFormat.format(toLondonDate(String(label)))
                 }
-              />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                iconType="plainline"
-                formatter={(value) => {
-                  if (value === "clicks") {
-                    return (
-                      <span className="text-xs text-rr-secondary">Clicks</span>
-                    );
-                  }
-                  if (value === "signups") {
-                    return (
-                      <span className="text-xs text-rr-secondary">Signups</span>
-                    );
-                  }
-                  return <span className="text-xs text-rr-secondary">{value}</span>;
-                }}
-                wrapperStyle={{ paddingBottom: 6 }}
               />
               <Line
                 type="monotone"
