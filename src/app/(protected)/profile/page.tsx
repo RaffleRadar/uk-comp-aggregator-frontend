@@ -15,6 +15,7 @@ import { CompetitionGridClient } from "@/components/competitions/competition-gri
 import { AdminAccordion } from "@/components/profile/admin-accordion";
 import { CompetitionAdmin } from "@/components/profile/competition-admin";
 import { CommentModeration } from "@/components/profile/comment-moderation";
+import { OperatorModeration } from "@/components/profile/operator-moderation";
 import { ScraperPanel } from "@/components/profile/scraper-panel";
 import { RadarLoader } from "@/components/ui/RadarLoader";
 import { useAuth } from "@/contexts/auth-context";
@@ -194,6 +195,9 @@ function SectionContent({ section }: { section: AccountSection }) {
           </AdminAccordion>
           <AdminAccordion title="Competitions">
             <CompetitionAdmin />
+          </AdminAccordion>
+          <AdminAccordion title="Operators">
+            <OperatorModeration />
           </AdminAccordion>
           <AdminAccordion title="Comments">
             <CommentModeration />
