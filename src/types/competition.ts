@@ -32,4 +32,5 @@ export type Competition = {
   prizeModel: string | null;
   description: string | null;
   sourceUrl: string | null;
+  commentCount?: number;
 };

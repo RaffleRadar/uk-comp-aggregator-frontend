@@ -1,8 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
+import {
+  getPageNumbers,
+  paginate,
+} from "@/components/ui/Pagination";
 import { cn } from "@/lib/cn";
 
 type CommentRecord = {
@@ -77,8 +87,10 @@ export function CommentModeration() {
   const [isHidden, setIsHidden] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState<FilterKind>("all");
+  const [page, setPage] = useState(1);
   const [togglingIds, setTogglingIds] = useState<Record<string, boolean>>({});
   const [rowErrors, setRowErrors] = useState<Record<string, string>>({});
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const requestComments = useCallback(async (): Promise<LoadResult> => {
     try {
@@ -284,6 +296,8 @@ export function CommentModeration() {
     }
   }, [filter, items]);
 
+  const paged = useMemo(() => paginate(filtered, page, 10), [filtered, page]);
+
   if (isHidden || !isResolved) {
     return null;
   }
@@ -303,7 +317,10 @@ export function CommentModeration() {
             <button
               key={option.id}
               type="button"
-              onClick={() => setFilter(option.id)}
+              onClick={() => {
+                setFilter(option.id);
+                setPage(1);
+              }}
               className={cn(
                 "inline-flex items-center rounded-xl border px-3 py-1.5 text-sm transition",
                 active
@@ -317,7 +334,6 @@ export function CommentModeration() {
         })}
       </div>
 
-      <div>
       {isLoading ? (
         <div className="mt-6 rounded-xl border border-rr-border bg-rr-elevated p-4 text-sm text-rr-secondary">
           Loading comments…
@@ -338,85 +354,185 @@ export function CommentModeration() {
       ) : filtered.length === 0 ? (
         <p className="mt-6 text-sm text-rr-secondary">No comments yet.</p>
       ) : (
-        <div className="mt-6 max-h-[32rem] overflow-y-auto pr-1">
-          <ul className="space-y-4">
-          {filtered.map((item) => {
-            const isToggling = Boolean(togglingIds[item.id]);
-            const rowError = rowErrors[item.id];
-            return (
-              <li
-                key={item.id}
-                className={cn(
-                  "rounded-2xl border border-rr-border bg-rr-bg p-4 md:p-5",
-                  item.isHidden && "opacity-60",
-                )}
-              >
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium text-rr-primary">
-                    {item.author.displayName ?? "Unknown"}
-                  </span>
-                  {item.parentId ? (
-                    <span className="inline-flex items-center rounded-full border border-rr-border bg-rr-surface px-2 py-0.5 text-[11px] uppercase tracking-[0.14em] text-rr-muted">
-                      Reply
-                    </span>
-                  ) : null}
-                  {item.isHidden ? (
-                    <span className="inline-flex items-center rounded-full bg-rr-elevated px-2 py-0.5 text-[11px] uppercase tracking-[0.14em] text-rr-muted">
-                      Hidden
-                    </span>
-                  ) : null}
-                </div>
-                <p className="mt-0.5 text-xs text-rr-muted">
-                  {item.author.email}
-                </p>
-                <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-rr-primary">
-                  {item.body}
-                </p>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                  <div className="min-w-0 text-xs text-rr-secondary">
-                    <span className="break-words">
-                      {item.competition ? (
-                        <a
-                          href={`/competitions/${item.competition.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="break-words text-rr-secondary hover:text-rr-primary hover:underline"
-                        >
-                          {item.competition.prize}
-                        </a>
-                      ) : (
-                        <span className="text-rr-muted">Not a competition</span>
-                      )}
-                    </span>
-                    <span className="mx-1.5 text-rr-muted">·</span>
-                    <span>{formatTimestamp(item.createdAt)}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {rowError ? (
-                      <span className="text-xs text-rr-danger">
-                        {rowError}
+        <>
+          <div
+            ref={scrollContainerRef}
+            className="mt-6 max-h-[32rem] overflow-y-auto pr-1"
+          >
+            <ul className="space-y-4">
+              {paged.items.map((item) => {
+                const isToggling = Boolean(togglingIds[item.id]);
+                const rowError = rowErrors[item.id];
+                return (
+                  <li
+                    key={item.id}
+                    className={cn(
+                      "rounded-2xl border border-rr-border bg-rr-bg p-4 md:p-5",
+                      item.isHidden && "opacity-60",
+                    )}
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-medium text-rr-primary">
+                        {item.author.displayName ?? "Unknown"}
                       </span>
-                    ) : null}
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      disabled={isToggling}
-                      onClick={() =>
-                        void toggleComment(item.id, !item.isHidden)
+                      {item.parentId ? (
+                        <span className="inline-flex items-center rounded-full border border-rr-border bg-rr-surface px-2 py-0.5 text-[11px] uppercase tracking-[0.14em] text-rr-muted">
+                          Reply
+                        </span>
+                      ) : null}
+                      {item.isHidden ? (
+                        <span className="inline-flex items-center rounded-full bg-rr-elevated px-2 py-0.5 text-[11px] uppercase tracking-[0.14em] text-rr-muted">
+                          Hidden
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="mt-0.5 text-xs text-rr-muted">
+                      {item.author.email}
+                    </p>
+                    <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-rr-primary">
+                      {item.body}
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                      <div className="min-w-0 text-xs text-rr-secondary">
+                        <span className="break-words">
+                          {item.competition ? (
+                            <a
+                              href={`/competitions/${item.competition.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="break-words text-rr-secondary hover:text-rr-primary hover:underline"
+                            >
+                              {item.competition.prize}
+                            </a>
+                          ) : (
+                            <span className="text-rr-muted">
+                              Not a competition
+                            </span>
+                          )}
+                        </span>
+                        <span className="mx-1.5 text-rr-muted">·</span>
+                        <span>{formatTimestamp(item.createdAt)}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {rowError ? (
+                          <span className="text-xs text-rr-danger">
+                            {rowError}
+                          </span>
+                        ) : null}
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          disabled={isToggling}
+                          onClick={() =>
+                            void toggleComment(item.id, !item.isHidden)
+                          }
+                          className="min-w-[72px] justify-center disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {item.isHidden ? "Show" : "Hide"}
+                        </Button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {paged.totalPages > 1 ? (
+            <div className="mt-4">
+              <p className="text-xs text-rr-muted">
+                Showing {(paged.currentPage - 1) * paged.pageSize + 1}
+                {"–"}
+                {Math.min(paged.currentPage * paged.pageSize, paged.totalItems)}{" "}
+                of {paged.totalItems}
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled={!paged.hasPrev}
+                  onClick={() => {
+                    if (paged.hasPrev) {
+                      const element = scrollContainerRef.current;
+                      if (element) {
+                        element.scrollTop = 0;
                       }
-                      className="min-w-[72px] justify-center disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {item.isHidden ? "Show" : "Hide"}
-                    </Button>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-          </ul>
-        </div>
+                      setPage(paged.currentPage - 1);
+                    }
+                  }}
+                  className={cn(
+                    "inline-flex items-center rounded-xl border px-3 py-1.5 text-sm transition",
+                    paged.hasPrev
+                      ? "border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary disabled:cursor-not-allowed disabled:opacity-50"
+                      : "border-rr-border text-rr-muted opacity-50",
+                  )}
+                >
+                  Prev
+                </button>
+                {getPageNumbers(paged.currentPage, paged.totalPages).map(
+                  (entry, index) => {
+                    if (entry === "ellipsis") {
+                      return (
+                        <span
+                          key={`ellipsis-${index}`}
+                          className="inline-flex items-center rounded-xl border border-transparent px-3 py-1.5 text-sm text-rr-muted"
+                        >
+                          …
+                        </span>
+                      );
+                    }
+
+                    const pageNumber = entry;
+                    const active = pageNumber === paged.currentPage;
+
+                    return (
+                      <button
+                        key={pageNumber}
+                        type="button"
+                        onClick={() => {
+                          const element = scrollContainerRef.current;
+                          if (element) {
+                            element.scrollTop = 0;
+                          }
+                          setPage(pageNumber);
+                        }}
+                        className={cn(
+                          "inline-flex min-w-[36px] items-center justify-center rounded-xl border px-3 py-1.5 text-sm transition",
+                          active
+                            ? "border-rr-green bg-rr-elevated font-medium text-rr-primary"
+                            : "border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
+                        )}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  },
+                )}
+                <button
+                  type="button"
+                  disabled={!paged.hasNext}
+                  onClick={() => {
+                    if (paged.hasNext) {
+                      const element = scrollContainerRef.current;
+                      if (element) {
+                        element.scrollTop = 0;
+                      }
+                      setPage(paged.currentPage + 1);
+                    }
+                  }}
+                  className={cn(
+                    "inline-flex items-center rounded-xl border px-3 py-1.5 text-sm transition",
+                    paged.hasNext
+                      ? "border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary disabled:cursor-not-allowed disabled:opacity-50"
+                      : "border-rr-border text-rr-muted opacity-50",
+                  )}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </>
       )}
-      </div>
     </div>
   );
 }

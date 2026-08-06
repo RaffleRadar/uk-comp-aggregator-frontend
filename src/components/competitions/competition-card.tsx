@@ -8,6 +8,7 @@ import {
   IconGift,
   IconClockHour4,
   IconDeviceLaptop,
+  IconMessageCircle,
 } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
 import { CompetitionImage } from "@/components/ui/CompetitionImage";
@@ -185,6 +186,16 @@ export function CompetitionCard({
               {timingLabel && !isEnded && !badgeShowsTime
                 ? ` · ${timingLabel}`
                 : ""}
+              {typeof competition.commentCount === "number" &&
+              competition.commentCount > 0 ? (
+                <>
+                  {" · "}
+                  <span className="inline-flex items-center gap-1 align-baseline">
+                    <IconMessageCircle size={14} aria-hidden />
+                    {competition.commentCount}
+                  </span>
+                </>
+              ) : null}
             </span>
           ) : typeof ticketsTotal !== "number" &&
             typeof ticketsSold === "number" ? (

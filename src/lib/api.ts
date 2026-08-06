@@ -114,6 +114,7 @@ export type CompetitionDetail = {
   prizeModel: string | null;
   description: string | null;
   sourceUrl: string | null;
+  commentCount?: number;
 };
 
 export type CompetitionSearchResult = {
