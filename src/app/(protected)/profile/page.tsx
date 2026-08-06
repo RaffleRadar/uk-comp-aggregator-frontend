@@ -15,6 +15,7 @@ import { CompetitionGridClient } from "@/components/competitions/competition-gri
 import { AdminAccordion } from "@/components/profile/admin-accordion";
 import { CompetitionAdmin } from "@/components/profile/competition-admin";
 import { CommentModeration } from "@/components/profile/comment-moderation";
+import { ClickStats } from "@/components/profile/click-stats";
 import { OperatorModeration } from "@/components/profile/operator-moderation";
 import { ScraperPanel } from "@/components/profile/scraper-panel";
 import { RadarLoader } from "@/components/ui/RadarLoader";
@@ -190,6 +191,12 @@ function SectionContent({ section }: { section: AccountSection }) {
     case "scrapers":
       return (
         <div className="space-y-6">
+          <AdminAccordion
+            title="Traffic"
+            defaultOpen
+          >
+            <ClickStats />
+          </AdminAccordion>
           <AdminAccordion title="Scrapers">
             <ScraperPanel />
           </AdminAccordion>
