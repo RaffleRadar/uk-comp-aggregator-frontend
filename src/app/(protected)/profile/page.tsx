@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  IconClock,
   IconHeart,
   IconSearch,
   IconSettings,
+  IconShieldLock,
 } from "@tabler/icons-react";
 import { AccountGreeting } from "@/components/account/account-greeting";
 import { NewsletterBanner } from "@/components/account/newsletter-banner";
@@ -13,6 +13,7 @@ import { SavedSearchesSection } from "@/components/account/saved-searches-sectio
 import { SettingsSection } from "@/components/account/settings-section";
 import { CompetitionGridClient } from "@/components/competitions/competition-grid-client";
 import { CompetitionAdmin } from "@/components/profile/competition-admin";
+import { CommentModeration } from "@/components/profile/comment-moderation";
 import { ScraperPanel } from "@/components/profile/scraper-panel";
 import { RadarLoader } from "@/components/ui/RadarLoader";
 import { useAuth } from "@/contexts/auth-context";
@@ -35,7 +36,7 @@ const sections: {
 }[] = [
   { id: "wishlist", label: "Wishlist", icon: IconHeart },
   { id: "searches", label: "Saved searches", icon: IconSearch },
-  { id: "scrapers", label: "Scrapers", icon: IconClock },
+  { id: "scrapers", label: "Admin", icon: IconShieldLock },
   { id: "settings", label: "Settings", icon: IconSettings },
 ];
 
@@ -189,6 +190,7 @@ function SectionContent({ section }: { section: AccountSection }) {
         <div className="space-y-6">
           <ScraperPanel />
           <CompetitionAdmin />
+          <CommentModeration />
         </div>
       );
     case "settings":
