@@ -130,6 +130,7 @@ export function CommentsSection({
 
   const isAuthenticated = status === "authenticated";
   const currentUserId = user?.id ?? null;
+  const isAdmin = user?.role === "admin";
   const visibleCount = useMemo(
     () => countVisibleComments(comments),
     [comments],
@@ -183,6 +184,7 @@ export function CommentsSection({
                 competitionId={competitionId}
                 currentUserId={currentUserId}
                 isAuthenticated={isAuthenticated}
+                isAdmin={isAdmin}
                 isReply={false}
                 onReplyPosted={(parentId, reply) => {
                   setComments((current) =>

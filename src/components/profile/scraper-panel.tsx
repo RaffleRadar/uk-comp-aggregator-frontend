@@ -21,9 +21,6 @@ type LoadResult =
   | { kind: "error"; message: string }
   | { kind: "ready"; items: ScraperRecord[] };
 
-const cardClass = "rounded-2xl border border-rr-border bg-rr-surface p-6";
-const titleClass = "mb-1 text-base font-medium text-rr-primary";
-const subtitleClass = "text-sm text-rr-secondary";
 const londonDateTimeFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Europe/London",
   dateStyle: "short",
@@ -319,22 +316,18 @@ export function ScraperPanel() {
 
   if (loadError) {
     return (
-      <section className={cardClass}>
-        <h3 className={titleClass}>Scrapers</h3>
-        <p role="alert" className="mt-4 text-sm text-rr-primary">
+      <div>
+        <p role="alert" className="text-sm text-rr-primary">
           {loadError}
         </p>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className={cardClass}>
-      <h3 className={titleClass}>Scrapers</h3>
-      <p className={subtitleClass}>Run an operator scraper manually.</p>
-
+    <div>
       {anyRunning ? (
-        <p className="mt-4 text-sm text-rr-secondary">
+        <p className="text-sm text-rr-secondary">
           A run can take up to three minutes. You can leave this page — it will keep going.
         </p>
       ) : null}
@@ -381,6 +374,6 @@ export function ScraperPanel() {
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   );
 }

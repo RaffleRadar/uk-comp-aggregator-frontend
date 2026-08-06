@@ -23,9 +23,6 @@ type CompetitionAdminRecord = {
   } | null;
 };
 
-const cardClass = "rounded-2xl border border-rr-border bg-rr-surface p-6";
-const titleClass = "mb-1 text-base font-medium text-rr-primary";
-const subtitleClass = "text-sm text-rr-secondary";
 const inputClass =
   "w-full rounded-xl border border-transparent bg-rr-elevated text-sm text-rr-primary outline-none transition placeholder:text-rr-muted caret-rr-primary focus-visible:border-rr-green focus-visible:ring-2 focus-visible:ring-rr-green/20";
 const moneyFormatter = new Intl.NumberFormat("en-GB", {
@@ -252,13 +249,8 @@ export function CompetitionAdmin() {
   }
 
   return (
-    <section className={cardClass}>
-      <h3 className={titleClass}>Competitions</h3>
-      <p className={subtitleClass}>
-        Search all competitions, including hidden and ended ones.
-      </p>
-
-      <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row">
+    <div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
         <input
           type="text"
           value={query}
@@ -343,6 +335,6 @@ export function CompetitionAdmin() {
           </table>
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }

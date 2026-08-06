@@ -10,6 +10,7 @@ type CommentItemProps = {
   competitionId: string;
   currentUserId: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isReply: boolean;
   onReplyPosted: (parentId: string, reply: CommentNode) => void;
   onDeleted: (id: string) => void;
@@ -21,6 +22,9 @@ const relativeTimeFormatter = new Intl.RelativeTimeFormat("en-GB", {
 
 const actionClassName =
   "rounded-md text-xs font-medium text-rr-muted transition hover:text-rr-primary disabled:cursor-not-allowed disabled:opacity-50";
+
+const staffBadgeClassName =
+  "whitespace-nowrap rounded border border-rr-green-border px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-rr-green";
 
 function getRelativeTimestamp(value: string) {
   const date = new Date(value);
@@ -80,6 +84,7 @@ export function CommentItem({
   competitionId,
   currentUserId,
   isAuthenticated,
+  isAdmin,
   isReply,
   onReplyPosted,
   onDeleted,
@@ -87,6 +92,7 @@ export function CommentItem({
   const [isReplyFormOpen, setIsReplyFormOpen] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
 
   const timestamp = useMemo(
     () => getRelativeTimestamp(comment.createdAt),
@@ -97,6 +103,7 @@ export function CommentItem({
     isAuthenticated &&
     currentUserId !== null &&
     comment.author?.id === currentUserId;
+  const canHide = isAdmin && !canDelete && !comment.isDeleted;
   const hasReplies = !isReply && comment.replies.length > 0;
 
   async function handleDelete() {
@@ -125,18 +132,83 @@ export function CommentItem({
     }
   }
 
+  async function handleHide() {
+    if (isHiding) {
+      return;
+    }
+
+    const confirmed = window.confirm("Hide this comment from the site?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeleteError("");
+    setIsHiding(true);
+
+    try {
+      const response = await fetch(
+        `/api/admin/comments/${encodeURIComponent(comment.id)}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          cache: "no-store",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ isHidden: true }),
+        },
+      );
+
+      if (!response.ok) {
+        let message = "Failed to hide comment";
+
+        try {
+          const raw = await response.text();
+
+          if (raw) {
+            const payload = JSON.parse(raw) as unknown;
+
+            if (payload && typeof payload === "object" && "message" in payload) {
+              const record = payload as Record<string, unknown>;
+
+              if (typeof record.message === "string" && record.message.trim()) {
+                message = record.message;
+              }
+            }
+          }
+        } catch {
+          message = "Failed to hide comment";
+        }
+
+        throw new Error(message);
+      }
+
+      onDeleted(comment.id);
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error ? error.message : "Failed to hide comment",
+      );
+    } finally {
+      setIsHiding(false);
+    }
+  }
+
   return (
     <div>
       {comment.isDeleted ? (
         <p className="text-sm italic text-rr-muted">Comment removed</p>
       ) : (
         <div>
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-sm font-semibold text-rr-primary">
               {comment.author?.displayName ?? "Unknown"}
             </span>
             {comment.author?.isStaff ? (
-              <span className="whitespace-nowrap rounded-full border border-rr-green-border bg-rr-green-bg px-2 py-0.5 text-[11px] font-medium text-rr-green">
+              <span
+                className={staffBadgeClassName}
+                title="Posted by the RaffleRadar team"
+              >
                 RaffleRadar
               </span>
             ) : null}
@@ -153,7 +225,7 @@ export function CommentItem({
             {comment.body}
           </p>
 
-          {canReply || canDelete ? (
+          {canReply || canDelete || canHide ? (
             <div className="mt-2 flex flex-wrap items-center gap-4">
               {canReply ? (
                 <button
@@ -165,6 +237,19 @@ export function CommentItem({
                   }}
                 >
                   {isReplyFormOpen ? "Close" : "Reply"}
+                </button>
+              ) : null}
+
+              {canHide ? (
+                <button
+                  type="button"
+                  className={actionClassName}
+                  disabled={isHiding}
+                  onClick={() => {
+                    void handleHide();
+                  }}
+                >
+                  Hide
                 </button>
               ) : null}
 
@@ -216,6 +301,7 @@ export function CommentItem({
               competitionId={competitionId}
               currentUserId={currentUserId}
               isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
               isReply
               onReplyPosted={onReplyPosted}
               onDeleted={onDeleted}

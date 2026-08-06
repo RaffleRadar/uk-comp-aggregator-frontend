@@ -29,10 +29,6 @@ type LoadResult =
   | { kind: "error"; message: string }
   | { kind: "ready"; items: CommentRecord[] };
 
-const cardClass = "rounded-2xl border border-rr-border bg-rr-surface p-6";
-const titleClass = "mb-1 text-base font-medium text-rr-primary";
-const subtitleClass = "text-sm text-rr-secondary";
-
 function formatTimestamp(value: string) {
   try {
     return formatDistanceToNow(new Date(value), { addSuffix: true }).replace(
@@ -293,14 +289,8 @@ export function CommentModeration() {
   }
 
   return (
-    <section className={cardClass}>
-      <h3 className={titleClass}>Comments</h3>
-      <p className={subtitleClass}>
-        Moderate user comments. Hide spam or offensive content; hiding is
-        reversible.
-      </p>
-
-      <div className="mt-4 flex flex-wrap gap-2">
+    <div>
+      <div className="flex flex-wrap gap-2">
         {(
           [
             { id: "all", label: "All" },
@@ -327,6 +317,7 @@ export function CommentModeration() {
         })}
       </div>
 
+      <div>
       {isLoading ? (
         <div className="mt-6 rounded-xl border border-rr-border bg-rr-elevated p-4 text-sm text-rr-secondary">
           Loading comments…
@@ -347,7 +338,8 @@ export function CommentModeration() {
       ) : filtered.length === 0 ? (
         <p className="mt-6 text-sm text-rr-secondary">No comments yet.</p>
       ) : (
-        <ul className="mt-6 space-y-4">
+        <div className="mt-6 max-h-[32rem] overflow-y-auto pr-1">
+          <ul className="space-y-4">
           {filtered.map((item) => {
             const isToggling = Boolean(togglingIds[item.id]);
             const rowError = rowErrors[item.id];
@@ -421,8 +413,10 @@ export function CommentModeration() {
               </li>
             );
           })}
-        </ul>
+          </ul>
+        </div>
       )}
-    </section>
+      </div>
+    </div>
   );
 }
