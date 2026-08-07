@@ -21,6 +21,8 @@ export default function robots(): MetadataRoute.Robots {
           "/newsletter/confirm",
           "/newsletter/unsubscribe",
           "/saved-searches/unsubscribe",
+          "/competitions?*",
+          "/*?section=",
         ],
       },
     ],

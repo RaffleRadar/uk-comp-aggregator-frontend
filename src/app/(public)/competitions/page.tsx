@@ -12,7 +12,7 @@ import { SaveSearchButton } from "@/components/competitions/save-search-button";
 import { FilterBar } from "@/components/layout/filter-bar";
 import { getSiteContent } from "@/sanity/queries";
 
-export const metadata: Metadata = {
+const NO_FILTER_BASE_METADATA: Metadata = {
   title: "UK Prize Competitions & Draws | RaffleRadar",
   description:
     "Find live UK prize competitions in one place. Compare entry prices, prize values, tickets remaining and closing dates across leading competition sites.",
@@ -24,6 +24,33 @@ export const metadata: Metadata = {
     url: "/competitions",
   },
 };
+
+const FILTER_ROBOT_KEYS = [
+  "category",
+  "closing",
+  "search",
+  "sortBy",
+  "sortOrder",
+  "operator",
+  "minPrizeValue",
+  "freeOnly",
+  "excludeInstant",
+  "excludeFree",
+  "section",
+] as const;
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<CompetitionsPageSearchParams> }): Promise<Metadata> {
+  const params = await searchParams;
+  const hasFilter = FILTER_ROBOT_KEYS.some((key) => {
+    const value = params[key];
+    return typeof value === "string" && value.trim().length > 0;
+  });
+  if (!hasFilter) return NO_FILTER_BASE_METADATA;
+  return {
+    ...NO_FILTER_BASE_METADATA,
+    robots: { index: false, follow: true },
+  };
+}
 
 type CompetitionsPageSearchParams = {
   category?: string;
