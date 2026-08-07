@@ -145,27 +145,23 @@ export function CompetitionCard({
         ) : (
           <PlaceholderIcon category={category} />
         )}
-        <div className="absolute inset-x-1.5 top-1.5 flex items-start justify-between gap-1.5">
-          <span className="flex min-w-0 max-w-[calc(100%-88px)] flex-wrap items-start gap-1">
-            <Badge
-              variant="operator"
-              className="truncate max-w-[92px] sm:max-w-[130px]"
-            >
-              {competition.operator?.name ?? "Unknown"}
-            </Badge>
-            {isNew ? <Badge variant="green">New</Badge> : null}
-          </span>
-          {statusBadge && (
-            <span className="shrink-0">
-              <Badge
-                variant={statusBadge.variant}
-                className="whitespace-nowrap"
-              >
-                {statusBadge.label}
-              </Badge>
-            </span>
-          )}
-        </div>
+        <Badge
+          variant="operator"
+          className="absolute left-1.5 top-1.5 max-w-[calc(100%-92px)] whitespace-normal overflow-visible text-clip"
+        >
+          {competition.operator?.name ?? "Unknown"}
+        </Badge>
+        {statusBadge && (
+          <Badge
+            variant={statusBadge.variant}
+            className="absolute right-1.5 top-1.5 whitespace-nowrap"
+          >
+            {statusBadge.label}
+          </Badge>
+        )}
+        {isNew ? (
+          <Badge variant="green" className="absolute left-1.5 top-11">New</Badge>
+        ) : null}
       </div>
       <div className="p-[9px]">
         <p className="text-[11.5px] font-medium text-rr-text-primary leading-[1.35] h-8 overflow-hidden mb-1.5">
