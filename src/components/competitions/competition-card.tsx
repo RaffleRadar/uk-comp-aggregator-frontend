@@ -162,6 +162,13 @@ export function CompetitionCard({
             {statusBadge.label}
           </Badge>
         )}
+        {isInteractive ? (
+          <SaveHeart
+            competitionId={id}
+            className="absolute bottom-1.5 right-1.5 z-10 h-8 w-8"
+            iconSize={18}
+          />
+        ) : null}
       </div>
       <div className="p-[9px]">
         <p className="text-[11.5px] font-medium text-rr-text-primary leading-[1.35] h-8 overflow-hidden mb-1.5">
@@ -243,11 +250,6 @@ export function CompetitionCard({
 
   return (
     <div className="relative">
-      <SaveHeart
-        competitionId={id}
-        className="absolute right-2 top-[75px] z-10 h-8 w-8 -translate-y-1/2"
-        iconSize={18}
-      />
       <ViewAllLink
         href={`/competitions/${id}`}
         className={cardClassName}
