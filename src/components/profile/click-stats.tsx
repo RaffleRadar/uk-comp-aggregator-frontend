@@ -809,6 +809,12 @@ export function ClickStats() {
       </div>
 
       <section className="rounded-2xl border border-rr-border bg-rr-surface p-5 text-sm text-rr-secondary">
+        <h3 className="mb-2 text-sm font-medium text-rr-primary">
+          Where clicks came from
+        </h3>
+        <p className="mb-3 text-xs text-rr-muted">
+          Which page the visitor was on when they clicked through to the operator.
+        </p>
         {data.bySource.length === 0 ? (
           <p className="text-xs text-rr-muted">No source breakdown yet.</p>
         ) : (
