@@ -3,6 +3,7 @@ import { RichTitle } from "@/components/sanity/RichTitle";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { titleColorVar } from "@/lib/titleColor";
 import { urlFor } from "@/sanity/client";
+import { formatCategory } from "@/lib/blog-category";
 
 type PostSlug = {
   current: string;
@@ -79,7 +80,7 @@ export function FeaturedPostCard({
             <div className="flex flex-wrap items-center gap-2 text-sm text-rr-muted">
               {category ? (
                 <span className="inline-flex rounded-full border border-rr-green-border bg-rr-green-bg px-2.5 py-1 text-[11px] font-medium text-rr-green">
-                  {category}
+                  {formatCategory(category)}
                 </span>
               ) : null}
               <span>{formatPublishedDate(publishedAt)}</span>

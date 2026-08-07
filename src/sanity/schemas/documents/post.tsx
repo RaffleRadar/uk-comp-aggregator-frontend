@@ -97,6 +97,7 @@ export const post = defineType({
           { title: "Analysis", value: "analysis" },
           { title: "Industry", value: "industry" },
           { title: "Tips", value: "tips" },
+          { title: "Radar Updates", value: "radar-updates" },
         ],
       },
     }),

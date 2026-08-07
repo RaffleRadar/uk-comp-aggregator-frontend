@@ -2,6 +2,7 @@ import { PortableText } from "@portabletext/react";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { urlFor } from "@/sanity/client";
 import { titleColorVar } from "@/lib/titleColor";
+import { formatCategory } from "@/lib/blog-category";
 import { RelatedPosts } from "./RelatedPosts";
 import { portableTextComponents } from "./portableTextComponents";
 import { ShareBar } from "@/components/ui/ShareBar";
@@ -104,7 +105,7 @@ export function PostArticle({
             <div className="mb-4 mt-8 flex flex-wrap items-center gap-3">
               {post.category ? (
                 <span className="inline-flex rounded-full border border-rr-green-border bg-rr-green-bg px-2.5 py-1 text-[11px] font-medium text-rr-green">
-                  {post.category}
+                  {formatCategory(post.category)}
                 </span>
               ) : null}
               {post.publishedAt ? (
