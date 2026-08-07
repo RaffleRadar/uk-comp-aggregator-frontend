@@ -155,7 +155,7 @@ export function ReviewArticle({
             )}
 
             {review.excerpt ? (
-              <p className="mt-5 text-[17px] italic leading-7 text-rr-secondary">
+              <p className="mt-5 text-[17px] italic leading-7 text-rr-secondary whitespace-pre-line">
                 {review.excerpt}
               </p>
             ) : null}

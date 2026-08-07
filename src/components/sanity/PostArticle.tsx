@@ -128,7 +128,7 @@ export function PostArticle({
             )}
 
             {post.excerpt ? (
-              <p className="mt-5 text-[17px] italic leading-7 text-rr-secondary">{post.excerpt}</p>
+              <p className="mt-5 text-[17px] italic leading-7 text-rr-secondary whitespace-pre-line">{post.excerpt}</p>
             ) : null}
 
             <div className="mt-10">
