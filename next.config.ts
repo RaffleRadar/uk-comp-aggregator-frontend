@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.elitecompetitions.co.uk", pathname: "/**" },
       { protocol: "https", hostname: "www.stormcompetitions.co.uk", pathname: "/**" },
       { protocol: "https", hostname: "cdn.sanity.io", pathname: "/**" },
+      { protocol: "https", hostname: "firebasestorage.googleapis.com", pathname: "/**" },
     ],
   },
 };
