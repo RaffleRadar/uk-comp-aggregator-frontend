@@ -145,23 +145,23 @@ export function CompetitionCard({
         ) : (
           <PlaceholderIcon category={category} />
         )}
-        <Badge
-          variant="operator"
-          className="absolute left-1.5 top-1.5 max-w-[calc(100%-92px)] whitespace-normal overflow-visible text-clip"
-        >
-          {competition.operator?.name ?? "Unknown"}
-        </Badge>
+        <span className="absolute inset-x-1.5 top-1.5 flex flex-wrap items-start gap-1">
+          <Badge
+            variant="operator"
+            className="whitespace-nowrap overflow-visible text-clip"
+          >
+            {competition.operator?.name ?? "Unknown"}
+          </Badge>
+          {isNew ? <Badge variant="green">New</Badge> : null}
+        </span>
         {statusBadge && (
           <Badge
             variant={statusBadge.variant}
-            className="absolute right-1.5 top-1.5 whitespace-nowrap"
+            className="absolute bottom-1.5 right-1.5 whitespace-nowrap"
           >
             {statusBadge.label}
           </Badge>
         )}
-        {isNew ? (
-          <Badge variant="green" className="absolute left-1.5 top-11">New</Badge>
-        ) : null}
       </div>
       <div className="p-[9px]">
         <p className="text-[11.5px] font-medium text-rr-text-primary leading-[1.35] h-8 overflow-hidden mb-1.5">
