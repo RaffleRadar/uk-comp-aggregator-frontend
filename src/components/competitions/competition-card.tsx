@@ -117,6 +117,9 @@ export function CompetitionCard({
     Number.isFinite(createdAtTime) &&
     now - createdAtTime >= 0 &&
     now - createdAtTime <= NEW_BADGE_WINDOW_MS;
+  const showCommentCount =
+    typeof competition.commentCount === "number" &&
+    competition.commentCount > 0;
 
   const cardClassName = [
     "block overflow-hidden rounded-[10px] border",
@@ -144,14 +147,22 @@ export function CompetitionCard({
         )}
         <div className="absolute inset-x-1.5 top-1.5 flex items-start justify-between gap-1.5">
           <span className="flex min-w-0 max-w-[calc(100%-88px)] flex-wrap items-start gap-1">
-            <Badge variant="operator" className="truncate max-w-[92px] sm:max-w-[130px]">
+            <Badge
+              variant="operator"
+              className="truncate max-w-[92px] sm:max-w-[130px]"
+            >
               {competition.operator?.name ?? "Unknown"}
             </Badge>
             {isNew ? <Badge variant="green">New</Badge> : null}
           </span>
           {statusBadge && (
             <span className="shrink-0">
-              <Badge variant={statusBadge.variant} className="whitespace-nowrap">{statusBadge.label}</Badge>
+              <Badge
+                variant={statusBadge.variant}
+                className="whitespace-nowrap"
+              >
+                {statusBadge.label}
+              </Badge>
             </span>
           )}
         </div>
@@ -179,19 +190,25 @@ export function CompetitionCard({
         <div className="h-2">
           {percent !== null ? <ProgressBar value={percent} /> : null}
         </div>
-        <div className="flex min-h-[15px] justify-between mt-1">
+        <div className="mt-1 flex h-[15px] items-center justify-between overflow-hidden">
           {percent !== null ? (
-            <span className="text-[10px] text-rr-muted">
-              {percent.toFixed(0)}% sold
-              {timingLabel && !isEnded && !badgeShowsTime
-                ? ` · ${timingLabel}`
-                : ""}
-              {typeof competition.commentCount === "number" &&
-              competition.commentCount > 0 ? (
+            <span className="flex items-center text-[10px] leading-none text-rr-muted">
+              <span className="leading-none">
+                {percent.toFixed(0)}% sold
+                {timingLabel && !isEnded && !badgeShowsTime
+                  ? ` · ${timingLabel}`
+                  : ""}
+              </span>
+              {showCommentCount ? (
                 <>
-                  {" · "}
-                  <span className="inline-flex items-center gap-1 align-baseline">
-                    <IconMessageCircle size={11} stroke={1.5} aria-hidden />
+                  <span className="mx-1 leading-none">·</span>
+                  <IconMessageCircle
+                    size={11}
+                    stroke={1.5}
+                    aria-hidden
+                    className="block shrink-0"
+                  />
+                  <span className="ml-0.5 leading-none">
                     {competition.commentCount}
                   </span>
                 </>
@@ -199,21 +216,23 @@ export function CompetitionCard({
             </span>
           ) : typeof ticketsTotal !== "number" &&
             typeof ticketsSold === "number" ? (
-            <span className="text-[10px] text-rr-muted">
+            <span className="text-[10px] leading-none text-rr-muted">
               Total tickets not disclosed
               {timingLabel && !isEnded && !badgeShowsTime
                 ? ` · ${timingLabel}`
                 : ""}
             </span>
           ) : timingLabel && !isEnded && !badgeShowsTime ? (
-            <span className="text-[10px] text-rr-muted">{timingLabel}</span>
+            <span className="text-[10px] leading-none text-rr-muted">
+              {timingLabel}
+            </span>
           ) : (
             <span />
           )}
           {isEnded ? (
             <Badge variant="neutral">Draw complete</Badge>
           ) : instantPrizes ? (
-            <span className="text-[10px] font-medium text-rr-green">
+            <span className="text-[10px] font-medium leading-none text-rr-green">
               Auto draw
             </span>
           ) : null}
