@@ -145,7 +145,7 @@ export function CompetitionCard({
         ) : (
           <PlaceholderIcon category={category} />
         )}
-        <span className="absolute inset-x-1.5 top-1.5 flex flex-wrap items-start gap-1">
+        <span className="absolute inset-x-1.5 top-1.5 flex flex-wrap items-start gap-1 pr-10">
           <Badge
             variant="operator"
             className="whitespace-nowrap overflow-visible text-clip"
@@ -157,7 +157,7 @@ export function CompetitionCard({
         {statusBadge && (
           <Badge
             variant={statusBadge.variant}
-            className="absolute bottom-1.5 right-1.5 whitespace-nowrap"
+            className="absolute bottom-1.5 left-1.5 whitespace-nowrap"
           >
             {statusBadge.label}
           </Badge>
@@ -245,7 +245,7 @@ export function CompetitionCard({
     <div className="relative">
       <SaveHeart
         competitionId={id}
-        className="absolute right-2 top-1/2 z-10 h-8 w-8 -translate-y-1/2"
+        className="absolute right-2 top-[75px] z-10 h-8 w-8 -translate-y-1/2"
         iconSize={18}
       />
       <ViewAllLink
