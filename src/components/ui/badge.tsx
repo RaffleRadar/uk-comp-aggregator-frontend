@@ -24,7 +24,7 @@ export function Badge({ variant, children, className }: BadgeProps) {
   return (
     <span
       className={cn(
-        "px-1.5 py-0.5 rounded text-[10px] font-medium",
+        "inline-block max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-1.5 py-0.5 rounded text-[10px] font-medium",
         variants[variant],
         className,
       )}

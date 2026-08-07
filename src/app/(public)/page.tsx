@@ -145,10 +145,10 @@ export default async function Page({
         limit: 8,
       }),
       getMostUndersold({
-        limit: 4,
+        limit: 8,
         excludeGames: true,
       }),
-      getRecentlyEnded(8),
+      getRecentlyEnded(4),
       getCompetitions({
         sortBy: "percentSold",
         sortOrder: "desc",
@@ -230,14 +230,6 @@ export default async function Page({
         competitions={undersold}
       />
       <CompetitionSection
-        titleStart={siteContent?.section3TitleStart?.trim() || "Recent"}
-        titleAccent={siteContent?.section3TitleAccent?.trim() || "draws"}
-        subtitle={siteContent?.section3Subtitle?.trim() || "Just finished — how they sold before the draw"}
-        viewAllHref="/recent-draws"
-        competitions={recentlyEnded}
-        cardVariant="ended"
-      />
-      <CompetitionSection
         titleStart={siteContent?.section4TitleStart?.trim() || "Top Prizes"}
         titleAccent={siteContent?.section4TitleAccent?.trim() || "right now"}
         subtitle={siteContent?.section4Subtitle?.trim() || "The biggest draws right now — cars, homes and bikes worth winning"}
@@ -258,6 +250,14 @@ export default async function Page({
         viewAllHref="/competitions?section=ending-today&sortBy=endsAt&sortOrder=asc&closing=today&excludeInstant=true&excludeFree=true"
         competitions={endingToday}
         accentTone="red"
+      />
+      <CompetitionSection
+        titleStart={siteContent?.section3TitleStart?.trim() || "Recent"}
+        titleAccent={siteContent?.section3TitleAccent?.trim() || "draws"}
+        subtitle={siteContent?.section3Subtitle?.trim() || "Just finished — how they sold before the draw"}
+        viewAllHref="/recent-draws"
+        competitions={recentlyEnded}
+        cardVariant="ended"
       />
     </main>
   );

@@ -332,7 +332,7 @@ export function ScraperPanel() {
         </p>
       ) : null}
 
-      <div className="mt-4 rounded-2xl border border-rr-border">
+      <div className="mt-4 overflow-hidden rounded-2xl border border-rr-border">
         <table className="w-full text-sm">
           <thead className="hidden bg-rr-elevated md:table-header-group">
             <tr>
