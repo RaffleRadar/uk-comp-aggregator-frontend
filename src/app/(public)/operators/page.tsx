@@ -175,23 +175,26 @@ export default async function OperatorsPage() {
                           : "border-rr-border hover:border-rr-green-border"
                       }`}
                     >
-                      {isBestValue ? (
-                        <div className="flex items-center gap-2 bg-rr-green px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-on-accent">
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            aria-hidden
-                          >
-                            <path
-                              d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.2 9l6.9-.7L12 2z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                          #1 for value
-                        </div>
-                      ) : null}
+                      <div
+                        aria-hidden={!isBestValue}
+                        className={`flex items-center gap-2 bg-rr-green px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-on-accent ${
+                          isBestValue ? "" : "invisible"
+                        }`}
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden
+                        >
+                          <path
+                            d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.7L12 17.3 5.9 20.6l1.5-6.7L2.2 9l6.9-.7L12 2z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        #1 for value
+                      </div>
 
                       <div className="flex flex-1 flex-col p-4">
                         <div className="flex items-center gap-3">
