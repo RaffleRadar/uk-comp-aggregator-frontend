@@ -220,6 +220,22 @@ function SectionContent({ section }: { section: AccountSection }) {
 
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<AccountSection>("wishlist");
+  const { status, user } = useAuth();
+
+  const isAdmin = user?.role === "admin";
+
+  const visibleSections = useMemo(() => {
+    const showAdminNav = status !== "loading" && isAdmin;
+    return sections.filter((section) => section.id !== "scrapers" || showAdminNav);
+  }, [status, isAdmin]);
+
+  const effectiveSection = useMemo(() => {
+    const showAdminNav = status !== "loading" && isAdmin;
+    if (activeSection === "scrapers" && !showAdminNav) {
+      return "wishlist";
+    }
+    return activeSection;
+  }, [activeSection, status, isAdmin]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -234,9 +250,9 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-[14rem_1fr]">
         <nav className="overflow-hidden rounded-2xl border border-rr-border bg-rr-surface md:w-52">
           <div className="flex flex-wrap gap-2 p-2 md:flex-col md:gap-0 md:p-0">
-            {sections.map((section) => {
+            {visibleSections.map((section) => {
               const Icon = section.icon;
-              const isActive = activeSection === section.id;
+              const isActive = effectiveSection === section.id;
 
               return (
                 <button
@@ -257,7 +273,7 @@ export default function ProfilePage() {
             })}
           </div>
         </nav>
-        <SectionContent section={activeSection} />
+        <SectionContent section={effectiveSection} />
       </div>
     </div>
   );
