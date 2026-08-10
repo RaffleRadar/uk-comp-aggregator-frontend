@@ -145,7 +145,7 @@ export function CompetitionCard({
         ) : (
           <PlaceholderIcon category={category} />
         )}
-        <span className="absolute inset-x-1.5 top-1.5 flex flex-wrap items-start gap-1 pr-10">
+        <span className="absolute inset-x-1.5 top-1.5 flex flex-wrap items-start gap-1">
           <Badge
             variant="operator"
             className="whitespace-nowrap overflow-visible text-clip"
