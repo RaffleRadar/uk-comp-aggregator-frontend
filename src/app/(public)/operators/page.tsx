@@ -6,7 +6,7 @@ import { VrScale } from "@/components/operators/VrScale";
 import { Badge } from "@/components/ui/badge";
 import { getOperators } from "@/lib/api";
 import type { OperatorSummary } from "@/lib/api";
-import { getOperatorFairness } from "@/lib/operator-display";
+import { getOperatorFairness, MIN_BADGE_SAMPLE } from "@/lib/operator-display";
 import { getSiteContent } from "@/sanity/queries";
 
 export const revalidate = 60;
@@ -102,6 +102,23 @@ export default async function OperatorsPage() {
     rankedOperators.map(({ operator }, index) => [operator.id, index + 1]),
   );
 
+  const toSampleSize = (value: unknown) => {
+    if (typeof value === "number") {
+      return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === "string" && value.trim()) {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  };
+
+  const badgedOperatorId =
+    rankedOperators.find(({ operator }) => {
+      const sample = toSampleSize(operator.vrSampleSize);
+      return sample !== null && sample >= MIN_BADGE_SAMPLE;
+    })?.operator.id ?? null;
+
   return (
     <main className="bg-rr-bg">
       <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
@@ -145,7 +162,8 @@ export default async function OperatorsPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {sortedOperators.map(({ operator, fairness }) => {
                   const valueRank = operatorRankMap.get(operator.id);
-                  const isBestValue = valueRank === 1;
+                  const isBestValue =
+                    badgedOperatorId !== null && operator.id === badgedOperatorId;
 
                   return (
                     <Link
@@ -231,7 +249,7 @@ export default async function OperatorsPage() {
 
                           <div className="rounded-lg border border-rr-border bg-rr-elevated p-3">
                             <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
-                              Live competitions
+                              Live draws
                             </p>
                             <p className="mt-1 text-base font-medium text-rr-primary">
                               {operator.activeCompetitionsCount ?? 0} active
