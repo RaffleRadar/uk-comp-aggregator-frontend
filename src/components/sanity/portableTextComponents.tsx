@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { PortableTextComponents } from "@portabletext/react";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { urlFor } from "@/sanity/client";
+import { CANONICAL_ORIGIN } from "@/lib/site";
 
 export const portableTextComponents: PortableTextComponents = {
   block: {
@@ -63,7 +64,24 @@ export const portableTextComponents: PortableTextComponents = {
           ? String(value.href)
           : "#";
 
-      if (href.startsWith("http")) {
+      let isInternal = false;
+      let internalHref = href;
+
+      if (href.startsWith("/")) {
+        isInternal = true;
+      } else {
+        try {
+          const parsed = new URL(href);
+          if (parsed.origin === CANONICAL_ORIGIN) {
+            isInternal = true;
+            internalHref = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+          }
+        } catch {
+          isInternal = false;
+        }
+      }
+
+      if (!isInternal) {
         return (
           <a
             href={href}
@@ -78,7 +96,7 @@ export const portableTextComponents: PortableTextComponents = {
 
       return (
         <Link
-          href={href}
+          href={internalHref}
           className="text-rr-green underline decoration-rr-green/40 underline-offset-4 transition hover:opacity-80"
         >
           {children}
