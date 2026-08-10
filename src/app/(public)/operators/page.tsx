@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { GetListedBanner } from "@/components/operators/get-listed-banner";
 import { VrScale } from "@/components/operators/VrScale";
 import { Badge } from "@/components/ui/badge";
 import { getOperators } from "@/lib/api";
 import type { OperatorSummary } from "@/lib/api";
-import { MIN_BADGE_SAMPLE, getOperatorFairness } from "@/lib/operator-display";
+import { getOperatorFairness } from "@/lib/operator-display";
 import { getSiteContent } from "@/sanity/queries";
 
 export const revalidate = 60;
@@ -101,18 +102,6 @@ export default async function OperatorsPage() {
     rankedOperators.map(({ operator }, index) => [operator.id, index + 1]),
   );
 
-  const bestBadgeOperatorId =
-    rankedOperators
-      .filter(({ operator }) => {
-        const raw = operator.vrSampleSize;
-        let sample: number | null = null;
-        if (typeof raw === "number") {
-          sample = Number.isFinite(raw) ? raw : null;
-        }
-        return sample !== null && sample >= MIN_BADGE_SAMPLE;
-      })[0]
-      ?.operator.id ?? null;
-
   return (
     <main className="bg-rr-bg">
       <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
@@ -156,8 +145,7 @@ export default async function OperatorsPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {sortedOperators.map(({ operator, fairness }) => {
                   const valueRank = operatorRankMap.get(operator.id);
-                  const isBestValue =
-                    bestBadgeOperatorId !== null && operator.id === bestBadgeOperatorId;
+                  const isBestValue = valueRank === 1;
 
                   return (
                     <Link
@@ -264,6 +252,8 @@ export default async function OperatorsPage() {
                 No operators available right now.
               </div>
             )}
+
+            <GetListedBanner />
           </div>
         </div>
       </section>
