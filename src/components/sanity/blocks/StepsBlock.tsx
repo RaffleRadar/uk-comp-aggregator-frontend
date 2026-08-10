@@ -63,7 +63,7 @@ export function StepsBlock({ block }: { block: StepsBlockData }) {
                   <h3 className="mb-2 text-base font-medium tracking-[-0.02em] text-rr-primary">
                     {item.title}
                   </h3>
-                  <p className="text-sm leading-6 text-rr-secondary">{item.body}</p>
+                  <p className="whitespace-pre-line text-sm leading-6 text-rr-secondary">{item.body}</p>
                 </div>
               </div>
             ))}
