@@ -190,7 +190,7 @@ function SectionContent({ section }: { section: AccountSection }) {
       return <SavedSearchesSection />;
     case "scrapers":
       return (
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <AdminAccordion
             title="Traffic"
             defaultOpen
@@ -247,7 +247,7 @@ export default function ProfilePage() {
         <NewsletterBanner />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-[14rem_1fr]">
+      <div className="grid min-w-0 gap-6 md:grid-cols-[14rem_1fr]">
         <nav className="overflow-hidden rounded-2xl border border-rr-border bg-rr-surface md:w-52">
           <div className="flex flex-wrap gap-2 p-2 md:flex-col md:gap-0 md:p-0">
             {visibleSections.map((section) => {
