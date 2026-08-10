@@ -1,4 +1,5 @@
 export const MIN_VR_SAMPLE = 5;
+export const MIN_BADGE_SAMPLE = 30;
 export const BEST_VR = 2;
 export const GOOD_VR = 3;
 export const FAIR_VR = 5;
