@@ -238,12 +238,10 @@ export default async function OperatorsPage() {
                         <div className="mt-3 grid grid-cols-2 gap-3">
                           <div className="rounded-lg border border-rr-border bg-rr-elevated p-3">
                             <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
-                              Rated on
+                              Rated on draws
                             </p>
                             <p className="mt-1 text-base font-medium text-rr-primary">
-                              {operator.vrSampleSize
-                                ? `${operator.vrSampleSize} competitions`
-                                : "—"}
+                              {operator.vrSampleSize ?? "—"}
                             </p>
                           </div>
 
