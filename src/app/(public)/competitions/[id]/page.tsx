@@ -21,6 +21,7 @@ import { CompetitionCard } from "@/components/competitions/competition-card";
 import { CompetitionImage } from "@/components/ui/CompetitionImage";
 import { ViewAllLink } from "@/components/ui/view-all-link";
 import { CommentsSection } from "@/components/comments/comments-section";
+import { CategoryBadgeAdmin } from "@/components/competitions/category-badge-admin";
 import {
   getCompetition,
   getCompetitionHistory,
@@ -509,11 +510,7 @@ export default async function Page({
                   )}
                 </div>
               )}
-              {category && (
-                <Badge variant="neutral" className="text-rr-muted bg-rr-elevated">
-                  {category}
-                </Badge>
-              )}
+              <CategoryBadgeAdmin competitionId={id} category={category} />
               {getEndsTimeLabel(endsAt) && (
                 <Badge variant="red">{getEndsTimeLabel(endsAt)}</Badge>
               )}

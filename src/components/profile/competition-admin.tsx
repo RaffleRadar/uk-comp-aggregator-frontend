@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { type ComponentProps, useCallback, useMemo, useState } from "react";
+import { type ComponentProps, useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
 type CompetitionAdminRecord = {
   id: string;
   prize: string;
+  category: string | null;
+  categoryOverride: boolean;
   isActive: boolean;
   isHidden: boolean;
   availableToBuy: boolean | null;
@@ -97,8 +99,42 @@ export function CompetitionAdmin() {
   const [loadError, setLoadError] = useState("");
   const [rowErrors, setRowErrors] = useState<Record<string, string>>({});
   const [togglingIds, setTogglingIds] = useState<Record<string, boolean>>({});
+  const [categories, setCategories] = useState<string[]>([]);
+  const [savingCategoryIds, setSavingCategoryIds] = useState<Record<string, boolean>>({});
 
   const canSearch = query.trim().length >= 2;
+
+  useEffect(() => {
+    let aborted = false;
+
+    (async () => {
+      try {
+        const response = await fetch("/api/admin/competitions/categories", {
+          credentials: "same-origin",
+          cache: "no-store",
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          return;
+        }
+
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = await parseJsonResponse<unknown>(response);
+
+        if (!aborted && Array.isArray(payload) && payload.every((v) => typeof v === "string")) {
+          setCategories(payload as string[]);
+        }
+      } catch {
+      }
+    })();
+
+    return () => {
+      aborted = true;
+    };
+  }, []);
 
   const runSearch = useCallback(async () => {
     const trimmedQuery = query.trim();
@@ -241,6 +277,110 @@ export function CompetitionAdmin() {
     [items],
   );
 
+  const updateCategory = useCallback(
+    async (id: string, nextCategory: string | null) => {
+      const previousItem = items.find((item) => item.id === id);
+
+      if (!previousItem) {
+        return;
+      }
+
+      setSavingCategoryIds((current) => ({ ...current, [id]: true }));
+      setRowErrors((current) => {
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+      setItems((current) =>
+        updateCompetitionRow(current, id, {
+          category: nextCategory,
+          categoryOverride: true,
+        }),
+      );
+
+      try {
+        const response = await fetch(`/api/admin/competitions/${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ category: nextCategory }),
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          setIsHidden(true);
+          setItems([]);
+          setLoadError("");
+          return;
+        }
+
+        let payload: unknown = null;
+
+        try {
+          payload = await parseJsonResponse<unknown>(response);
+        } catch {
+          payload = null;
+        }
+
+        if (payload && typeof payload === "object") {
+          const responseCategory =
+            "category" in payload ? (payload as { category: unknown }).category : undefined;
+          const responseOverride =
+            "categoryOverride" in payload
+              ? (payload as { categoryOverride: unknown }).categoryOverride
+              : undefined;
+
+          const nextState: Partial<CompetitionAdminRecord> = {};
+
+          if (responseCategory === null || typeof responseCategory === "string") {
+            nextState.category = responseCategory;
+          }
+
+          if (typeof responseOverride === "boolean") {
+            nextState.categoryOverride = responseOverride;
+          }
+
+          if (Object.keys(nextState).length > 0) {
+            setItems((current) => updateCompetitionRow(current, id, nextState));
+          }
+        }
+
+        if (!response.ok) {
+          setItems((current) =>
+            updateCompetitionRow(current, id, {
+              category: previousItem.category,
+              categoryOverride: previousItem.categoryOverride,
+            }),
+          );
+          setRowErrors((current) => ({
+            ...current,
+            [id]: readMessage(payload, "Request failed."),
+          }));
+        }
+      } catch {
+        setItems((current) =>
+          updateCompetitionRow(current, id, {
+            category: previousItem.category,
+            categoryOverride: previousItem.categoryOverride,
+          }),
+        );
+        setRowErrors((current) => ({
+          ...current,
+          [id]: "Request failed.",
+        }));
+      } finally {
+        setSavingCategoryIds((current) => {
+          const next = { ...current };
+          delete next[id];
+          return next;
+        });
+      }
+    },
+    [items],
+  );
+
   const hasResults = items.length > 0;
   const tableRows = useMemo(() => items, [items]);
 
@@ -270,7 +410,8 @@ export function CompetitionAdmin() {
       {hasSearched ? (
         <p className="mt-4 text-sm text-rr-secondary">
           Hiding a competition removes it from the site immediately. It stays listed here so you
-          can restore it.
+          can restore it. Changing category takes effect immediately and locks the row against
+          automatic recategorisation; new competitions are still categorised automatically.
         </p>
       ) : null}
 
@@ -288,51 +429,134 @@ export function CompetitionAdmin() {
       ) : null}
 
       {!loadError && hasResults ? (
-        <div className="mt-4 rounded-2xl border border-rr-border">
-          <table className="w-full text-sm">
-            <thead className="hidden bg-rr-elevated md:table-header-group">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium text-rr-primary">Prize</th>
-                <th className="px-4 py-3 text-left font-medium text-rr-primary">Operator</th>
-                <th className="px-4 py-3 text-left font-medium text-rr-primary">Ticket price</th>
-                <th className="px-4 py-3 text-left font-medium text-rr-primary">Prize value</th>
-                <th className="px-4 py-3 text-left font-medium text-rr-primary">Ends</th>
-                <th className="px-4 py-3 text-left font-medium text-rr-primary">Visible</th>
-              </tr>
-            </thead>
-            <tbody className="block divide-y divide-rr-border md:table-row-group md:divide-y-0">
-              {tableRows.map((item) => {
-                const isToggling = Boolean(togglingIds[item.id]);
-                const rowError = rowErrors[item.id];
+        <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
+          {tableRows.map((item) => {
+            const isToggling = Boolean(togglingIds[item.id]);
+            const isSavingCategory = Boolean(savingCategoryIds[item.id]);
+            const rowError = rowErrors[item.id];
+            const categoryDisabled = isSavingCategory || categories.length === 0;
 
-                return (
-                  <tr key={item.id} className="block px-4 py-4 md:table-row md:border-t md:border-rr-border md:p-0 md:align-top">
-                    <td className="block pb-3 text-base font-medium text-rr-primary md:table-cell md:px-4 md:py-3 md:text-sm md:font-normal">
-                      <Link href={`/competitions/${item.id}`} target="_blank" rel="noreferrer" className="break-words text-rr-green underline underline-offset-4">
-                        {item.prize}
-                      </Link>
-                    </td>
-                    <td data-label="Operator" className="flex items-center justify-between gap-4 py-2 text-rr-secondary md:table-cell md:px-4 md:py-3 before:text-xs before:font-medium before:uppercase before:tracking-wide before:text-rr-secondary before:content-[attr(data-label)] md:before:hidden"><span className="text-right md:text-left">{item.operator?.name ?? "—"}</span></td>
-                    <td data-label="Ticket price" className="flex items-center justify-between gap-4 py-2 text-rr-primary md:table-cell md:px-4 md:py-3 md:whitespace-nowrap before:text-xs before:font-medium before:uppercase before:tracking-wide before:text-rr-secondary before:content-[attr(data-label)] md:before:hidden"><span className="text-right md:text-left">{formatMoney(item.ticketPrice)}</span></td>
-                    <td data-label="Prize value" className="flex items-center justify-between gap-4 py-2 text-rr-primary md:table-cell md:px-4 md:py-3 md:whitespace-nowrap before:text-xs before:font-medium before:uppercase before:tracking-wide before:text-rr-secondary before:content-[attr(data-label)] md:before:hidden"><span className="text-right md:text-left">{formatMoney(item.prizeValue)}</span></td>
-                    <td data-label="Ends" className="flex items-center justify-between gap-4 py-2 text-rr-secondary md:table-cell md:px-4 md:py-3 md:whitespace-nowrap before:text-xs before:font-medium before:uppercase before:tracking-wide before:text-rr-secondary before:content-[attr(data-label)] md:before:hidden"><span className="text-right md:text-left">{formatEndsAt(item.endsAt)}</span></td>
-                    <td className="block pt-3 text-rr-primary md:table-cell md:px-4 md:py-3">
-                      <div className="mb-2 text-xs font-medium uppercase tracking-wide text-rr-secondary md:hidden">Visible</div>
-                      <div className="flex flex-col gap-3">
-                        <button type="button" role="switch" aria-checked={!item.isHidden} disabled={isToggling} onClick={() => void toggleCompetition(item.id, !item.isHidden)} className={cn("inline-flex w-full items-center justify-between gap-3 rounded-full border border-rr-border px-3 py-2 text-sm font-medium transition md:w-fit md:justify-start", !item.isHidden ? "bg-rr-surface text-rr-primary" : "bg-rr-surface text-rr-secondary", isToggling ? "cursor-not-allowed opacity-60" : "hover:bg-rr-surface/80")}>
-                          <span className={cn("relative h-6 w-11 rounded-full transition", !item.isHidden ? "bg-rr-green" : "bg-rr-border")}>
-                            <span className={cn("absolute top-0.5 h-5 w-5 rounded-full bg-white transition", !item.isHidden ? "left-[22px]" : "left-0.5")} />
-                          </span>
-                          <span>{isToggling ? "Updating..." : !item.isHidden ? "Visible" : "Hidden"}</span>
-                        </button>
-                        {rowError ? <span className="text-sm text-red-700 dark:text-red-300">{rowError}</span> : null}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+            return (
+              <div
+                key={item.id}
+                className={cn(
+                  "flex flex-col rounded-2xl border bg-rr-surface p-4 transition",
+                  item.isHidden ? "border-rr-border opacity-70" : "border-rr-border",
+                )}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <Link
+                    href={`/competitions/${item.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="break-words text-base font-medium leading-snug text-rr-green underline underline-offset-4"
+                  >
+                    {item.prize}
+                  </Link>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {item.categoryOverride === true ? (
+                      <span className="shrink-0 rounded-full border border-rr-green/40 bg-rr-green-bg px-2 py-0.5 text-[11px] font-medium leading-5 text-rr-green">
+                        Overridden
+                      </span>
+                    ) : null}
+                    {item.isHidden === true ? (
+                      <span className="shrink-0 rounded-full border border-rr-border bg-rr-elevated px-2 py-0.5 text-[11px] font-medium leading-5 text-rr-secondary">
+                        Hidden
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+
+                <p className="mt-1 text-sm text-rr-secondary">{item.operator?.name ?? "—"}</p>
+
+                <dl className="mt-4 grid grid-cols-3 gap-3 rounded-xl bg-rr-elevated px-3 py-3">
+                  <div className="min-w-0">
+                    <dt className="text-[11px] font-medium uppercase tracking-wide text-rr-secondary">
+                      Ticket
+                    </dt>
+                    <dd className="mt-0.5 truncate text-sm text-rr-primary">
+                      {formatMoney(item.ticketPrice)}
+                    </dd>
+                  </div>
+                  <div className="min-w-0">
+                    <dt className="text-[11px] font-medium uppercase tracking-wide text-rr-secondary">
+                      Prize value
+                    </dt>
+                    <dd className="mt-0.5 truncate text-sm text-rr-primary">
+                      {formatMoney(item.prizeValue)}
+                    </dd>
+                  </div>
+                  <div className="min-w-0">
+                    <dt className="text-[11px] font-medium uppercase tracking-wide text-rr-secondary">
+                      Ends
+                    </dt>
+                    <dd className="mt-0.5 text-sm text-rr-primary">{formatEndsAt(item.endsAt)}</dd>
+                  </div>
+                </dl>
+
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <label className="flex min-w-0 flex-1 flex-col gap-1.5">
+                    <span className="text-[11px] font-medium uppercase tracking-wide text-rr-secondary">
+                      Category
+                    </span>
+                    <select
+                      disabled={categoryDisabled}
+                      value={item.category ?? ""}
+                      onChange={(event) => {
+                        const raw = event.target.value;
+                        const next = raw === "" ? null : raw;
+                        void updateCategory(item.id, next);
+                      }}
+                      className={cn(
+                        inputClass,
+                        "h-10 min-w-0 border-rr-border px-3 sm:max-w-[220px]",
+                        categoryDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
+                      )}
+                    >
+                      <option value="">Uncategorised</option>
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={!item.isHidden}
+                    disabled={isToggling}
+                    onClick={() => void toggleCompetition(item.id, !item.isHidden)}
+                    className={cn(
+                      "inline-flex h-10 shrink-0 items-center justify-between gap-3 rounded-full border border-rr-border bg-rr-surface px-3 text-sm font-medium transition",
+                      item.isHidden ? "text-rr-secondary" : "text-rr-primary",
+                      isToggling ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-rr-elevated",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "relative h-6 w-11 shrink-0 rounded-full transition",
+                        !item.isHidden ? "bg-rr-green" : "bg-rr-border",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-all",
+                          !item.isHidden ? "left-[22px]" : "left-0.5",
+                        )}
+                      />
+                    </span>
+                    <span>{isToggling ? "Updating..." : !item.isHidden ? "Visible" : "Hidden"}</span>
+                  </button>
+                </div>
+
+                {rowError ? (
+                  <span className="mt-3 text-sm text-red-700 dark:text-red-300">{rowError}</span>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       ) : null}
     </div>
