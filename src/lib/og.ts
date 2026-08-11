@@ -1,6 +1,9 @@
-function resolveImageUrl(image: string | null | undefined, fallbackImage: string): string {
+function resolveImageUrl(
+  image: string | null | undefined,
+  fallbackImage: string,
+): { url: string; isFallback: boolean } {
   if (!image) {
-    return fallbackImage;
+    return { url: fallbackImage, isFallback: true };
   }
 
   let parsed: URL;
@@ -8,14 +11,17 @@ function resolveImageUrl(image: string | null | undefined, fallbackImage: string
   try {
     parsed = new URL(image);
   } catch {
-    return fallbackImage;
+    return { url: fallbackImage, isFallback: true };
   }
 
   if (parsed.protocol !== "https:") {
-    return fallbackImage;
+    return { url: fallbackImage, isFallback: true };
   }
 
-  return `/api/og-image?src=${encodeURIComponent(image)}`;
+  return {
+    url: `/api/og-image?src=${encodeURIComponent(image)}`,
+    isFallback: false,
+  };
 }
 
 type BuildOpenGraphArgs = {
@@ -33,7 +39,7 @@ export function buildOpenGraph({
   image,
   fallbackImage = "/og-default.png",
 }: BuildOpenGraphArgs) {
-  const url = resolveImageUrl(image, fallbackImage);
+  const { url, isFallback } = resolveImageUrl(image, fallbackImage);
   return {
     title,
     description,
@@ -42,12 +48,9 @@ export function buildOpenGraph({
     locale: "en_GB",
     type: "website",
     images: [
-      {
-        url,
-        width: 1200,
-        height: 630,
-        alt: title,
-      },
+      isFallback
+        ? { url, width: 1200, height: 630, alt: title }
+        : { url, alt: title },
     ],
   };
 }
@@ -65,7 +68,7 @@ export function buildTwitter({
   image,
   fallbackImage = "/og-default.png",
 }: BuildTwitterArgs) {
-  const url = resolveImageUrl(image, fallbackImage);
+  const { url } = resolveImageUrl(image, fallbackImage);
   return {
     card: "summary_large_image" as const,
     title,
