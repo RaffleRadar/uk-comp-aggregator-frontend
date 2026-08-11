@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PostArticle } from "@/components/sanity/PostArticle";
+import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { sanityClient, urlFor } from "@/sanity/client";
 import { ALL_POST_SLUGS, POST_BY_SLUG, RELATED_POSTS } from "@/sanity/queries";
 
@@ -83,10 +84,17 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: pageUrl },
-    openGraph: imageUrl ? { title, description, url: pageUrl, images: [{ url: imageUrl }] } : { title, description, url: pageUrl },
-    twitter: imageUrl
-      ? { card: "summary_large_image", title, description, images: [imageUrl] }
-      : { card: "summary_large_image", title, description },
+    openGraph: buildOpenGraph({
+      title,
+      description: description ?? "",
+      path: `/blog/${slug}`,
+      image: imageUrl,
+    }),
+    twitter: buildTwitter({
+      title,
+      description: description ?? "",
+      image: imageUrl,
+    }),
   };
 }
 

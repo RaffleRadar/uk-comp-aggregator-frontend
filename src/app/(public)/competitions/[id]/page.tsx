@@ -31,6 +31,7 @@ import {
 } from "@/lib/api";
 import type { Competition } from "@/types/competition";
 import { getEndsTimeLabel } from "@/lib/competition-display";
+import { buildOpenGraph, buildTwitter } from "@/lib/og";
 
 type CompetitionHistory = {
   scrapedAt: string;
@@ -97,17 +98,22 @@ export async function generateMetadata({
       };
     }
     const comp = competition as CompetitionDetail;
-    const { prize } = comp;
+    const { prize, imageUrl } = comp;
     const metaDescription = `Win ${prize} in this UK prize draw competition.`;
     return {
       title: prize,
       description: metaDescription,
-      openGraph: { title: prize, description: metaDescription, type: "website" },
-      twitter: {
-        card: "summary_large_image",
+      openGraph: buildOpenGraph({
         title: prize,
         description: metaDescription,
-      },
+        path: `/competitions/${id}`,
+        image: imageUrl,
+      }),
+      twitter: buildTwitter({
+        title: prize,
+        description: metaDescription,
+        image: imageUrl,
+      }),
     };
   } catch {
     return {

@@ -1,26 +1,34 @@
 import "@fontsource/inter/latin.css";
 import type { Metadata } from "next";
 import { CANONICAL_ORIGIN } from "@/lib/site";
+import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { getOgImageUrl } from "@/sanity/queries";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const ogImage = (await getOgImageUrl()) ?? "/og-default.png";
+  const sanityOgImage = await getOgImageUrl();
+  const fallbackImage = sanityOgImage ?? "/og-default.png";
+
+  const title = "RaffleRadar";
+  const description = "Find the best UK prize draws in one place.";
 
   return {
     metadataBase: new URL(CANONICAL_ORIGIN),
-    title: "RaffleRadar",
-    description: "Find the best UK prize draws in one place.",
-    openGraph: {
-      siteName: "RaffleRadar",
-      locale: "en_GB",
-      type: "website",
-      images: [{ url: ogImage, width: 1200, height: 630 }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      images: [ogImage],
-    },
+    title,
+    description,
+    openGraph: buildOpenGraph({
+      title,
+      description,
+      path: "/",
+      image: sanityOgImage,
+      fallbackImage,
+    }),
+    twitter: buildTwitter({
+      title,
+      description,
+      image: sanityOgImage,
+      fallbackImage,
+    }),
     icons: {
       icon: "/favnew.svg",
       shortcut: "/favnew.svg",

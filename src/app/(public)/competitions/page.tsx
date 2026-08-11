@@ -10,19 +10,26 @@ import {
 import { NewsletterSignupBanner } from "@/components/competitions/newsletter-signup-banner";
 import { SaveSearchButton } from "@/components/competitions/save-search-button";
 import { FilterBar } from "@/components/layout/filter-bar";
+import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { getSiteContent } from "@/sanity/queries";
 
+const COMPETITIONS_OG_TITLE = "UK Prize Competitions & Draws | RaffleRadar";
+const COMPETITIONS_OG_DESCRIPTION =
+  "Find live UK prize competitions in one place. Compare entry prices, prize values, tickets remaining and closing dates across leading competition sites.";
+
 const NO_FILTER_BASE_METADATA: Metadata = {
-  title: "UK Prize Competitions & Draws | RaffleRadar",
-  description:
-    "Find live UK prize competitions in one place. Compare entry prices, prize values, tickets remaining and closing dates across leading competition sites.",
+  title: COMPETITIONS_OG_TITLE,
+  description: COMPETITIONS_OG_DESCRIPTION,
   alternates: { canonical: "/competitions" },
-  openGraph: {
-    title: "UK Prize Competitions & Draws | RaffleRadar",
-    description:
-      "Find live UK prize competitions in one place. Compare entry prices, prize values, tickets remaining and closing dates across leading competition sites.",
-    url: "/competitions",
-  },
+  openGraph: buildOpenGraph({
+    title: COMPETITIONS_OG_TITLE,
+    description: COMPETITIONS_OG_DESCRIPTION,
+    path: "/competitions",
+  }),
+  twitter: buildTwitter({
+    title: COMPETITIONS_OG_TITLE,
+    description: COMPETITIONS_OG_DESCRIPTION,
+  }),
 };
 
 const FILTER_ROBOT_KEYS = [

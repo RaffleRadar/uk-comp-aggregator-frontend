@@ -17,19 +17,27 @@ import {
   getStats,
   getTopOpportunities,
 } from "@/lib/api";
+import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { getSiteContent as getSanitySiteContent } from "@/sanity/queries";
 import type { Competition } from "@/types/competition";
 
+const ogTitle = "RaffleRadar | UK Competitions & Prize Draw Finder";
+const ogDescription = "Compare live UK prize draws by real odds and real value. No noise, just the numbers.";
+
 export const metadata: Metadata = {
-  title: "RaffleRadar | UK Competitions & Prize Draw Finder",
+  title: ogTitle,
   description:
     "Compare live UK prize draws by real odds and real value. See which competitions are undersold, which are closing soon, and which offer the best value for money.",
   alternates: { canonical: "/" },
-  openGraph: {
-    title: "RaffleRadar | UK Competitions & Prize Draw Finder",
-    description: "Compare live UK prize draws by real odds and real value. No noise, just the numbers.",
-    url: "/",
-  },
+  openGraph: buildOpenGraph({
+    title: ogTitle,
+    description: ogDescription,
+    path: "/",
+  }),
+  twitter: buildTwitter({
+    title: ogTitle,
+    description: ogDescription,
+  }),
 };
 
 type HomePageSearchParams = {

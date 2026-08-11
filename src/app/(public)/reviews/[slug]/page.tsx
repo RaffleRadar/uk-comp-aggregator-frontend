@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { sanityClient, urlFor } from "@/sanity/client";
 import { ALL_REVIEW_SLUGS, RELATED_REVIEWS, REVIEW_BY_SLUG } from "@/sanity/queries";
 import { ReviewArticle } from "@/components/sanity/ReviewArticle";
+import { buildOpenGraph, buildTwitter } from "@/lib/og";
 
 export const revalidate = 60;
 
@@ -82,10 +83,17 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: pageUrl },
-    openGraph: imageUrl ? { title, description, url: pageUrl, images: [{ url: imageUrl }] } : { title, description, url: pageUrl },
-    twitter: imageUrl
-      ? { card: "summary_large_image", title, description, images: [imageUrl] }
-      : { card: "summary_large_image", title, description },
+    openGraph: buildOpenGraph({
+      title,
+      description: description ?? "",
+      path: `/reviews/${slug}`,
+      image: imageUrl,
+    }),
+    twitter: buildTwitter({
+      title,
+      description: description ?? "",
+      image: imageUrl,
+    }),
   };
 }
 
