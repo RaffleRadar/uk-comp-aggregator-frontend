@@ -4,7 +4,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { IconChevronDown, IconMenu2, IconMoon, IconSun, IconX } from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconFileText,
+  IconLogin,
+  IconLogout,
+  IconMail,
+  IconMenu2,
+  IconMoon,
+  IconSettings,
+  IconStar,
+  IconSun,
+  IconTag,
+  IconTrophy,
+  IconUser,
+  IconUserPlus,
+  IconUsers,
+  IconX,
+} from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
 import { useAuth } from "@/contexts/auth-context";
 import { CompetitionSearch } from "@/components/layout/competition-search";
@@ -18,6 +35,14 @@ function getInitials(value: string): string {
   const second = (parts.length > 1 ? parts[1]?.[0] : parts[0]?.[1]) ?? "";
   return (first + second).toUpperCase() || "?";
 }
+
+const mobileItemBase =
+  "flex items-center gap-3 rounded-xl border px-4 py-3 text-[15px] font-medium no-underline transition";
+const mobileItemIdle =
+  "border-rr-border bg-rr-elevated text-rr-primary [@media(hover:hover)]:hover:border-rr-green/40 [@media(hover:hover)]:hover:bg-rr-green-bg";
+const mobileItemActive = "border-rr-green bg-rr-green text-rr-on-accent";
+const mobileItemCta =
+  "border-rr-green bg-transparent text-rr-green [@media(hover:hover)]:hover:bg-rr-green-bg";
 
 export function Navbar() {
   const { user, status, logout } = useAuth();
@@ -247,25 +272,107 @@ export function Navbar() {
       </div>
 
       {menuOpen ? (
-        <div className="absolute left-0 right-0 top-full bg-rr-surface md:hidden z-50 shadow-lg border-t border-rr-border">
-          <div className="flex flex-col gap-1 px-5 py-3">
-            <Link href="/competitions" aria-current={isCompetitionsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline", isCompetitionsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")} onClick={() => setMenuOpen(false)}>Competitions</Link>
-            <Link href="/operators" aria-current={isOperatorsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline", isOperatorsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")} onClick={() => setMenuOpen(false)}>Operators</Link>
-            <Link href="/reviews" aria-current={isReviewsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline", isReviewsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")} onClick={() => setMenuOpen(false)}>Reviews</Link>
-            <Link href="/blog" aria-current={isBlogActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline", isBlogActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")} onClick={() => setMenuOpen(false)}>Blog</Link>
-            <Link href="/how-it-works" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline" onClick={() => setMenuOpen(false)}>How it works</Link>
-            <Link href="/get-listed" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline" onClick={() => setMenuOpen(false)}>Get Listed</Link>
-            <Link href="/contact" aria-current={isContactActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline", isContactActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")} onClick={() => setMenuOpen(false)}>Contact</Link>
+        <div className="absolute left-0 right-0 top-full z-50 border-t border-rr-border bg-rr-surface shadow-lg md:hidden">
+          <div className="flex flex-col gap-2 px-4 py-4">
+            <Link
+              href="/competitions"
+              aria-current={isCompetitionsActive ? "page" : undefined}
+              className={cn(mobileItemBase, isCompetitionsActive ? mobileItemActive : mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconTrophy size={20} className={cn("shrink-0", isCompetitionsActive ? "text-rr-on-accent" : "text-rr-green")} />
+              Competitions
+            </Link>
+            <Link
+              href="/operators"
+              aria-current={isOperatorsActive ? "page" : undefined}
+              className={cn(mobileItemBase, isOperatorsActive ? mobileItemActive : mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconUsers size={20} className={cn("shrink-0", isOperatorsActive ? "text-rr-on-accent" : "text-rr-green")} />
+              Operators
+            </Link>
+            <Link
+              href="/reviews"
+              aria-current={isReviewsActive ? "page" : undefined}
+              className={cn(mobileItemBase, isReviewsActive ? mobileItemActive : mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconStar size={20} className={cn("shrink-0", isReviewsActive ? "text-rr-on-accent" : "text-rr-green")} />
+              Reviews
+            </Link>
+            <Link
+              href="/blog"
+              aria-current={isBlogActive ? "page" : undefined}
+              className={cn(mobileItemBase, isBlogActive ? mobileItemActive : mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconFileText size={20} className={cn("shrink-0", isBlogActive ? "text-rr-on-accent" : "text-rr-green")} />
+              Blog
+            </Link>
+            <Link
+              href="/how-it-works"
+              className={cn(mobileItemBase, mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconSettings size={20} className="shrink-0 text-rr-green" />
+              How it works
+            </Link>
+            <Link
+              href="/get-listed"
+              className={cn(mobileItemBase, mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconTag size={20} className="shrink-0 text-rr-green" />
+              Get Listed
+            </Link>
+            <Link
+              href="/contact"
+              aria-current={isContactActive ? "page" : undefined}
+              className={cn(mobileItemBase, isContactActive ? mobileItemActive : mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconMail size={20} className={cn("shrink-0", isContactActive ? "text-rr-on-accent" : "text-rr-green")} />
+              Contact
+            </Link>
 
             {status === "authenticated" && user ? (
               <>
-                <Button variant="secondary" className="w-full justify-start text-sm mt-2" onClick={() => { setMenuOpen(false); router.push("/profile"); }}>Account</Button>
-                <Button variant="secondary" className="w-full justify-start text-sm" onClick={() => { void handleSignOut(true); }}>Sign out</Button>
+                <Link
+                  href="/profile"
+                  className={cn(mobileItemBase, mobileItemIdle)}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <IconUser size={20} className="shrink-0 text-rr-green" />
+                  Account
+                </Link>
+                <button
+                  type="button"
+                  className={cn(mobileItemBase, mobileItemIdle, "w-full cursor-pointer text-left")}
+                  onClick={() => { void handleSignOut(true); }}
+                >
+                  <IconLogout size={20} className="shrink-0 text-rr-green" />
+                  Sign out
+                </button>
               </>
             ) : status === "unauthenticated" ? (
               <>
-                <Button variant="secondary" className="w-full justify-start text-sm mt-2" onClick={() => { setMenuOpen(false); router.push("/login"); }}>Log in</Button>
-                <Button variant="primary" className="w-full justify-start text-sm" onClick={() => { setMenuOpen(false); router.push("/register"); }}>Sign up</Button>
+                <button
+                  type="button"
+                  className={cn(mobileItemBase, mobileItemIdle, "w-full cursor-pointer text-left")}
+                  onClick={() => { setMenuOpen(false); router.push("/login"); }}
+                >
+                  <IconLogin size={20} className="shrink-0 text-rr-green" />
+                  Log in
+                </button>
+                <button
+                  type="button"
+                  className={cn(mobileItemBase, mobileItemCta, "w-full cursor-pointer text-left")}
+                  onClick={() => { setMenuOpen(false); router.push("/register"); }}
+                >
+                  <IconUserPlus size={20} className="shrink-0 text-rr-green" />
+                  Sign up
+                </button>
               </>
             ) : null}
           </div>
