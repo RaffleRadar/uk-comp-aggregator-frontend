@@ -228,15 +228,16 @@ export function Navbar() {
                     ref={userMenuRef}
                     role="menu"
                     onKeyDown={handleUserMenuPanelKeyDown}
-                    className="absolute right-0 top-full z-50 mt-2 w-40 max-w-[calc(100vw-1.5rem)] rounded-xl border border-rr-border bg-rr-surface p-1.5 shadow-lg md:w-52"
+                    className="absolute right-0 top-full z-50 mt-2 flex w-48 max-w-[calc(100vw-1.5rem)] flex-col gap-2 rounded-2xl border border-rr-border bg-rr-surface p-2 shadow-lg md:w-56"
                   >
                     <Link
                       href="/profile"
                       role="menuitem"
                       ref={(el) => { accountLinkRef.current = el; }}
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex w-full min-w-0 items-center rounded-lg px-3 py-2 text-sm text-rr-secondary no-underline transition hover:bg-rr-elevated hover:text-rr-primary"
+                      className="flex w-full min-w-0 items-center gap-3 rounded-lg border border-rr-border bg-rr-elevated px-3 py-2.5 text-sm font-medium text-rr-primary no-underline transition [@media(hover:hover)]:hover:border-rr-green/40 [@media(hover:hover)]:hover:bg-rr-green-bg"
                     >
+                      <IconUser size={18} className="shrink-0 text-rr-green" />
                       Account
                     </Link>
                     <button
@@ -244,8 +245,9 @@ export function Navbar() {
                       role="menuitem"
                       ref={(el) => { signOutButtonRef.current = el; }}
                       onClick={() => { void handleSignOut(false); }}
-                      className="flex w-full min-w-0 items-center rounded-lg px-3 py-2 text-left text-sm text-rr-secondary transition hover:bg-rr-elevated hover:text-rr-primary"
+                      className="flex w-full min-w-0 items-center gap-3 rounded-lg border border-rr-border bg-rr-elevated px-3 py-2.5 text-left text-sm font-medium text-rr-primary transition [@media(hover:hover)]:hover:border-rr-green/40 [@media(hover:hover)]:hover:bg-rr-green-bg"
                     >
+                      <IconLogout size={18} className="shrink-0 text-rr-green" />
                       Sign out
                     </button>
                   </div>
