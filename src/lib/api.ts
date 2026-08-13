@@ -467,6 +467,10 @@ export async function getCompetitionHistory(id: string) {
   return apiFetch<unknown>(`/competitions/${id}/history`);
 }
 
+export async function getSimilarCompetitions(id: string, limit = 8) {
+  return apiFetch<unknown>(`/competitions/${id}/similar?limit=${limit}`);
+}
+
 export async function subscribeToNewsletter(email: string) {
   return apiFetch<unknown>("/newsletter/subscribe", {
     method: "POST",

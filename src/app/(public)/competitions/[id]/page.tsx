@@ -27,6 +27,7 @@ import {
   getCompetitionHistory,
   getCompetitions,
   getComments,
+  getSimilarCompetitions,
   type CompetitionDetail,
 } from "@/lib/api";
 import type { Competition } from "@/types/competition";
@@ -135,6 +136,7 @@ async function fetchCompetitionData(id: string) {
     const competitionPromise = getCompetition(id);
     const historyPromise = getCompetitionHistory(id);
     const commentsPromise = getComments(id).catch(() => []);
+    const similarPromise = getSimilarCompetitions(id, 8).catch(() => []);
     const moreFromOperatorPromise = competitionPromise.then((value) => {
       if (!value || typeof value !== "object") return [];
       const comp = value as Competition;
@@ -144,14 +146,15 @@ async function fetchCompetitionData(id: string) {
         website,
         sortBy: "valueRatio",
         sortOrder: "desc",
-        limit: 5,
+        limit: 6,
       });
     });
-    const [competition, historyData, moreFromOperatorData, comments] =
+    const [competition, historyData, moreFromOperatorData, similarData, comments] =
       await Promise.all([
         competitionPromise,
         historyPromise,
         moreFromOperatorPromise,
+        similarPromise,
         commentsPromise,
       ]);
     if (!competition || typeof competition !== "object") {
@@ -212,6 +215,9 @@ async function fetchCompetitionData(id: string) {
           .filter((c) => c.id !== id)
           .slice(0, 4)
       : [];
+    const similar = Array.isArray(similarData)
+      ? (similarData as Competition[]).filter((c) => c.id !== id).slice(0, 4)
+      : [];
     return {
       prize,
       imageUrl,
@@ -237,6 +243,7 @@ async function fetchCompetitionData(id: string) {
       percentSoldValue,
       priceValue,
       history,
+      similar,
       moreFromOperator,
       comments,
       hasEnded,
@@ -284,6 +291,7 @@ export default async function Page({
     description,
     sourceUrl,
     history,
+    similar,
     moreFromOperator,
     comments,
   } = data;
@@ -672,6 +680,23 @@ export default async function Page({
             )}
           </div>
         </div>
+        {similar.length > 0 && (
+          <div className="mt-10">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <h2 className="text-lg font-semibold text-rr-primary">
+                Similar prizes
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {similar.map((competition) => (
+                <CompetitionCard
+                  key={competition.id}
+                  competition={competition}
+                />
+              ))}
+            </div>
+          </div>
+        )}
         {moreFromOperator.length > 0 && (
           <div className="mt-10">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
