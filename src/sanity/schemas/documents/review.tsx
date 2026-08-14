@@ -68,11 +68,13 @@ export const review = defineType({
       name: "operatorName",
       title: "Operator Name",
       type: "string",
+      description: "Free text field: name any UK competition site here, it does not need to exist in our database.",
     }),
     defineField({
       name: "operatorId",
       title: "Operator",
       type: "string",
+      description: "Optional field that links the review to an operator we already track; leave it empty when we do not have that operator yet.",
       components: {
         input: ReviewOperatorInput,
       },
