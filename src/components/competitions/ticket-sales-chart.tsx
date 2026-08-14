@@ -19,6 +19,7 @@ type CompetitionHistory = {
 type TicketSalesChartProps = {
   history: CompetitionHistory[];
   hasEnded?: boolean;
+  isSoldOut?: boolean;
 };
 
 type EndpointDotProps = {
@@ -44,7 +45,7 @@ const tooltipTimeFormat = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
 });
 
-export function TicketSalesChart({ history, hasEnded = false }: TicketSalesChartProps) {
+export function TicketSalesChart({ history, hasEnded = false, isSoldOut = false }: TicketSalesChartProps) {
   if (history.length < 3) {
     return (
       <div className="text-center text-rr-muted text-sm py-10">
@@ -89,7 +90,7 @@ export function TicketSalesChart({ history, hasEnded = false }: TicketSalesChart
   return (
     <div className="ticket-sales-chart">
       <div className="ticket-sales-chart__chip">
-        {hasEnded ? `Final: ${currentLabel}` : `Current: ${currentLabel}`}
+        {hasEnded || isSoldOut ? `Final: ${currentLabel}` : `Current: ${currentLabel}`}
       </div>
       <div className="ticket-sales-chart__canvas">
         <ResponsiveContainer width="100%" height={256}>

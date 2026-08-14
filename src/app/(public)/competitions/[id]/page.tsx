@@ -502,7 +502,16 @@ export default async function Page({
                   Ticket sales history
                 </h2>
                 <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
-                  <TicketSalesChart history={history} hasEnded={hasEnded} />
+                  <TicketSalesChart
+                    history={history}
+                    hasEnded={hasEnded}
+                    isSoldOut={
+                      totalTicketsValue != null &&
+                      totalTicketsValue > 0 &&
+                      soldTickets != null &&
+                      soldTickets >= totalTicketsValue
+                    }
+                  />
                 </div>
               </div>
             ) : null}
