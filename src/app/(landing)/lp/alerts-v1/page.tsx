@@ -10,7 +10,7 @@ import {
 import { LpHeader } from "@/components/landing/lp-header";
 import { LpPhonePreview } from "@/components/landing/lp-phone-preview";
 import { LpSignupForm } from "@/components/landing/lp-signup-form";
-import { LpSoldMeters } from "@/components/landing/lp-sold-meters";
+import { LpSalesCurve } from "@/components/landing/lp-sales-curve";
 
 const CAMPAIGN = "alerts-v1";
 
@@ -151,7 +151,7 @@ export default function Page() {
                 {[
                   "Live ticket counts pulled from operator sites, updated through the day.",
                   "Sort by percentage sold, ticket price, or time remaining.",
-                  "Alerts when a prize you care about is still undersold near the close.",
+                  "Alerts while the odds are still in your favour, not after.",
                 ].map((item) => (
                   <li key={item} className="flex gap-3 text-[16px] leading-7 text-rr-secondary">
                     <span className="mt-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-rr-green-bg text-rr-green">
@@ -174,7 +174,7 @@ export default function Page() {
               </ul>
             </div>
 
-              <LpSoldMeters />
+              <LpSalesCurve />
             </div>
           </div>
         </section>
