@@ -74,7 +74,7 @@ const watching = [
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-rr-bg">
+    <div className="min-h-screen overflow-x-hidden bg-rr-bg">
       <LpHeader campaign={CAMPAIGN} />
 
       <main>
@@ -251,7 +251,7 @@ export default function Page() {
               <h2 className="text-[30px] font-bold leading-[1.1] tracking-[-0.03em] text-rr-primary sm:text-[38px]">
                 Stop scrolling ten operator sites
               </h2>
-              <p className="mx-auto mt-3 whitespace-nowrap text-center text-[17px] leading-8 text-rr-secondary">
+              <p className="mx-auto mt-3 max-w-[38rem] break-words text-center text-[17px] leading-8 text-rr-secondary">
                 One account, every competition worth entering, alerts before they close.
               </p>
 

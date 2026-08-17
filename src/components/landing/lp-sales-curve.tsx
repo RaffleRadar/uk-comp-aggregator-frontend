@@ -127,7 +127,7 @@ export function LpSalesCurve() {
   return (
     <div
       ref={containerRef}
-      className="rounded-2xl border border-rr-border bg-rr-elevated p-5 sm:p-6"
+      className="overflow-x-hidden rounded-2xl border border-rr-border bg-rr-elevated p-5 sm:p-6"
     >
       <div className="mb-5">
         <p className="text-[15px] font-semibold text-rr-primary">
@@ -138,12 +138,12 @@ export function LpSalesCurve() {
         </p>
       </div>
 
-      <div className="h-[240px] w-full">
+      <div className="h-[240px] w-full max-w-full overflow-hidden">
         {isRevealed ? (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
-              margin={{ top: 8, right: 8, bottom: 4, left: -18 }}
+              margin={{ top: 8, right: 8, bottom: 4, left: 0 }}
             >
               <defs>
                 <linearGradient id="lpCurveFill" x1="0" y1="0" x2="0" y2="1">
