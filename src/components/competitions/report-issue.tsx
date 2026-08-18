@@ -102,9 +102,9 @@ export function ReportIssue({ competitionId }: ReportIssueProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-1 text-[12px] text-rr-muted underline-offset-2 hover:underline hover:text-rr-secondary transition-colors"
+        className="inline-flex items-center gap-1.5 text-[13px] text-rr-muted underline-offset-2 transition-colors hover:text-rr-primary hover:underline"
       >
-        <IconFlag size={14} />
+        <IconFlag size={15} />
         Report an issue with this listing
       </button>
     );
@@ -213,7 +213,7 @@ export function ReportIssue({ competitionId }: ReportIssueProps) {
             </Button>
 
             {error ? (
-              <div className="mt-3 rounded-[8px] border border-red-200 bg-red-50 p-2.5 text-sm text-red-700">
+              <div className="mt-3 rounded-[8px] border border-red-500/40 bg-red-500/10 p-2.5 text-sm text-red-600 dark:text-red-400">
                 {error}
               </div>
             ) : null}
@@ -225,22 +225,14 @@ export function ReportIssue({ competitionId }: ReportIssueProps) {
               Thank you!
             </h3>
             <p className="text-sm text-rr-secondary text-center mb-4">
-              Our team will review this report within 24 hours.
+              We will check this listing against the operator site.
             </p>
             <Button
               type="button"
               variant="ghost"
               size="sm"
               className="w-full"
-              onClick={() => {
-                setIsOpen(false);
-                setTimeout(() => {
-                  setSubmitted(false);
-                  setReason("");
-                  setComment("");
-                  setError(null);
-                }, 300);
-              }}
+              onClick={handleClose}
             >
               Close
             </Button>
