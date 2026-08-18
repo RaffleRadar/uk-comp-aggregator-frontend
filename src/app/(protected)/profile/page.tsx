@@ -201,13 +201,11 @@ function SectionContent({ section }: { section: AccountSection }) {
           </AdminAccordion>
           <AdminAccordion
             title="Sales patterns"
-            description="When competitions sell, by hour and day of week"
           >
             <SalesAnalytics />
           </AdminAccordion>
           <AdminAccordion
             title="Data quality"
-            description="Issues reported by users, by operator and reason"
           >
             <ReportsAnalytics />
           </AdminAccordion>

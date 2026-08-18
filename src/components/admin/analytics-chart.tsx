@@ -4,6 +4,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -14,6 +15,7 @@ import {
 
 interface AnalyticsChartProps {
   title: string;
+  description?: string;
   data: Array<Record<string, number | string | null | undefined>>;
   type: "bar" | "line";
   xKey: string;
@@ -21,34 +23,36 @@ interface AnalyticsChartProps {
   xFormatter?: (value: number | string | null | undefined) => string;
   yFormatter?: (value: number | string | null | undefined) => string;
   orientation?: "vertical" | "horizontal";
+  emptyLabel?: string;
 }
 
 const AXIS_TICK = { fill: "var(--text-muted)", fontSize: 12 };
 const AXIS_LINE = { stroke: "var(--border)" };
-
-const SERIES_PALETTE = [
-  "var(--accent)",
-  "var(--rr-green)",
-  "#60a5fa",
-  "#f97316",
-  "#a855f7",
-  "#ef4444",
-];
+const SERIES_OPACITY = [1, 0.62, 0.32];
 
 const TOOLTIP_CONTENT_STYLE = {
   background: "var(--surface)",
   border: "1px solid var(--border)",
   borderRadius: 8,
   fontSize: 12,
+  color: "var(--text-secondary)",
 };
 
 const TOOLTIP_LABEL_STYLE = {
   color: "var(--text-primary)",
   fontWeight: 600,
+  marginBottom: 4,
+};
+
+const LEGEND_STYLE = {
+  fontSize: 12,
+  color: "var(--text-muted)",
+  paddingTop: 12,
 };
 
 export function AnalyticsChart({
   title,
+  description,
   data,
   type,
   xKey,
@@ -56,13 +60,13 @@ export function AnalyticsChart({
   xFormatter,
   yFormatter,
   orientation = "vertical",
+  emptyLabel = "No data available yet.",
 }: AnalyticsChartProps) {
   const isHorizontalBars = type === "bar" && orientation === "horizontal";
-  const rowHeight = isHorizontalBars ? 44 : 0;
+  const hasLegend = yKeys.length > 1;
   const chartHeight = isHorizontalBars
-    ? Math.max(320, data.length * rowHeight + 64)
-    : 280;
-  const hasMultipleSeries = yKeys.length > 1;
+    ? Math.max(200, data.length * 38 + (hasLegend ? 60 : 30))
+    : 260;
 
   const tooltipFormatter = (
     value: unknown,
@@ -79,11 +83,17 @@ export function AnalyticsChart({
   };
 
   return (
-    <div className="rounded-[10px] border border-rr-border bg-rr-surface p-4 md:p-5">
-      <h3 className="mb-3 text-sm font-semibold text-rr-primary">{title}</h3>
+    <div className="flex h-full flex-col rounded-xl border border-rr-border bg-rr-surface p-5">
+      <div className="mb-4">
+        <h3 className="text-sm font-semibold text-rr-primary">{title}</h3>
+        {description ? (
+          <p className="mt-0.5 text-xs text-rr-muted">{description}</p>
+        ) : null}
+      </div>
+
       {data.length === 0 ? (
-        <div className="flex h-[280px] items-center justify-center rounded-md border border-dashed border-rr-border text-sm text-rr-muted">
-          No data available yet.
+        <div className="flex h-[200px] flex-1 items-center justify-center rounded-lg border border-dashed border-rr-border text-sm text-rr-muted">
+          {emptyLabel}
         </div>
       ) : (
         <div className="w-full" style={{ height: chartHeight }}>
@@ -92,10 +102,11 @@ export function AnalyticsChart({
               <BarChart
                 data={data}
                 layout={isHorizontalBars ? "vertical" : "horizontal"}
+                barCategoryGap={isHorizontalBars ? "22%" : "18%"}
                 margin={
                   isHorizontalBars
-                    ? { top: 12, right: 32, bottom: 12, left: 8 }
-                    : { top: 12, right: 20, bottom: 12, left: 0 }
+                    ? { top: 4, right: 28, bottom: 4, left: 4 }
+                    : { top: 4, right: 8, bottom: 4, left: -12 }
                 }
               >
                 <CartesianGrid
@@ -108,59 +119,61 @@ export function AnalyticsChart({
                   <XAxis
                     type="number"
                     tick={AXIS_TICK}
-                    axisLine={AXIS_LINE}
-                    tickLine={AXIS_LINE}
-                    tickFormatter={
-                      yFormatter ? (v) => yFormatter(v) : undefined
-                    }
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={yFormatter ? (v) => yFormatter(v) : undefined}
                   />
                 ) : (
                   <XAxis
                     dataKey={xKey}
+                    interval="preserveStartEnd"
                     tick={AXIS_TICK}
                     axisLine={AXIS_LINE}
-                    tickLine={AXIS_LINE}
-                    tickFormatter={
-                      xFormatter ? (v) => xFormatter(v) : undefined
-                    }
+                    tickLine={false}
+                    tickFormatter={xFormatter ? (v) => xFormatter(v) : undefined}
                   />
                 )}
                 {isHorizontalBars ? (
                   <YAxis
                     type="category"
                     dataKey={xKey}
-                    width={170}
+                    width={150}
                     tick={AXIS_TICK}
-                    axisLine={AXIS_LINE}
-                    tickLine={AXIS_LINE}
-                    tickFormatter={
-                      xFormatter ? (v) => xFormatter(v) : undefined
-                    }
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={xFormatter ? (v) => xFormatter(v) : undefined}
                   />
                 ) : (
                   <YAxis
+                    width={52}
                     tick={AXIS_TICK}
-                    axisLine={AXIS_LINE}
-                    tickLine={AXIS_LINE}
-                    tickFormatter={
-                      yFormatter ? (v) => yFormatter(v) : undefined
-                    }
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={yFormatter ? (v) => yFormatter(v) : undefined}
                   />
                 )}
                 <Tooltip
-                  cursor={false}
+                  cursor={{ fill: "var(--elevated)" }}
                   contentStyle={TOOLTIP_CONTENT_STYLE}
                   labelStyle={TOOLTIP_LABEL_STYLE}
                   formatter={tooltipFormatter}
                 />
-                {yKeys.map((k, i) => (
+                {hasLegend ? (
+                  <Legend
+                    iconType="circle"
+                    iconSize={8}
+                    wrapperStyle={LEGEND_STYLE}
+                  />
+                ) : null}
+                {yKeys.map((k, index) => (
                   <Bar
                     key={k.key}
                     dataKey={k.key}
                     name={k.label}
-                    stackId={hasMultipleSeries ? "series" : undefined}
-                    fill={SERIES_PALETTE[i % SERIES_PALETTE.length]}
+                    fill="var(--accent)"
+                    fillOpacity={SERIES_OPACITY[index % SERIES_OPACITY.length]}
                     radius={isHorizontalBars ? [0, 4, 4, 0] : [4, 4, 0, 0]}
+                    maxBarSize={isHorizontalBars ? 22 : 34}
                     isAnimationActive={false}
                   />
                 ))}
@@ -168,7 +181,7 @@ export function AnalyticsChart({
             ) : (
               <LineChart
                 data={data}
-                margin={{ top: 8, right: 16, bottom: 8, left: 0 }}
+                margin={{ top: 4, right: 8, bottom: 4, left: -12 }}
               >
                 <CartesianGrid
                   stroke="var(--border)"
@@ -177,16 +190,19 @@ export function AnalyticsChart({
                 />
                 <XAxis
                   dataKey={xKey}
+                  interval="preserveStartEnd"
+                  minTickGap={24}
                   tick={AXIS_TICK}
                   axisLine={AXIS_LINE}
-                  tickLine={AXIS_LINE}
+                  tickLine={false}
                   tickFormatter={xFormatter ? (v) => xFormatter(v) : undefined}
                 />
                 <YAxis
+                  width={52}
                   allowDecimals={false}
                   tick={AXIS_TICK}
-                  axisLine={AXIS_LINE}
-                  tickLine={AXIS_LINE}
+                  axisLine={false}
+                  tickLine={false}
                   tickFormatter={yFormatter ? (v) => yFormatter(v) : undefined}
                 />
                 <Tooltip
@@ -195,12 +211,20 @@ export function AnalyticsChart({
                   labelStyle={TOOLTIP_LABEL_STYLE}
                   formatter={tooltipFormatter}
                 />
-                {yKeys.map((k, i) => (
+                {hasLegend ? (
+                  <Legend
+                    iconType="circle"
+                    iconSize={8}
+                    wrapperStyle={LEGEND_STYLE}
+                  />
+                ) : null}
+                {yKeys.map((k, index) => (
                   <Line
                     key={k.key}
                     dataKey={k.key}
                     name={k.label}
-                    stroke={SERIES_PALETTE[i % SERIES_PALETTE.length]}
+                    stroke="var(--accent)"
+                    strokeOpacity={SERIES_OPACITY[index % SERIES_OPACITY.length]}
                     strokeWidth={2}
                     dot={false}
                     isAnimationActive={false}

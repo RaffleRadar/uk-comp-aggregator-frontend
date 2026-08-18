@@ -110,18 +110,21 @@ export function ReportsAnalytics() {
       return;
     }
 
-    const id = setTimeout(() => {
+    const id = requestAnimationFrame(() => {
       void fetchData();
-    }, 0);
-    return () => clearTimeout(id);
+    });
+    return () => cancelAnimationFrame(id);
   }, [isVisible, fetchData]);
 
-  const topOperators = useMemo((): ReportOperatorRow[] => {
+  const reportedOperators = useMemo((): ReportOperatorRow[] => {
     if (!data?.byOperator?.length) {
       return [];
     }
 
-    return data.byOperator.slice(0, 10);
+    return data.byOperator
+      .filter((row) => row.reportCount > 0)
+      .sort((a, b) => b.reportsPerHundred - a.reportsPerHundred)
+      .slice(0, 10);
   }, [data]);
 
   const byReason = useMemo((): ReportReasonRow[] => {
@@ -168,54 +171,60 @@ export function ReportsAnalytics() {
 
   return (
     <div ref={containerRef} className="min-w-0">
-      <p className="mb-5 text-sm text-rr-secondary">
+      <p className="mb-5 border-b border-rr-border pb-5 text-sm text-rr-secondary">
         {totalReports > 0
           ? `${totalReports.toLocaleString("en-GB")} issues reported by users so far.`
-          : "Issues reported by users. Nothing reported yet."}
+          : "Users can flag bad data from any competition page. Nothing reported yet."}
       </p>
 
       {loading ? (
-        <div className="flex h-[320px] items-center justify-center">
+        <div className="flex h-[300px] items-center justify-center">
           <RadarLoader size="md" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <div className="lg:col-span-2">
-            <AnalyticsChart
-              title="Reports per 100 active listings"
-              type="bar"
-              orientation="horizontal"
-              data={topOperators}
-              xKey="operatorName"
-              yKeys={[{ key: "reportsPerHundred", label: "Reports per 100" }]}
-              yFormatter={(v) => `${Number(v ?? 0).toFixed(1)}`}
-            />
-          </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <AnalyticsChart
             title="Reports by reason"
+            description="What users flag most often"
             type="bar"
             data={byReason}
             xKey="reason"
             yKeys={[{ key: "count", label: "Reports" }]}
             xFormatter={(v) => REASON_LABELS[String(v)] ?? String(v ?? "")}
-            yFormatter={(v) => `${Number(v ?? 0).toLocaleString("en-GB")}`}
+            yFormatter={(v) => Number(v ?? 0).toLocaleString("en-GB")}
+            emptyLabel="No reports yet."
           />
           <AnalyticsChart
-            title="Reports by day (last 30 days)"
-            type="line"
+            title="Reports by day"
+            description="Last 30 days"
+            type="bar"
             data={paddedByDay}
             xKey="day"
             yKeys={[{ key: "count", label: "Reports" }]}
             xFormatter={(v) => String(v ?? "").slice(5, 10)}
-            yFormatter={(v) => `${Number(v ?? 0).toLocaleString("en-GB")}`}
+            yFormatter={(v) => Number(v ?? 0).toLocaleString("en-GB")}
+            emptyLabel="No reports yet."
           />
+          <div className="lg:col-span-2">
+            <AnalyticsChart
+              title="Reports per 100 active listings"
+              description="Only operators with at least one report"
+              type="bar"
+              orientation="horizontal"
+              data={reportedOperators}
+              xKey="operatorName"
+              yKeys={[{ key: "reportsPerHundred", label: "Reports per 100" }]}
+              yFormatter={(v) => Number(v ?? 0).toFixed(1)}
+              emptyLabel="No operator has been reported yet."
+            />
+          </div>
         </div>
       )}
 
       {error ? (
         <div
           role="alert"
-          className="mt-5 rounded-[8px] border border-rr-border bg-rr-elevated p-4 text-sm text-rr-primary"
+          className="mt-4 rounded-lg border border-rr-border bg-rr-elevated p-4 text-sm text-rr-primary"
         >
           {error}
         </div>

@@ -104,10 +104,10 @@ export function SalesAnalytics() {
       return;
     }
 
-    const id = setTimeout(() => {
+    const id = requestAnimationFrame(() => {
       void fetchData();
-    }, 0);
-    return () => clearTimeout(id);
+    });
+    return () => cancelAnimationFrame(id);
   }, [isVisible, fetchData]);
 
   const paddedByHour = useMemo((): HourlyRow[] => {
@@ -160,63 +160,78 @@ export function SalesAnalytics() {
       .slice(0, 8);
   }, [data]);
 
+  const operatorOptions = useMemo((): SellThroughRow[] => {
+    if (!data?.sellThroughCurve?.length) {
+      return [];
+    }
+
+    return [...data.sellThroughCurve].sort((a, b) =>
+      a.operatorName.localeCompare(b.operatorName),
+    );
+  }, [data]);
+
   return (
     <div ref={containerRef} className="min-w-0">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-5 flex flex-col gap-3 border-b border-rr-border pb-5 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-rr-secondary">
-          Patterns from hourly sales snapshots across every operator we track.
+          Hourly sales snapshots across every operator we track.
         </p>
-        <select
-          value={selectedOperatorId}
-          onChange={(event) => setSelectedOperatorId(event.target.value)}
-          className="w-full rounded-[8px] border border-rr-border bg-rr-bg px-3 py-2 text-sm text-rr-primary focus:border-rr-green focus:outline-none sm:w-[220px]"
-        >
-          <option value="">All operators</option>
-          {data?.sellThroughCurve?.map((operator) => (
-            <option key={operator.operatorId} value={operator.operatorId}>
-              {operator.operatorName}
-            </option>
-          ))}
-        </select>
+        {operatorOptions.length > 0 ? (
+          <select
+            value={selectedOperatorId}
+            onChange={(event) => setSelectedOperatorId(event.target.value)}
+            className="w-full shrink-0 rounded-lg border border-rr-border bg-rr-bg px-3 py-2 text-sm text-rr-primary focus:border-rr-green focus:outline-none sm:w-[220px]"
+          >
+            <option value="">All operators</option>
+            {operatorOptions.map((operator) => (
+              <option key={operator.operatorId} value={operator.operatorId}>
+                {operator.operatorName}
+              </option>
+            ))}
+          </select>
+        ) : null}
       </div>
 
       {loading ? (
-        <div className="flex h-[320px] items-center justify-center">
+        <div className="flex h-[300px] items-center justify-center">
           <RadarLoader size="md" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <AnalyticsChart
-            title="Sales by hour of day (London)"
+            title="Tickets sold by hour"
+            description="London time, all tracked competitions"
             type="bar"
             data={paddedByHour}
             xKey="hour"
-            yKeys={[{ key: "ticketsMoved", label: "Tickets moved" }]}
+            yKeys={[{ key: "ticketsMoved", label: "Tickets" }]}
             xFormatter={(v) => `${String(v).padStart(2, "0")}:00`}
-            yFormatter={(v) => `${Number(v ?? 0).toLocaleString("en-GB")}`}
+            yFormatter={(v) => Number(v ?? 0).toLocaleString("en-GB")}
           />
           <AnalyticsChart
-            title="Sales by day of week"
+            title="Tickets sold by day of week"
+            description="Totals across the tracked period"
             type="bar"
             data={paddedByDayOfWeek}
             xKey="dayOfWeek"
-            yKeys={[{ key: "ticketsMoved", label: "Tickets moved" }]}
+            yKeys={[{ key: "ticketsMoved", label: "Tickets" }]}
             xFormatter={(v) => DAY_LABELS[Number(v) % 7] ?? ""}
-            yFormatter={(v) => `${Number(v ?? 0).toLocaleString("en-GB")}`}
+            yFormatter={(v) => Number(v ?? 0).toLocaleString("en-GB")}
           />
           <div className="lg:col-span-2">
             <AnalyticsChart
-              title="Sell-through curve by phase"
+              title="How far competitions sell through"
+              description="Average percentage sold by the end of each third of a competition's run"
               type="bar"
-              orientation="horizontal"
               data={topSellThrough}
               xKey="operatorName"
               yKeys={[
-                { key: "phase1Pct", label: "First third" },
-                { key: "phase2Pct", label: "Second third" },
-                { key: "phase3Pct", label: "Last third" },
+                { key: "phase1Pct", label: "By first third" },
+                { key: "phase2Pct", label: "By second third" },
+                { key: "phase3Pct", label: "At close" },
               ]}
               yFormatter={(v) => `${Number(v ?? 0).toFixed(0)}%`}
+              emptyLabel="No finished competitions with hourly history yet."
             />
           </div>
         </div>
@@ -225,7 +240,7 @@ export function SalesAnalytics() {
       {error ? (
         <div
           role="alert"
-          className="mt-5 rounded-[8px] border border-rr-border bg-rr-elevated p-4 text-sm text-rr-primary"
+          className="mt-4 rounded-lg border border-rr-border bg-rr-elevated p-4 text-sm text-rr-primary"
         >
           {error}
         </div>
