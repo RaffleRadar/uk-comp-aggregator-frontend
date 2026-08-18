@@ -22,6 +22,7 @@ import { CompetitionImage } from "@/components/ui/CompetitionImage";
 import { ViewAllLink } from "@/components/ui/view-all-link";
 import { CommentsSection } from "@/components/comments/comments-section";
 import { CategoryBadgeAdmin } from "@/components/competitions/category-badge-admin";
+import { ReportIssue } from "@/components/competitions/report-issue";
 import {
   getCompetition,
   getCompetitionHistory,
@@ -714,6 +715,9 @@ export default async function Page({
                 </div>
               </div>
             )}
+            <div className="mb-8">
+              <ReportIssue competitionId={id} />
+            </div>
           </div>
         </div>
         {similar.length > 0 && (
