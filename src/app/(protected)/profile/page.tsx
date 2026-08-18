@@ -195,7 +195,6 @@ function SectionContent({ section }: { section: AccountSection }) {
         <div className="min-w-0 space-y-6">
           <AdminAccordion
             title="Traffic"
-            defaultOpen
           >
             <ClickStats />
           </AdminAccordion>
