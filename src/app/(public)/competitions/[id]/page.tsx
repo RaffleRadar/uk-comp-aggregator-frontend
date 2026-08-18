@@ -689,7 +689,12 @@ export default async function Page({
               <div className="rounded-lg border border-rr-border bg-rr-elevated p-4 mb-6">
                 <div className="flex justify-between">
                   <div>
-                    <p className="text-xs text-rr-muted mb-1">Cash alternative</p>
+                    <p className="text-xs text-rr-muted mb-1">
+                      <span className="text-rr-muted">
+                        Cash alternative
+                        <InfoTooltip text="What the winner receives instead of the prize. Often lower than the prize value, since the prize can include extras that are not part of the cash option." />
+                      </span>
+                    </p>
                     <p className="text-lg font-semibold text-rr-primary">
                       {cashAltNum ? (
                         `£${cashAltNum.toLocaleString("en-GB")}`
