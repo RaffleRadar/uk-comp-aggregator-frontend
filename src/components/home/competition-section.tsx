@@ -43,8 +43,8 @@ export function CompetitionSection({
         <div
           className={
             mobileLayout === "grid"
-              ? "mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
-              : "mt-3 flex overflow-x-auto snap-x snap-mandatory -mx-4 px-4 md:grid md:grid-cols-2 xl:grid-cols-4 md:gap-4 md:mx-0 md:px-0 md:overflow-visible md:snap-none scrollbar-hide"
+              ? "mt-3 grid auto-rows-fr grid-cols-1 items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4"
+              : "mt-3 flex items-stretch overflow-x-auto snap-x snap-mandatory -mx-4 px-4 md:grid md:auto-rows-fr md:items-stretch md:grid-cols-2 xl:grid-cols-4 md:gap-4 md:mx-0 md:px-0 md:overflow-visible md:snap-none scrollbar-hide"
           }
         >
           {competitions.map((competition) => (
@@ -52,11 +52,11 @@ export function CompetitionSection({
               key={competition.id}
               className={
                 mobileLayout === "grid"
-                  ? "w-full"
-                  : "flex-none snap-start w-[280px] mr-3 last:mr-0 md:w-auto md:mr-0 md:last:mr-0"
+                  ? "h-full w-full"
+                  : "flex-none snap-start w-[280px] mr-3 last:mr-0 md:w-auto md:mr-0 md:last:mr-0 md:h-full"
               }
             >
-              <div className="w-full">
+              <div className="h-full w-full">
                 <CompetitionCard
                   competition={competition}
                   featured={featuredSet.has(competition.id)}

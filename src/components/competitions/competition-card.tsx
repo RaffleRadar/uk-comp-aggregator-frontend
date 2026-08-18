@@ -79,6 +79,7 @@ export function CompetitionCard({
     ticketsLeft,
     ticketsSold,
     percentSold,
+    cashAlternative,
     finalPercentSold,
     endsAt,
     createdAt,
@@ -122,7 +123,7 @@ export function CompetitionCard({
     competition.commentCount > 0;
 
   const cardClassName = [
-    "block overflow-hidden rounded-[10px] border",
+    "flex h-full flex-col overflow-hidden rounded-[10px] border",
     "bg-rr-surface border-rr-border",
     featured ? "border-rr-green-border" : "",
     isInteractive
@@ -132,7 +133,7 @@ export function CompetitionCard({
 
   const cardContent = (
     <>
-      <div className="relative flex h-[150px] items-center justify-center bg-rr-elevated">
+      <div className="relative flex h-[150px] shrink-0 items-center justify-center bg-rr-elevated">
         {imageUrl ? (
           <CompetitionImage
             src={imageUrl}
@@ -170,7 +171,7 @@ export function CompetitionCard({
           />
         ) : null}
       </div>
-      <div className="p-[9px]">
+      <div className="flex flex-1 flex-col p-[9px]">
         <p className="text-[11.5px] font-medium text-rr-text-primary leading-[1.35] h-8 overflow-hidden mb-1.5">
           {prize}
         </p>
@@ -240,6 +241,13 @@ export function CompetitionCard({
             </span>
           ) : null}
         </div>
+        <div className="mt-auto pt-3">
+          {cashAlternative ? (
+            <span className="inline-flex items-center rounded-md bg-rr-green-bg px-2 py-1 text-[11px] font-semibold text-rr-green">
+              Cash alternative £{Number(cashAlternative).toLocaleString("en-GB")}
+            </span>
+          ) : null}
+        </div>
       </div>
     </>
   );
@@ -249,7 +257,7 @@ export function CompetitionCard({
   }
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <ViewAllLink
         href={`/competitions/${id}`}
         className={cardClassName}

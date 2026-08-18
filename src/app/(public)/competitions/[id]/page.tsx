@@ -420,11 +420,33 @@ export default async function Page({
         About this competition
       </h2>
       <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
-        {description && (
-          <p className="text-sm text-rr-secondary mb-4 leading-relaxed">
-            {description}
-          </p>
-        )}
+        {description ? (
+          <div className="mb-4 space-y-3">
+            {description.split(/\n{2,}/).map((block, index) => {
+              const lines = block.split("\n").filter(Boolean);
+              const isList = lines.every((line) => line.trimStart().startsWith("•"));
+
+              if (isList) {
+                return (
+                  <ul key={index} className="grid gap-1.5 pl-1 sm:grid-cols-2">
+                    {lines.map((line, i) => (
+                      <li key={i} className="flex gap-2 text-[15px] leading-6 text-rr-secondary">
+                        <span className="text-rr-green">•</span>
+                        {line.replace(/^\s*•\s*/, "")}
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+
+              return (
+                <p key={index} className="text-[15px] leading-7 text-rr-secondary">
+                  {lines.join(" ")}
+                </p>
+              );
+            })}
+          </div>
+        ) : null}
         <div className="space-y-3">
           <div className="flex justify-between">
             <span className="text-xs text-rr-muted">Winners</span>

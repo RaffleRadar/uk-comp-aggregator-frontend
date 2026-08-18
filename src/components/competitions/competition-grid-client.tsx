@@ -27,20 +27,21 @@ export function CompetitionGridClient({
 
   const featuredSet = new Set(featuredIds);
   const gridClassName = embedded
-    ? "grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
-    : "grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+    ? "grid auto-rows-fr grid-cols-2 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+    : "grid auto-rows-fr grid-cols-2 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
   const content = competitions.length > 0 ? (
     <>
       <div className={gridClassName}>
         {visibleItems.map((competition) => (
-          <CompetitionCard
-            key={competition.id}
-            competition={competition}
-            featured={featuredSet.has(competition.id)}
-            variant={competition.isActive === false ? "ended" : "default"}
-            interactiveWhenEnded={interactiveWhenEnded}
-          />
+          <div key={competition.id} className="h-full">
+            <CompetitionCard
+              competition={competition}
+              featured={featuredSet.has(competition.id)}
+              variant={competition.isActive === false ? "ended" : "default"}
+              interactiveWhenEnded={interactiveWhenEnded}
+            />
+          </div>
         ))}
       </div>
 
