@@ -23,6 +23,7 @@ import { ViewAllLink } from "@/components/ui/view-all-link";
 import { CommentsSection } from "@/components/comments/comments-section";
 import { CategoryBadgeAdmin } from "@/components/competitions/category-badge-admin";
 import { ReportIssue } from "@/components/competitions/report-issue";
+import { AdminAccordion } from "@/components/profile/admin-accordion";
 import {
   getCompetition,
   getCompetitionHistory,
@@ -417,12 +418,9 @@ export default async function Page({
     : null;
   const aboutBlock = (
     <div>
-      <h2 className="text-lg font-semibold text-rr-primary mb-4">
-        About this competition
-      </h2>
-      <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
+      <AdminAccordion title="About this competition">
         {description ? (
-          <div className="mb-4 space-y-3">
+          <div className="space-y-3">
             {description.split(/\n{2,}/).map((block, index) => {
               const lines = block.split("\n").filter(Boolean);
               const isList = lines.every((line) => line.trimStart().startsWith("•"));
@@ -448,6 +446,8 @@ export default async function Page({
             })}
           </div>
         ) : null}
+      </AdminAccordion>
+      <div className="mt-4 rounded-lg border border-rr-border bg-rr-elevated p-4">
         <div className="space-y-3">
           <div className="flex justify-between">
             <span className="text-xs text-rr-muted">Winners</span>
