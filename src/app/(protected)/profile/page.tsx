@@ -16,6 +16,8 @@ import { AdminAccordion } from "@/components/profile/admin-accordion";
 import { CompetitionAdmin } from "@/components/profile/competition-admin";
 import { CommentModeration } from "@/components/profile/comment-moderation";
 import { ClickStats } from "@/components/profile/click-stats";
+import { SalesAnalytics } from "@/components/profile/sales-analytics";
+import { ReportsAnalytics } from "@/components/profile/reports-analytics";
 import { OperatorModeration } from "@/components/profile/operator-moderation";
 import { ScraperPanel } from "@/components/profile/scraper-panel";
 import { RadarLoader } from "@/components/ui/RadarLoader";
@@ -196,6 +198,18 @@ function SectionContent({ section }: { section: AccountSection }) {
             defaultOpen
           >
             <ClickStats />
+          </AdminAccordion>
+          <AdminAccordion
+            title="Sales patterns"
+            description="When competitions sell, by hour and day of week"
+          >
+            <SalesAnalytics />
+          </AdminAccordion>
+          <AdminAccordion
+            title="Data quality"
+            description="Issues reported by users, by operator and reason"
+          >
+            <ReportsAnalytics />
           </AdminAccordion>
           <AdminAccordion title="Scrapers">
             <ScraperPanel />
