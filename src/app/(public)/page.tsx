@@ -227,14 +227,14 @@ export default async function Page({
         titleStart={siteContent?.section1TitleStart?.trim() || "Top"}
         titleAccent={siteContent?.section1TitleAccent?.trim() || "Opportunities"}
         subtitle={siteContent?.section1Subtitle?.trim() || "Best chances to win right now"}
-        viewAllHref="/competitions?section=top-opportunities&sortBy=opportunityScore&sortOrder=desc&excludeInstant=true&excludeFree=true"
+        viewAllHref="/competitions?section=top-opportunities&sortBy=opportunityScore&sortOrder=desc"
         competitions={topOpportunities}
       />
       <CompetitionSection
         titleStart={siteContent?.section2TitleStart?.trim() || "Most undersold"}
         titleAccent={siteContent?.section2TitleAccent?.trim() || "ending soon"}
         subtitle={siteContent?.section2Subtitle?.trim() || "Low ticket sales, closing within 3 days — your best odds right now"}
-        viewAllHref="/competitions?section=most-undersold&sortBy=percentSold&sortOrder=asc&excludeInstant=true&excludeFree=true"
+        viewAllHref="/competitions?section=most-undersold&sortBy=percentSold&sortOrder=asc"
         competitions={undersold}
       />
       <CompetitionSection

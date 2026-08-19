@@ -110,7 +110,7 @@ export default async function CompetitionsPage({
   const trimmedSection = params.section?.trim() || "";
   const defaultClosingBySection: Record<string, string> = {
     "ending-today": "today",
-    "most-undersold": "today",
+    "most-undersold": "3days",
   };
   const defaultClosing = defaultClosingBySection[trimmedSection];
   const shouldApplyDefaultClosing = !searchTerm && Boolean(defaultClosing);

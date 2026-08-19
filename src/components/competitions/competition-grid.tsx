@@ -18,6 +18,7 @@ export type CompetitionResultsHeadingParams = {
   freeOnly?: string;
   excludeInstant?: string;
   excludeFree?: string;
+  excludeGames?: string;
   section?: string;
 };
 
