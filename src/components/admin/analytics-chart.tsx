@@ -158,13 +158,6 @@ export function AnalyticsChart({
                   labelStyle={TOOLTIP_LABEL_STYLE}
                   formatter={tooltipFormatter}
                 />
-                {hasLegend ? (
-                  <Legend
-                    iconType="circle"
-                    iconSize={8}
-                    wrapperStyle={LEGEND_STYLE}
-                  />
-                ) : null}
                 {yKeys.map((k, index) => (
                   <Bar
                     key={k.key}
@@ -177,6 +170,13 @@ export function AnalyticsChart({
                     isAnimationActive={false}
                   />
                 ))}
+                {hasLegend ? (
+                  <Legend
+                    iconType="circle"
+                    iconSize={8}
+                    wrapperStyle={LEGEND_STYLE}
+                  />
+                ) : null}
               </BarChart>
             ) : (
               <LineChart
@@ -211,13 +211,6 @@ export function AnalyticsChart({
                   labelStyle={TOOLTIP_LABEL_STYLE}
                   formatter={tooltipFormatter}
                 />
-                {hasLegend ? (
-                  <Legend
-                    iconType="circle"
-                    iconSize={8}
-                    wrapperStyle={LEGEND_STYLE}
-                  />
-                ) : null}
                 {yKeys.map((k, index) => (
                   <Line
                     key={k.key}
@@ -230,6 +223,13 @@ export function AnalyticsChart({
                     isAnimationActive={false}
                   />
                 ))}
+                {hasLegend ? (
+                  <Legend
+                    iconType="circle"
+                    iconSize={8}
+                    wrapperStyle={LEGEND_STYLE}
+                  />
+                ) : null}
               </LineChart>
             )}
           </ResponsiveContainer>
