@@ -74,11 +74,12 @@ export function AnalyticsChart({
   ): [string | number, string] => {
     const arr = Array.isArray(value) ? (value as ReadonlyArray<unknown>) : null;
     const scalar = arr ? arr[0] : value;
-    const v = scalar == null
-      ? ""
-      : typeof scalar === "object"
+    const v =
+      scalar == null
         ? ""
-        : (scalar as number | string);
+        : typeof scalar === "object"
+          ? ""
+          : (scalar as number | string);
     return [yFormatter ? yFormatter(v) : v, name == null ? "" : String(name)];
   };
 
@@ -121,7 +122,9 @@ export function AnalyticsChart({
                     tick={AXIS_TICK}
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={yFormatter ? (v) => yFormatter(v) : undefined}
+                    tickFormatter={
+                      yFormatter ? (v) => yFormatter(v) : undefined
+                    }
                   />
                 ) : (
                   <XAxis
@@ -130,7 +133,9 @@ export function AnalyticsChart({
                     tick={AXIS_TICK}
                     axisLine={AXIS_LINE}
                     tickLine={false}
-                    tickFormatter={xFormatter ? (v) => xFormatter(v) : undefined}
+                    tickFormatter={
+                      xFormatter ? (v) => xFormatter(v) : undefined
+                    }
                   />
                 )}
                 {isHorizontalBars ? (
@@ -141,7 +146,9 @@ export function AnalyticsChart({
                     tick={AXIS_TICK}
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={xFormatter ? (v) => xFormatter(v) : undefined}
+                    tickFormatter={
+                      xFormatter ? (v) => xFormatter(v) : undefined
+                    }
                   />
                 ) : (
                   <YAxis
@@ -149,7 +156,9 @@ export function AnalyticsChart({
                     tick={AXIS_TICK}
                     axisLine={false}
                     tickLine={false}
-                    tickFormatter={yFormatter ? (v) => yFormatter(v) : undefined}
+                    tickFormatter={
+                      yFormatter ? (v) => yFormatter(v) : undefined
+                    }
                   />
                 )}
                 <Tooltip
@@ -172,6 +181,36 @@ export function AnalyticsChart({
                 ))}
                 {hasLegend ? (
                   <Legend
+                    content={({ payload: legendPayload }) => (
+                      <ul
+                        className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
+                        style={LEGEND_STYLE}
+                      >
+                        {yKeys.map((k) => {
+                          const entry = legendPayload?.find(
+                            (e) => e.dataKey === k.key,
+                          );
+                          const inactive = Boolean(entry?.inactive);
+                          return (
+                            <li
+                              key={k.key}
+                              className="flex items-center gap-2"
+                              style={{
+                                opacity: inactive ? 0.3 : 1,
+                                fontSize: LEGEND_STYLE.fontSize,
+                                color: LEGEND_STYLE.color,
+                              }}
+                            >
+                              <span
+                                className="inline-block h-2 w-2 rounded-full"
+                                style={{ backgroundColor: "var(--accent)" }}
+                              />
+                              <span>{k.label}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                     iconType="circle"
                     iconSize={8}
                     wrapperStyle={LEGEND_STYLE}
@@ -217,7 +256,9 @@ export function AnalyticsChart({
                     dataKey={k.key}
                     name={k.label}
                     stroke="var(--accent)"
-                    strokeOpacity={SERIES_OPACITY[index % SERIES_OPACITY.length]}
+                    strokeOpacity={
+                      SERIES_OPACITY[index % SERIES_OPACITY.length]
+                    }
                     strokeWidth={2}
                     dot={false}
                     isAnimationActive={false}
@@ -225,6 +266,36 @@ export function AnalyticsChart({
                 ))}
                 {hasLegend ? (
                   <Legend
+                    content={({ payload: legendPayload }) => (
+                      <ul
+                        className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
+                        style={LEGEND_STYLE}
+                      >
+                        {yKeys.map((k) => {
+                          const entry = legendPayload?.find(
+                            (e) => e.dataKey === k.key,
+                          );
+                          const inactive = Boolean(entry?.inactive);
+                          return (
+                            <li
+                              key={k.key}
+                              className="flex items-center gap-2"
+                              style={{
+                                opacity: inactive ? 0.3 : 1,
+                                fontSize: LEGEND_STYLE.fontSize,
+                                color: LEGEND_STYLE.color,
+                              }}
+                            >
+                              <span
+                                className="inline-block h-2 w-2 rounded-full"
+                                style={{ backgroundColor: "var(--accent)" }}
+                              />
+                              <span>{k.label}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                     iconType="circle"
                     iconSize={8}
                     wrapperStyle={LEGEND_STYLE}
