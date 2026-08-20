@@ -160,7 +160,10 @@ export const SITE_CONTENT = `*[_type == "siteContent"][0]{
 
 export const HOW_IT_WORKS_PAGE = `*[_type == "howItWorksPage"][0]{
   title,
+  heroEyebrow,
   richTitle,
+  heroHeadingColor,
+  heroLead,
   body
 }`;
 

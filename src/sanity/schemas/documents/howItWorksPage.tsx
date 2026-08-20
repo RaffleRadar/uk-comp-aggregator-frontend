@@ -35,10 +35,38 @@ export const howItWorksPage = defineType(
         validation: (rule) => rule.required(),
       }),
       defineField({
+        name: "heroEyebrow",
+        title: "Hero Eyebrow",
+        type: "string",
+      }),
+      defineField({
         name: "richTitle",
         title: "Rich Title",
         type: "richTitle",
         description: "Optional. Overrides Title with coloured words support.",
+      }),
+      defineField({
+        name: "heroHeadingColor",
+        title: "Hero Heading colour",
+        type: "string",
+        options: {
+          list: [
+            { title: "Default", value: "default" },
+            { title: "Accent (green)", value: "accent" },
+            { title: "Positive (green)", value: "good" },
+            { title: "Warning (amber)", value: "warn" },
+            { title: "Danger (red)", value: "danger" },
+            { title: "Muted (grey)", value: "muted" },
+          ],
+          layout: "dropdown",
+        },
+        initialValue: "default",
+      }),
+      defineField({
+        name: "heroLead",
+        title: "Hero Lead",
+        type: "text",
+        rows: 3,
       }),
       defineField({
         name: "body",
