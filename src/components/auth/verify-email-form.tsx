@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { AuthClientError, authRequest, authFetchJson } from "@/lib/auth-client";
 import { cn } from "@/lib/cn";
 import type { AuthUser } from "@/lib/auth-client";
+import { pushEvent } from "@/lib/analytics";
 
 type VerifyEmailFormProps = {
   token: string | null;
@@ -20,6 +21,7 @@ export function VerifyEmailForm({ token }: VerifyEmailFormProps) {
   const router = useRouter();
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState("");
+  const didFireRegistrationRef = useRef(false);
 
   useEffect(() => {
     async function checkStatus() {
@@ -57,6 +59,10 @@ export function VerifyEmailForm({ token }: VerifyEmailFormProps) {
         method: "POST",
         body: { token },
       });
+      if (!didFireRegistrationRef.current) {
+        didFireRegistrationRef.current = true;
+        pushEvent("complete_registration");
+      }
       setStatus("success");
       setTimeout(() => {
         router.replace("/");
