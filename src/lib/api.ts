@@ -2,25 +2,36 @@ import type { Competition } from "@/types/competition";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
+const DEFAULT_REVALIDATE = 60;
+
 type RequestOptions = {
   method?: string;
   body?: unknown;
+  revalidate?: number | false;
 };
 
 export async function apiFetch<T>(
   path: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { method = "GET", body } = options;
+  const { method = "GET", body, revalidate } = options;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
+  const isGet = method === "GET";
+  const ttl = revalidate === undefined ? DEFAULT_REVALIDATE : revalidate;
+  const cacheOptions =
+    isGet && ttl !== false
+      ? { next: { revalidate: ttl } }
+      : { cache: "no-store" as const };
+
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
+    ...cacheOptions,
   });
 
   if (!res.ok) {
@@ -47,7 +58,7 @@ export async function getStats() {
     competitionsCount: number;
     operatorsCount: number;
     lastUpdatedAt: string | null;
-  }>("/stats");
+  }>("/stats", { revalidate: 300 });
 }
 
 export type CompetitionSortField =
@@ -362,6 +373,7 @@ export async function getCompetitionSearch(
 
   const response = await apiFetch<unknown>(
     `/competitions/search?${query.toString()}`,
+    { revalidate: false },
   );
   return normalizeCompetitionSearchResponse(response);
 }
@@ -538,5 +550,6 @@ export type CommentNode = {
 export async function getComments(competitionId: string) {
   return apiFetch<CommentNode[]>(
     `/comments?competitionId=${encodeURIComponent(competitionId)}`,
+    { revalidate: false },
   );
 }
