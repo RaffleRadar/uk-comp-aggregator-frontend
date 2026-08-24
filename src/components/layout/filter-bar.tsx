@@ -24,11 +24,13 @@ export type SortOption = {
   excludeFree?: boolean;
 };
 
+const VEHICLES_ALL = "cars,bikes,motorhomes,vans,boats,plant";
+const VEHICLES_OTHER = "vans,boats,plant";
+
 const defaultCategoryOptions: FilterOption[] = [
   { value: "all", label: "All" },
-  { value: "cars", label: "Cars" },
+  { value: "vehicles", label: "Vehicles" },
   { value: "houses", label: "Houses" },
-  { value: "bikes", label: "Bikes" },
   { value: "watches", label: "Watches" },
   { value: "cash", label: "Cash" },
   { value: "tech", label: "Tech" },
@@ -78,6 +80,14 @@ const otherSubcategoryOptions: FilterOption[] = [
   { value: "experiences", label: "Experiences" },
   { value: "sports", label: "Sports" },
   { value: "none", label: "Uncategorised" },
+];
+
+const vehicleSubcategoryOptions: FilterOption[] = [
+  { value: VEHICLES_ALL, label: "All" },
+  { value: "cars", label: "Cars" },
+  { value: "bikes", label: "Bikes" },
+  { value: "motorhomes", label: "Motorhomes" },
+  { value: VEHICLES_OTHER, label: "Other" },
 ];
 
 type FilterBarProps = {
@@ -165,10 +175,33 @@ export function FilterBar({
       .map((opt) => opt.value)
       .filter((value) => value !== "other"),
   );
-  const isOtherSubcategory = categoryParam ? otherSubcategoryValues.has(categoryParam) : false;
-  const currentMainCategory = freeOnly ? "free" : isOtherSubcategory ? "other" : (categoryParam ?? "all");
-  const currentOtherSubcategory = currentMainCategory === "other" ? (categoryParam ?? "other") : null;
+  const vehicleSubcategoryValues = new Set(
+    vehicleSubcategoryOptions.map((opt) => opt.value),
+  );
+
+  const isVehicleSubcategory = categoryParam
+    ? vehicleSubcategoryValues.has(categoryParam)
+    : false;
+  const isOtherSubcategory =
+    !isVehicleSubcategory && categoryParam
+      ? otherSubcategoryValues.has(categoryParam)
+      : false;
+
+  const currentMainCategory = freeOnly
+    ? "free"
+    : isVehicleSubcategory
+      ? "vehicles"
+      : isOtherSubcategory
+        ? "other"
+        : (categoryParam ?? "all");
+
+  const currentOtherSubcategory =
+    currentMainCategory === "other" ? (categoryParam ?? "other") : null;
+  const currentVehicleSubcategory =
+    currentMainCategory === "vehicles" ? (categoryParam ?? VEHICLES_ALL) : null;
+
   const showOtherSubcategories = currentMainCategory === "other";
+  const showVehicleSubcategories = currentMainCategory === "vehicles";
 
   const isSortOpen = showSort && sortOpen;
 
@@ -399,6 +432,26 @@ export function FilterBar({
                           {
                             filterType: "free",
                             filterValue: isActive ? "false" : "true",
+                          },
+                        );
+                        return;
+                      }
+
+                      if (opt.value === "vehicles") {
+                        updateParams(
+                          {
+                            category:
+                              categoryParam === VEHICLES_ALL
+                                ? null
+                                : VEHICLES_ALL,
+                            freeOnly: null,
+                          },
+                          {
+                            filterType: "category",
+                            filterValue:
+                              categoryParam === VEHICLES_ALL
+                                ? "all"
+                                : "vehicles",
                           },
                         );
                         return;
@@ -636,10 +689,17 @@ export function FilterBar({
           </div>
         </div>
 
-        {showOtherSubcategories ? (
+        {showOtherSubcategories || showVehicleSubcategories ? (
           <div className="mt-4 flex flex-wrap gap-2 lg:mt-2 lg:gap-[6px]">
-            {otherSubcategoryOptions.map((opt) => {
-              const isActive = opt.value === currentOtherSubcategory;
+            {(showVehicleSubcategories
+              ? vehicleSubcategoryOptions
+              : otherSubcategoryOptions
+            ).map((opt) => {
+              const isActive =
+                opt.value ===
+                (showVehicleSubcategories
+                  ? currentVehicleSubcategory
+                  : currentOtherSubcategory);
 
               return (
                 <button

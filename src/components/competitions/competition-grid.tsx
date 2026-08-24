@@ -47,6 +47,10 @@ const categoryLabelMap: Record<string, string> = {
   cars: "Cars",
   houses: "Houses",
   bikes: "Bikes",
+  motorhomes: "Motorhomes",
+  vans: "Vans",
+  boats: "Boats",
+  plant: "Plant",
   watches: "Watches",
   cash: "Cash",
   tech: "Tech",
@@ -70,6 +74,13 @@ function joinTitleLabels(values: string[]) {
 
 function getCategoryTitleLabel(category?: string) {
   if (!category) return null;
+  const normalized = category.trim().toLowerCase();
+  if (normalized === "cars,bikes,motorhomes,vans,boats,plant") {
+    return "Vehicles";
+  }
+  if (normalized === "vans,boats,plant") {
+    return "Other Vehicles";
+  }
   const values = category
     .split(",")
     .map((value) => value.trim())
