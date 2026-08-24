@@ -71,6 +71,15 @@ export const competitionListBlock = defineType({
       initialValue: false,
     }),
     defineField({
+      name: "limit",
+      title: "Number of competitions to show",
+      type: "number",
+      initialValue: 12,
+      validation: (rule) => rule.min(1).max(100),
+      description:
+        "Keeps the page short so the text below stays visible. Default 12.",
+    }),
+    defineField({
       name: "emptyMessage",
       title: "Empty state message",
       type: "text",

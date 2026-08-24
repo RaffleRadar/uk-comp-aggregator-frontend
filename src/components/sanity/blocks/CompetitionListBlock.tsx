@@ -23,9 +23,10 @@ type CompetitionListBlockData = {
   emptyMessage?: string;
   showFallbackWhenEmpty?: boolean;
   faqs?: Faq[];
+  limit?: number;
 };
 
-const FALLBACK_LIMIT = 12;
+const DEFAULT_LIMIT = 12;
 
 async function fetchCompetitions(
   params: Parameters<typeof getCompetitions>[0],
@@ -47,9 +48,13 @@ export async function CompetitionListBlock({
   const closing = block.closing?.trim() || undefined;
   const sortOrder = block.sortOrder === "asc" ? "asc" : "desc";
   const excludeGames = block.excludeGames ?? false;
+  const limit =
+    typeof block.limit === "number" && block.limit > 0
+      ? Math.min(Math.trunc(block.limit), 100)
+      : DEFAULT_LIMIT;
 
   let competitions = await fetchCompetitions({
-    limit: 500,
+    limit,
     category,
     closing,
     sortBy: block.sortBy || "valueRatio",
@@ -64,7 +69,7 @@ export async function CompetitionListBlock({
 
   if (usedFallback) {
     competitions = await fetchCompetitions({
-      limit: FALLBACK_LIMIT,
+      limit,
       category,
       sortBy: "endsAt",
       sortOrder: "asc",
@@ -140,7 +145,7 @@ export async function CompetitionListBlock({
         <CompetitionGridClient
           competitions={competitions}
           featuredIds={featuredIds}
-          pageSize={20}
+          pageSize={limit}
         />
 
         {faqs.length > 0 ? (
