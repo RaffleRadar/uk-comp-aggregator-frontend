@@ -111,7 +111,22 @@ export const page = defineType({
         defineArrayMember({ type: "calloutBlock" }),
         defineArrayMember({ type: "operatorsBlock" }),
         defineArrayMember({ type: "competitionListBlock" }),
+        defineArrayMember({ type: "categoryNavBlock" }),
       ],
+    }),
+    defineField({
+      name: "showInCategoryNav",
+      title: "Show in category navigation",
+      type: "boolean",
+      initialValue: false,
+      description:
+        "Include this page in the browse-by-category strip on other landing pages.",
+    }),
+    defineField({
+      name: "navLabel",
+      title: "Navigation label",
+      type: "string",
+      description: "Short label for the category strip. Defaults to Title.",
     }),
     defineField({
       name: "seo",

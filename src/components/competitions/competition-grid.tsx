@@ -237,7 +237,7 @@ export function CompetitionResultsHeading({
   );
 }
 
-function getFeaturedIds(competitions: Competition[]) {
+export function getFeaturedIds(competitions: Competition[]) {
   return competitions
     .filter(
       (competition) =>

@@ -1,5 +1,6 @@
 import { calloutBlock } from "./blocks/calloutBlock";
 import { cardsBlock } from "./blocks/cardsBlock";
+import { categoryNavBlock } from "./blocks/categoryNavBlock";
 import { competitionListBlock } from "./blocks/competitionListBlock";
 import { operatorsBlock } from "./blocks/operatorsBlock";
 import { richTextBlock } from "./blocks/richTextBlock";
@@ -28,6 +29,7 @@ export const schemaTypes = [
   calloutBlock,
   operatorsBlock,
   competitionListBlock,
+  categoryNavBlock,
   richTitle,
   seoMeta,
 ];

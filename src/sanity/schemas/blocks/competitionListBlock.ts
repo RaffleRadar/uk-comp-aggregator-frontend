@@ -78,5 +78,43 @@ export const competitionListBlock = defineType({
       description:
         "Shown when the filter returns nothing. Required for time-based pages such as ending today.",
     }),
+    defineField({
+      name: "showFallbackWhenEmpty",
+      title: "Show nearest competitions when empty",
+      type: "boolean",
+      initialValue: true,
+      description:
+        "When the closing filter returns nothing, show the next competitions to close instead of an empty page.",
+    }),
+    defineField({
+      name: "faqs",
+      title: "FAQs",
+      type: "array",
+      description:
+        "Answers can use {count}, {cheapestTicket}, {topPrize}, {operatorCount}, {averageTicket}. Values are filled in from live data.",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "question",
+              title: "Question",
+              type: "string",
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "answer",
+              title: "Answer",
+              type: "text",
+              rows: 3,
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: {
+            select: { title: "question" },
+          },
+        },
+      ],
+    }),
   ],
 });

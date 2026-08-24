@@ -5,6 +5,7 @@ import { titleColorVar } from "@/lib/titleColor";
 import { Button } from "@/components/ui/button";
 import { CalloutBlock } from "./blocks/CalloutBlock";
 import { CardsBlock } from "./blocks/CardsBlock";
+import { CategoryNavBlock } from "./blocks/CategoryNavBlock";
 import { CompetitionListBlock } from "./blocks/CompetitionListBlock";
 import { OperatorsBlock } from "./blocks/OperatorsBlock";
 import { RichTextBlock } from "./blocks/RichTextBlock";
@@ -135,6 +136,8 @@ export function PageRenderer({ page }: { page: PageData }) {
             return <OperatorsBlock key={key} block={section} />;
           case "competitionListBlock":
             return <CompetitionListBlock key={key} block={section} />;
+          case "categoryNavBlock":
+            return <CategoryNavBlock key={key} block={section} />;
           default:
             return null;
         }
