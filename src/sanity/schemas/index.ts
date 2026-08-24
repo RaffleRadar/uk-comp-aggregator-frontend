@@ -1,5 +1,6 @@
 import { calloutBlock } from "./blocks/calloutBlock";
 import { cardsBlock } from "./blocks/cardsBlock";
+import { competitionListBlock } from "./blocks/competitionListBlock";
 import { operatorsBlock } from "./blocks/operatorsBlock";
 import { richTextBlock } from "./blocks/richTextBlock";
 import { statsBlock } from "./blocks/statsBlock";
@@ -26,6 +27,7 @@ export const schemaTypes = [
   stepsBlock,
   calloutBlock,
   operatorsBlock,
+  competitionListBlock,
   richTitle,
   seoMeta,
 ];

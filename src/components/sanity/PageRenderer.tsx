@@ -5,6 +5,7 @@ import { titleColorVar } from "@/lib/titleColor";
 import { Button } from "@/components/ui/button";
 import { CalloutBlock } from "./blocks/CalloutBlock";
 import { CardsBlock } from "./blocks/CardsBlock";
+import { CompetitionListBlock } from "./blocks/CompetitionListBlock";
 import { OperatorsBlock } from "./blocks/OperatorsBlock";
 import { RichTextBlock } from "./blocks/RichTextBlock";
 import { StatsBlock } from "./blocks/StatsBlock";
@@ -132,6 +133,8 @@ export function PageRenderer({ page }: { page: PageData }) {
             return <CalloutBlock key={key} block={section} />;
           case "operatorsBlock":
             return <OperatorsBlock key={key} block={section} />;
+          case "competitionListBlock":
+            return <CompetitionListBlock key={key} block={section} />;
           default:
             return null;
         }

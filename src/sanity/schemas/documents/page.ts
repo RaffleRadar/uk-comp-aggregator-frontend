@@ -110,6 +110,7 @@ export const page = defineType({
         defineArrayMember({ type: "stepsBlock" }),
         defineArrayMember({ type: "calloutBlock" }),
         defineArrayMember({ type: "operatorsBlock" }),
+        defineArrayMember({ type: "competitionListBlock" }),
       ],
     }),
     defineField({
