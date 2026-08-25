@@ -4,10 +4,9 @@ import { sanityClient, urlFor } from "@/sanity/client";
 import { ALL_REVIEW_SLUGS, RELATED_REVIEWS, REVIEW_BY_SLUG } from "@/sanity/queries";
 import { ReviewArticle } from "@/components/sanity/ReviewArticle";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
+import { CANONICAL_ORIGIN as SITE_URL } from "@/lib/site";
 
 export const revalidate = 60;
-
-const SITE_URL = "https://uk-comp-aggregator-frontend.vercel.app";
 
 type PageParams = {
   slug: string;

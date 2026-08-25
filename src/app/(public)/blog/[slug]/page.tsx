@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PostArticle } from "@/components/sanity/PostArticle";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
+import { CANONICAL_ORIGIN as SITE_URL } from "@/lib/site";
 import { sanityClient, urlFor } from "@/sanity/client";
 import { ALL_POST_SLUGS, POST_BY_SLUG, RELATED_POSTS } from "@/sanity/queries";
 
 export const revalidate = 60;
-
-const SITE_URL = "https://uk-comp-aggregator-frontend.vercel.app";
 
 type PageParams = {
   slug: string;
