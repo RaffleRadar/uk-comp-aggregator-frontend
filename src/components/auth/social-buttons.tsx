@@ -11,7 +11,7 @@ function getProviderUrl(provider: Provider) {
 }
 
 export function SocialButtons() {
-  const showFacebook = false;
+  const showFacebook = true;
 
   function handleClick(provider: Provider) {
     if (!apiUrl) {
