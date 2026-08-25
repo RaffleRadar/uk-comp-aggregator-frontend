@@ -36,7 +36,7 @@ export async function CategoryNavBlock({
   }
 
   return (
-    <section className="py-10 md:py-12">
+    <section className="py-5 md:py-6">
       <div className="container">
         <h2 className="mb-4 text-xl font-medium tracking-[-0.02em] text-rr-primary">
           {block.heading || "Browse by category"}

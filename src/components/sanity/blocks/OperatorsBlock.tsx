@@ -19,7 +19,7 @@ export function OperatorsBlock({ block }: { block: OperatorsBlockData }) {
   }
 
   return (
-    <section className="py-14">
+    <section className="py-7">
       <div className="container">
         <div className="mx-auto max-w-[880px]">
           {block.eyebrow ? (

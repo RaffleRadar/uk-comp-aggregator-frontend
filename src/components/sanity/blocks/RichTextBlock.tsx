@@ -9,7 +9,7 @@ type RichTextBlockData = {
 
 export function RichTextBlock({ block }: { block: RichTextBlockData }) {
   return (
-    <section className="py-14">
+    <section className="py-7">
       <div className="container">
         <div className="mx-auto max-w-[880px]">
           <PortableText value={block.content ?? []} components={portableTextComponents} />

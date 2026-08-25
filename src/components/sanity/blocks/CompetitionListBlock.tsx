@@ -120,7 +120,7 @@ export async function CompetitionListBlock({
       : null;
 
   return (
-    <section className="py-10 md:py-12">
+    <section className="py-5 md:py-6">
       <div className="container">
         {block.eyebrow ? (
           <p className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-rr-green">
@@ -146,6 +146,7 @@ export async function CompetitionListBlock({
           competitions={competitions}
           featuredIds={featuredIds}
           pageSize={limit}
+          embedded
         />
 
         {faqs.length > 0 ? (

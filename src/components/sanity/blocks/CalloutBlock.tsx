@@ -11,7 +11,7 @@ export function CalloutBlock({ block }: { block: CalloutBlockData }) {
   }
 
   return (
-    <section className="py-6">
+    <section className="py-3">
       <div className="container">
         <div className="mx-auto max-w-[880px]">
           <div className="rounded-xl border border-rr-border border-l-[3px] border-l-rr-green bg-rr-surface px-7 py-6">

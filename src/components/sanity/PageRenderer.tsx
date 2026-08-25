@@ -64,7 +64,7 @@ export function PageRenderer({ page }: { page: PageData }) {
   return (
     <main className="bg-rr-bg">
       <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
-        <div className="container py-14 md:py-16">
+        <div className="container py-7 md:py-8">
           <div className="mx-auto max-w-[760px] text-center">
             {page.heroEyebrow ? (
               <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-rr-green">

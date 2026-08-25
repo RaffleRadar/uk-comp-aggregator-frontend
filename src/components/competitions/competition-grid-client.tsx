@@ -10,6 +10,7 @@ type CompetitionGridClientProps = {
   featuredIds: string[];
   pageSize?: number;
   embedded?: boolean;
+  xlThreeCols?: boolean;
   interactiveWhenEnded?: boolean;
 };
 
@@ -18,6 +19,7 @@ export function CompetitionGridClient({
   featuredIds,
   pageSize = 20,
   embedded = false,
+  xlThreeCols = false,
   interactiveWhenEnded = false,
 }: CompetitionGridClientProps) {
   const { visibleItems, hasMore, loadMoreRef } = useInfinitePagination({
@@ -26,7 +28,7 @@ export function CompetitionGridClient({
   });
 
   const featuredSet = new Set(featuredIds);
-  const gridClassName = embedded
+  const gridClassName = xlThreeCols
     ? "grid auto-rows-fr grid-cols-2 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
     : "grid auto-rows-fr grid-cols-2 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
