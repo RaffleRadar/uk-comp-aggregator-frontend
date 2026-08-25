@@ -37,7 +37,7 @@ export default async function HowItWorksPage() {
   return (
     <main className="bg-rr-bg">
       <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
-        <div className="container py-14 md:py-16">
+        <div className="container py-7 md:py-8">
           <div className="mx-auto max-w-[760px] text-center">
             {eyebrow ? (
               <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-rr-green">
@@ -69,7 +69,7 @@ export default async function HowItWorksPage() {
         </div>
       </section>
 
-      <section className="py-14">
+      <section className="py-7">
         <div className="container">
           <div className="mx-auto max-w-[880px]">
             {hasBody ? (
