@@ -216,6 +216,7 @@ export function FilterBar({
       }
 
       params.delete("page");
+      params.delete("search");
 
       const qs = params.toString();
       const nextHref = qs ? `${pathname}?${qs}` : pathname;
@@ -249,6 +250,7 @@ export function FilterBar({
       }
 
       params.delete("page");
+      params.delete("search");
 
       const qs = params.toString();
       const nextHref = qs ? `${pathname}?${qs}` : pathname;
@@ -284,6 +286,7 @@ export function FilterBar({
       });
 
       params.delete("page");
+      params.delete("search");
 
       const qs = params.toString();
       const nextHref = qs ? `${pathname}?${qs}` : pathname;

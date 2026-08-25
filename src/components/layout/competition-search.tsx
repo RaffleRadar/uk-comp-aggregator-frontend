@@ -49,6 +49,8 @@ function CompetitionSearchInput({
   initialQuery,
 }: CompetitionSearchInputProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const requestIdRef = useRef(0);
@@ -136,6 +138,13 @@ function CompetitionSearchInput({
     resetSearchState();
     requestIdRef.current += 1;
     inputRef.current?.focus();
+
+    if (searchParams.has("search")) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("search");
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname);
+    }
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
