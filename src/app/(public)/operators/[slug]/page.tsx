@@ -123,6 +123,7 @@ export async function generateMetadata({
   return {
     title: `${operator.name} — Operators — RaffleRadar`,
     description: `Live competitions, fairness and value metrics for ${operator.name}.`,
+    alternates: { canonical: `/operators/${slug}` },
   };
 }
 
