@@ -24,7 +24,7 @@ export type CompetitionResultsHeadingParams = {
 
 const sectionBaseTitles: Record<string, string> = {
   "most-undersold": "Most Undersold",
-  "top-opportunities": "Top Opportunities",
+  "top-opportunities": "Top Picks",
   "top-prizes": "Top Prizes",
   "selling-fast": "Selling Fast",
   "ending-today": "Ending Today",
@@ -55,6 +55,12 @@ const categoryLabelMap: Record<string, string> = {
   cash: "Cash",
   tech: "Tech",
   other: "Other",
+};
+
+const closingLabelMap: Record<string, string> = {
+  today: "Ending Today",
+  "3days": "Ending Within 3 Days",
+  "5days": "Ending Within 5 Days",
 };
 
 function titleCaseValue(value: string) {
@@ -160,9 +166,13 @@ export function CompetitionResultsHeading({
   const baseTitle = searchTerm
     ? `Search results for "${searchTerm}"`
     : (sectionBaseTitles[section] ?? "All Competitions");
+  const closingKey = params.closing?.trim() || "";
+  const closingLabel =
+    section === "ending-today" ? null : (closingLabelMap[closingKey] ?? null);
   const filterLabels = [
     getCategoryTitleLabel(params.category),
     operatorLabel ?? null,
+    closingLabel,
     params.minPrizeValue
       ? (() => {
           const value = Number(params.minPrizeValue);
@@ -184,9 +194,12 @@ export function CompetitionResultsHeading({
     excludeInstant: params.excludeInstant === "true",
     excludeFree: params.excludeFree === "true",
   });
-  const sortSuffix = sortMatchesSectionDefault
-    ? null
-    : (sortPresentation?.headingSuffix ?? null);
+  const sortSuffixRedundant =
+    closingLabel !== null && sortPresentation?.identity === "endingSoon";
+  const sortSuffix =
+    sortMatchesSectionDefault || sortSuffixRedundant
+      ? null
+      : (sortPresentation?.headingSuffix ?? null);
   const titleToneClass =
     section === "ending-today"
       ? "text-[#991b1b] dark:text-[#fca5a5]"

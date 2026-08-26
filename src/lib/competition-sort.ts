@@ -7,15 +7,16 @@ export type CompetitionSortState = {
 
 export type CompetitionSortIdentity =
   | "bestValue"
-  | "topOpportunities"
   | "mostUndersold"
-  | "bestOdds"
-  | "sellingFast"
-  | "topPrizes"
   | "endingSoon"
-  | "mostTicketsLeft"
+  | "bestOdds"
+  | "fewestTickets"
+  | "topPicks"
+  | "topPrizes"
+  | "sellingFast"
   | "lowestPrice"
-  | "latest";
+  | "newest"
+  | "mostTicketsLeft";
 
 export function getCompetitionSortIdentity(
   state: CompetitionSortState,
@@ -27,7 +28,7 @@ export function getCompetitionSortIdentity(
   }
 
   if (sortBy === "opportunityScore" && sortOrder === "desc") {
-    return "topOpportunities";
+    return "topPicks";
   }
 
   if (sortBy === "percentSold" && sortOrder === "asc") {
@@ -59,7 +60,11 @@ export function getCompetitionSortIdentity(
   }
 
   if (sortBy === "createdAt" && sortOrder === "desc") {
-    return "latest";
+    return "newest";
+  }
+
+  if (sortBy === "ticketsTotal" && sortOrder === "asc") {
+    return "fewestTickets";
   }
 
   return null;
@@ -74,36 +79,42 @@ export function getCompetitionSortPresentation(state: CompetitionSortState) {
 
   switch (identity) {
     case "bestValue":
-      return { identity, label: "Best value", headingSuffix: "By Value" };
-    case "topOpportunities":
-      return {
-        identity,
-        label: "Top opportunities",
-        headingSuffix: "By Opportunity",
-      };
+      return { identity, label: "Best Value", headingSuffix: "By Value" };
     case "mostUndersold":
       return {
         identity,
         label: "Most Undersold",
         headingSuffix: "By Most Undersold",
       };
-    case "bestOdds":
-      return { identity, label: "Best odds", headingSuffix: "By Best Odds" };
-    case "sellingFast":
-      return { identity, label: "Selling fast", headingSuffix: "By Selling Fast" };
-    case "topPrizes":
-      return { identity, label: "Top prizes", headingSuffix: "By Prize Value" };
     case "endingSoon":
-      return { identity, label: "Ending soon", headingSuffix: "By Ending Soon" };
+      return { identity, label: "Ending Soon", headingSuffix: "By Ending Soon" };
+    case "bestOdds":
+      return { identity, label: "Best Odds", headingSuffix: "By Best Odds" };
+    case "fewestTickets":
+      return {
+        identity,
+        label: "Fewest Total Tickets",
+        headingSuffix: "By Ticket Pool",
+      };
+    case "topPicks":
+      return { identity, label: "Top Picks", headingSuffix: "By Top Picks" };
+    case "topPrizes":
+      return { identity, label: "Top Prizes", headingSuffix: "By Prize Value" };
+    case "sellingFast":
+      return {
+        identity,
+        label: "Selling Fast",
+        headingSuffix: "By Selling Fast",
+      };
+    case "lowestPrice":
+      return { identity, label: "Lowest Price", headingSuffix: "By Price" };
+    case "newest":
+      return { identity, label: "Newest", headingSuffix: "By Newest" };
     case "mostTicketsLeft":
       return {
         identity,
-        label: "Most tickets left",
+        label: "Most Tickets Left",
         headingSuffix: "By Availability",
       };
-    case "lowestPrice":
-      return { identity, label: "Lowest price", headingSuffix: "By Price" };
-    case "latest":
-      return { identity, label: "Latest", headingSuffix: "By Newest" };
   }
 }

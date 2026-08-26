@@ -46,8 +46,7 @@ const defaultClosingOptions: FilterOption[] = [
 ];
 
 const defaultSortOptions: SortOption[] = [
-  { label: "Best value", sortBy: "valueRatio", sortOrder: "desc" },
-  { label: "Top opportunities", sortBy: "opportunityScore", sortOrder: "desc" },
+  { label: "Best Value", sortBy: "valueRatio", sortOrder: "desc" },
   {
     label: "Most Undersold",
     sortBy: "percentSold",
@@ -56,20 +55,22 @@ const defaultSortOptions: SortOption[] = [
     excludeInstant: true,
     excludeFree: true,
   },
+  { label: "Ending Soon", sortBy: "endsAt", sortOrder: "asc" },
   {
-    label: "Best odds",
+    label: "Best Odds",
     sortBy: "percentSold",
     sortOrder: "asc",
     closing: null,
     excludeInstant: false,
     excludeFree: false,
   },
-  { label: "Selling fast", sortBy: "percentSold", sortOrder: "desc" },
-  { label: "Top prizes", sortBy: "prizeValue", sortOrder: "desc" },
-  { label: "Ending soon", sortBy: "endsAt", sortOrder: "asc" },
-  { label: "Most tickets left", sortBy: "ticketsLeft", sortOrder: "desc" },
-  { label: "Lowest price", sortBy: "ticketPrice", sortOrder: "asc" },
-  { label: "Latest", sortBy: "createdAt", sortOrder: "desc" },
+  { label: "Fewest Total Tickets", sortBy: "ticketsTotal", sortOrder: "asc" },
+  { label: "Top Picks", sortBy: "opportunityScore", sortOrder: "desc" },
+  { label: "Top Prizes", sortBy: "prizeValue", sortOrder: "desc" },
+  { label: "Selling Fast", sortBy: "percentSold", sortOrder: "desc" },
+  { label: "Lowest Price", sortBy: "ticketPrice", sortOrder: "asc" },
+  { label: "Newest", sortBy: "createdAt", sortOrder: "desc" },
+  { label: "Most Tickets Left", sortBy: "ticketsLeft", sortOrder: "desc" },
 ];
 
 const otherSubcategoryOptions: FilterOption[] = [

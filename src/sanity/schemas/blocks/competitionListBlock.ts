@@ -42,10 +42,14 @@ export const competitionListBlock = defineType({
       type: "string",
       options: {
         list: [
-          { title: "Best value", value: "valueRatio" },
-          { title: "Ending soon", value: "endsAt" },
-          { title: "Top prizes", value: "prizeValue" },
-          { title: "Best odds", value: "percentSold" },
+          { title: "Best Value", value: "valueRatio" },
+          { title: "Ending Soon", value: "endsAt" },
+          { title: "Best Odds", value: "percentSold" },
+          { title: "Fewest Total Tickets", value: "ticketsTotal" },
+          { title: "Top Prizes", value: "prizeValue" },
+          { title: "Lowest Price", value: "ticketPrice" },
+          { title: "Newest", value: "createdAt" },
+          { title: "Most Tickets Left", value: "ticketsLeft" },
         ],
         layout: "dropdown",
       },
