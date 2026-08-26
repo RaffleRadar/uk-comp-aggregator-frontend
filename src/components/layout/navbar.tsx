@@ -190,7 +190,7 @@ export function Navbar() {
             <Link href="/operators" aria-current={isOperatorsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isOperatorsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Operators</Link>
             <Link href="/reviews" aria-current={isReviewsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isReviewsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Reviews</Link>
             <Link href="/blog" aria-current={isBlogActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isBlogActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Blog</Link>
-            <Link href="/how-it-works" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline whitespace-nowrap">How it works</Link>
+            <Link href="/how-it-works" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline whitespace-nowrap">How It Works</Link>
             <Link href="/get-listed" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline whitespace-nowrap">Get Listed</Link>
             <Link href="/contact" aria-current={isContactActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isContactActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Contact</Link>
           </div>
@@ -318,7 +318,7 @@ export function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               <IconSettings size={20} className="shrink-0 text-rr-green" />
-              How it works
+              How It Works
             </Link>
             <Link
               href="/get-listed"
