@@ -107,7 +107,11 @@ export function getCompetitionSortPresentation(state: CompetitionSortState) {
         headingSuffix: "By Selling Fast",
       };
     case "lowestPrice":
-      return { identity, label: "Lowest Price", headingSuffix: "By Price" };
+      return {
+        identity,
+        label: "Lowest Ticket Price",
+        headingSuffix: "By Ticket Price",
+      };
     case "newest":
       return { identity, label: "Newest", headingSuffix: "By Newest" };
     case "mostTicketsLeft":
