@@ -180,15 +180,25 @@ export function CompetitionCard({
             {price === 0 ? "FREE" : price ? `£${price.toFixed(2)}` : "—"}
           </span>
           <span className="text-[10px] text-rr-muted">
-            {isEnded
-              ? (timingLabel ?? "Ended")
-              : typeof ticketsLeft === "number"
-                ? `${ticketCountFormatter.format(ticketsLeft)} left`
-                : typeof ticketsTotal === "number"
-                  ? `${ticketCountFormatter.format(ticketsTotal)} tickets`
-                  : typeof ticketsSold === "number"
-                    ? `${ticketCountFormatter.format(ticketsSold)} sold`
-                    : "— tickets"}
+            {isEnded ? (
+              (timingLabel ?? "Ended")
+            ) : typeof ticketsLeft === "number" ? (
+              <>
+                {ticketCountFormatter.format(ticketsLeft)} left
+                {typeof ticketsTotal === "number" ? (
+                  <span className="text-rr-muted/60">
+                    {" • "}
+                    {ticketCountFormatter.format(ticketsTotal)} total
+                  </span>
+                ) : null}
+              </>
+            ) : typeof ticketsTotal === "number" ? (
+              `${ticketCountFormatter.format(ticketsTotal)} total`
+            ) : typeof ticketsSold === "number" ? (
+              `${ticketCountFormatter.format(ticketsSold)} sold`
+            ) : (
+              "— tickets"
+            )}
           </span>
         </div>
         <div className="h-2">
