@@ -1,8 +1,10 @@
 import { PortableText } from "@portabletext/react";
 import type { Metadata } from "next";
 import { RichTitle } from "@/components/sanity/RichTitle";
+import { FaqPageJsonLd } from "@/components/seo/structured-data";
 import { portableTextComponents } from "@/components/sanity/portableTextComponents";
 import { titleColorVar } from "@/lib/titleColor";
+import { extractFaqFromPortableText } from "@/lib/portable-text-faq";
 import { sanityClient } from "@/sanity/client";
 import { HOW_IT_WORKS_PAGE } from "@/sanity/queries";
 import {
@@ -43,9 +45,11 @@ export default async function HowItWorksPage() {
   const headingColor = titleColorVar(page?.heroHeadingColor);
   const body = applyLiveFiguresToPortableText(page?.body ?? [], figures);
   const hasBody = body.length > 0;
+  const faqEntries = extractFaqFromPortableText(body);
 
   return (
     <main className="bg-rr-bg">
+      <FaqPageJsonLd entries={faqEntries} />
       <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
         <div className="container py-7 md:py-8">
           <div className="mx-auto max-w-[760px] text-center">
