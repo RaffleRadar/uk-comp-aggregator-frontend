@@ -533,7 +533,7 @@ export function FilterBar({
 
                 {isSortOpen ? (
                   <div
-                    className="absolute left-0 right-0 z-50 mt-1 rounded-md border border-rr-border bg-rr-surface p-1 lg:left-auto lg:right-0 lg:w-[220px]"
+                    className="absolute left-0 z-50 mt-1 min-w-[260px] max-w-[calc(100vw-32px)] rounded-md border border-rr-border bg-rr-surface p-1 divide-y divide-rr-border/40 lg:left-auto lg:right-0 lg:w-[220px] lg:min-w-0"
                     role="listbox"
                     aria-label="Sort options"
                   >
@@ -552,7 +552,7 @@ export function FilterBar({
                           role="option"
                           aria-selected={isActive}
                           className={cn(
-                            "w-full text-left rounded px-2.5 py-2 text-sm transition cursor-pointer",
+                            "w-full text-left rounded px-2.5 py-2 text-sm transition cursor-pointer whitespace-nowrap",
                             isActive
                               ? "bg-rr-elevated text-rr-primary"
                               : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
@@ -596,7 +596,7 @@ export function FilterBar({
 
                   {closingOpen ? (
                     <div
-                      className="absolute left-0 right-0 z-50 mt-1 rounded-md border border-rr-border bg-rr-surface p-1"
+                      className="absolute right-0 z-50 mt-1 min-w-[200px] max-w-[calc(100vw-32px)] rounded-md border border-rr-border bg-rr-surface p-1 divide-y divide-rr-border/40"
                       role="listbox"
                       aria-label="Closing options"
                     >
@@ -605,7 +605,7 @@ export function FilterBar({
                         role="option"
                         aria-selected={!closing}
                         className={cn(
-                          "w-full text-left rounded px-2.5 py-2 text-sm transition cursor-pointer",
+                          "w-full text-left rounded px-2.5 py-2 text-sm transition cursor-pointer whitespace-nowrap",
                           !closing
                             ? "bg-rr-elevated text-rr-primary"
                             : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
@@ -631,7 +631,7 @@ export function FilterBar({
                             role="option"
                             aria-selected={isActive}
                             className={cn(
-                              "w-full text-left rounded px-2.5 py-2 text-sm transition cursor-pointer",
+                              "w-full text-left rounded px-2.5 py-2 text-sm transition cursor-pointer whitespace-nowrap",
                               isActive
                                 ? "bg-rr-elevated text-rr-primary"
                                 : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
