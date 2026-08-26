@@ -5,6 +5,11 @@ import { portableTextComponents } from "@/components/sanity/portableTextComponen
 import { titleColorVar } from "@/lib/titleColor";
 import { sanityClient } from "@/sanity/client";
 import { HOW_IT_WORKS_PAGE } from "@/sanity/queries";
+import {
+  applyLiveFigures,
+  applyLiveFiguresToPortableText,
+  getLiveFigures,
+} from "@/lib/live-figures";
 
 export const revalidate = 60;
 
@@ -24,14 +29,19 @@ type HowItWorksPageData = {
 };
 
 export default async function HowItWorksPage() {
-  const page = await sanityClient.fetch<HowItWorksPageData | null>(HOW_IT_WORKS_PAGE);
+  const [page, figures] = await Promise.all([
+    sanityClient.fetch<HowItWorksPageData | null>(HOW_IT_WORKS_PAGE),
+    getLiveFigures(),
+  ]);
   const title = page?.title?.trim() || "How It Works";
   const eyebrow = page?.heroEyebrow?.trim() || "";
-  const lead = page?.heroLead?.trim() || "";
+  const lead = page?.heroLead?.trim()
+    ? applyLiveFigures(page.heroLead.trim(), figures)
+    : "";
   const richTitle = page?.richTitle ?? [];
   const hasRichTitle = richTitle.length > 0;
   const headingColor = titleColorVar(page?.heroHeadingColor);
-  const body = page?.body ?? [];
+  const body = applyLiveFiguresToPortableText(page?.body ?? [], figures);
   const hasBody = body.length > 0;
 
   return (
