@@ -533,7 +533,7 @@ export function FilterBar({
 
                 {isSortOpen ? (
                   <div
-                    className="absolute left-0 z-50 mt-1 min-w-[260px] max-w-[calc(100vw-32px)] rounded-md border border-rr-border bg-rr-surface p-1 divide-y divide-rr-border/40 lg:left-auto lg:right-0 lg:w-[220px] lg:min-w-0"
+                    className="absolute left-0 z-50 mt-1 min-w-[260px] max-w-[calc(100vw-32px)] rounded-md border border-rr-border bg-rr-surface p-1 divide-y divide-rr-border/25 [&>button]:mx-1 [&>button]:w-[calc(100%-8px)] lg:left-auto lg:right-0 lg:w-[220px] lg:min-w-0"
                     role="listbox"
                     aria-label="Sort options"
                   >
@@ -596,7 +596,7 @@ export function FilterBar({
 
                   {closingOpen ? (
                     <div
-                      className="absolute right-0 z-50 mt-1 min-w-[200px] max-w-[calc(100vw-32px)] rounded-md border border-rr-border bg-rr-surface p-1 divide-y divide-rr-border/40"
+                      className="absolute right-0 z-50 mt-1 min-w-[200px] max-w-[calc(100vw-32px)] rounded-md border border-rr-border bg-rr-surface p-1 divide-y divide-rr-border/25 [&>button]:mx-1 [&>button]:w-[calc(100%-8px)]"
                       role="listbox"
                       aria-label="Closing options"
                     >
