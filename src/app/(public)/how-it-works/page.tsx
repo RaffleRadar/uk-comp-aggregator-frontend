@@ -13,7 +13,7 @@ import {
   getLiveFigures,
 } from "@/lib/live-figures";
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "How RaffleRadar works",

@@ -6,7 +6,7 @@ import { sanityClient } from "@/sanity/client";
 import { ALL_REVIEWS } from "@/sanity/queries";
 import { getSiteContent } from "@/sanity/queries";
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 type ReviewSlug = {
   current: string;

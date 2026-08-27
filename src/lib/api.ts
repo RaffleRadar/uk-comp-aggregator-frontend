@@ -395,12 +395,12 @@ export async function getCompetitionSearch(
 }
 
 export async function getOperators() {
-  const response = await apiFetch<unknown>("/operators", { revalidate: 600 });
+  const response = await apiFetch<unknown>("/operators");
   return normalizeOperatorSummary(response);
 }
 
 export async function getOperator(slug: string) {
-  const response = await apiFetch<unknown>(`/operators/${slug}`, { revalidate: 600 });
+  const response = await apiFetch<unknown>(`/operators/${slug}`);
   return normalizeOperatorDetail(response);
 }
 

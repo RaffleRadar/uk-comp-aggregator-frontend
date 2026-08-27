@@ -9,7 +9,7 @@ import type { OperatorSummary } from "@/lib/api";
 import { getOperatorFairness, MIN_BADGE_SAMPLE } from "@/lib/operator-display";
 import { getSiteContent } from "@/sanity/queries";
 
-export const revalidate = 600;
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

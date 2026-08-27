@@ -6,7 +6,7 @@ import { ReviewArticle } from "@/components/sanity/ReviewArticle";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { CANONICAL_ORIGIN as SITE_URL } from "@/lib/site";
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 type PageParams = {
   slug: string;
