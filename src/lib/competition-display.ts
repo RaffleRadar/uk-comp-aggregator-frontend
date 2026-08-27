@@ -27,7 +27,7 @@ export function getStatusBadge(
         (getUtcDateValue(endDate) - getUtcDateValue(now)) / 86400000,
       );
 
-      if (daysLeft === 0) {
+      if (daysLeft <= 0) {
         const timeStr = new Intl.DateTimeFormat("en-GB", {
           timeZone: "Europe/London",
           hour: "numeric",

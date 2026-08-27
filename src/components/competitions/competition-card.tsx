@@ -76,7 +76,6 @@ export function CompetitionCard({
     imageUrl,
     ticketPrice,
     ticketsTotal,
-    ticketsLeft,
     ticketsSold,
     percentSold,
     cashAlternative,
@@ -146,14 +145,13 @@ export function CompetitionCard({
         ) : (
           <PlaceholderIcon category={category} />
         )}
-        <span className="absolute inset-x-1.5 top-1.5 flex flex-wrap items-start gap-1">
+        <span className="absolute left-1.5 top-1.5 flex max-w-[calc(100%-48px)] flex-wrap items-start gap-1">
           <Badge
             variant="operator"
             className="whitespace-nowrap overflow-visible text-clip"
           >
             {competition.operator?.name ?? "Unknown"}
           </Badge>
-          {isNew ? <Badge variant="green">New</Badge> : null}
         </span>
         {statusBadge && (
           <Badge
@@ -163,100 +161,109 @@ export function CompetitionCard({
             {statusBadge.label}
           </Badge>
         )}
+        {isNew ? (
+          <Badge variant="green" className="absolute bottom-1.5 right-1.5">
+            New
+          </Badge>
+        ) : null}
         {isInteractive ? (
           <SaveHeart
             competitionId={id}
-            className="absolute bottom-1.5 right-1.5 z-10 h-8 w-8"
+            className="absolute right-1.5 top-1.5 z-10 h-8 w-8"
             iconSize={18}
           />
         ) : null}
       </div>
-      <div className="flex flex-1 flex-col p-[9px]">
-        <p className="text-[11.5px] font-medium text-rr-text-primary leading-[1.35] h-8 overflow-hidden mb-1.5">
-          {prize}
-        </p>
-        <div className="flex justify-between items-center mb-1.5">
-          <span className="text-[13px] font-medium text-rr-green">
-            {price === 0 ? "FREE" : price ? `£${price.toFixed(2)}` : "—"}
-          </span>
-          <span className="text-[10px] text-rr-muted">
-            {isEnded ? (
-              (timingLabel ?? "Ended")
-            ) : typeof ticketsLeft === "number" ? (
-              <>
-                {ticketCountFormatter.format(ticketsLeft)} left
-                {typeof ticketsTotal === "number" ? (
-                  <span className="text-rr-muted/60">
-                    {" • "}
-                    {ticketCountFormatter.format(ticketsTotal)} total
-                  </span>
-                ) : null}
-              </>
-            ) : typeof ticketsTotal === "number" ? (
-              `${ticketCountFormatter.format(ticketsTotal)} total`
-            ) : typeof ticketsSold === "number" ? (
-              `${ticketCountFormatter.format(ticketsSold)} sold`
-            ) : (
-              "— tickets"
-            )}
-          </span>
-        </div>
-        <div className="h-2">
-          {percent !== null ? <ProgressBar value={percent} /> : null}
-        </div>
-        <div className="mt-1 flex h-[15px] items-center justify-between overflow-hidden">
-          {percent !== null ? (
-            <span className="flex items-center text-[10px] leading-none text-rr-muted">
-              <span className="leading-none">
-                {percent.toFixed(0)}% sold
-                {timingLabel && !isEnded && !badgeShowsTime
-                  ? ` · ${timingLabel}`
-                  : ""}
-              </span>
+      <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col px-[9px] pt-[9px]">
+          <p className="mb-2 h-8 overflow-hidden text-[11.5px] font-medium leading-[1.35] text-rr-text-primary">
+            {prize}
+          </p>
+
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[15px] font-medium leading-none text-rr-green">
+              {price === 0 ? "FREE" : price ? `£${price.toFixed(2)}` : "—"}
+            </span>
+            <span className="flex items-center gap-1 text-[10px] font-medium uppercase leading-none tracking-[0.04em] text-rr-muted">
+              {percent !== null ? (
+                <span className="leading-none">{percent.toFixed(0)}% sold</span>
+              ) : (
+                <span className="leading-none normal-case">
+                  Total not disclosed
+                </span>
+              )}
               {showCommentCount ? (
                 <>
-                  <span className="mx-1 leading-none">·</span>
                   <IconMessageCircle
                     size={11}
                     stroke={1.5}
                     aria-hidden
                     className="block shrink-0"
                   />
-                  <span className="ml-0.5 leading-none">
+                  <span className="leading-none">
                     {competition.commentCount}
                   </span>
                 </>
               ) : null}
             </span>
-          ) : typeof ticketsTotal !== "number" &&
-            typeof ticketsSold === "number" ? (
-            <span className="text-[10px] leading-none text-rr-muted">
-              Total tickets not disclosed
-              {timingLabel && !isEnded && !badgeShowsTime
-                ? ` · ${timingLabel}`
-                : ""}
-            </span>
-          ) : timingLabel && !isEnded && !badgeShowsTime ? (
-            <span className="text-[10px] leading-none text-rr-muted">
-              {timingLabel}
-            </span>
-          ) : (
-            <span />
-          )}
-          {isEnded ? (
-            <Badge variant="neutral">Draw complete</Badge>
-          ) : instantPrizes ? (
-            <span className="text-[10px] font-medium leading-none text-rr-green">
-              Auto draw
-            </span>
-          ) : null}
+          </div>
+
+          <div className="mt-2 border-t border-rr-border" />
+
+          <div className="flex items-stretch py-2">
+            <div className="min-w-0 flex-1 pr-2">
+              <p className="text-[9px] font-medium uppercase leading-none tracking-[0.06em] text-rr-muted">
+                Sold
+              </p>
+              <p className="mt-1 truncate text-[13px] font-medium leading-none tabular-nums text-rr-text-primary">
+                {typeof ticketsSold === "number"
+                  ? ticketCountFormatter.format(ticketsSold)
+                  : "—"}
+              </p>
+            </div>
+            <div className="w-px shrink-0 bg-rr-border" />
+            <div className="min-w-0 flex-1 pl-2">
+              <p className="text-[9px] font-medium uppercase leading-none tracking-[0.06em] text-rr-muted">
+                <span className="lg:hidden">Total</span>
+                <span className="hidden lg:inline">Total tickets</span>
+              </p>
+              <p className="mt-1 truncate text-[13px] font-medium leading-none tabular-nums text-rr-text-primary">
+                {typeof ticketsTotal === "number"
+                  ? ticketCountFormatter.format(ticketsTotal)
+                  : "—"}
+              </p>
+            </div>
+          </div>
+
+          <div className="h-2">
+            {percent !== null ? <ProgressBar value={percent} /> : null}
+          </div>
         </div>
-        <div className="mt-auto pt-3">
-          {cashAlternative ? (
-            <span className="inline-flex items-center rounded-md bg-rr-green-bg px-2 py-1 text-[11px] font-semibold text-rr-green">
-              Cash alternative £{Number(cashAlternative).toLocaleString("en-GB")}
-            </span>
-          ) : null}
+
+        <div
+          className={[
+            "mt-2 flex items-center justify-between gap-2 border-t px-[9px] py-2 text-[10px] font-medium leading-none",
+            cashAlternative
+              ? "border-rr-green-border bg-rr-green-bg text-rr-green"
+              : "border-rr-border text-rr-muted",
+          ].join(" ")}
+        >
+          <span className="truncate">
+            {isEnded
+              ? "Draw complete"
+              : cashAlternative
+                ? `Cash alternative · £${Number(cashAlternative).toLocaleString("en-GB")}`
+                : "Prize only"}
+          </span>
+          <span className="shrink-0 whitespace-nowrap text-rr-muted">
+            {isEnded
+              ? (timingLabel ?? "")
+              : instantPrizes
+                ? "Auto draw"
+                : timingLabel && !badgeShowsTime
+                  ? timingLabel
+                  : ""}
+          </span>
         </div>
       </div>
     </>
