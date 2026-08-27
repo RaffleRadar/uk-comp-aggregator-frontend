@@ -4,15 +4,23 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { OperatorCompetitions } from "@/components/operators/operator-competitions";
 import { TrackedOperatorLink } from "@/components/operators/tracked-operator-link";
+import { OperatorProfileSections } from "@/components/operators/operator-profile-sections";
 import { Badge } from "@/components/ui/badge";
+import { OperatorJsonLd } from "@/components/seo/structured-data";
 import {
   getCompetitions,
   getOperator,
   getOperators,
 } from "@/lib/api";
 import { getOperatorFairness } from "@/lib/operator-display";
-import { sanityClient } from "@/sanity/client";
-import { OPERATOR_REVIEW_BY_ID, OPERATOR_REVIEW_BY_NAME } from "@/sanity/queries";
+import { sanityClient, urlFor } from "@/sanity/client";
+import {
+  OPERATOR_PROFILE_BY_ID,
+  OPERATOR_PROFILE_BY_NAME,
+  OPERATOR_REVIEW_BY_ID,
+  OPERATOR_REVIEW_BY_NAME,
+} from "@/sanity/queries";
+import type { OperatorProfile } from "@/types/operator-profile";
 import type { Competition } from "@/types/competition";
 
 export const revalidate = 60;
@@ -99,6 +107,18 @@ function OperatorLogo({
   );
 }
 
+function money(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    return "—";
+  }
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: value >= 1000 ? 0 : 2,
+    maximumFractionDigits: value >= 1000 ? 0 : 2,
+  }).format(value);
+}
+
 export async function generateStaticParams() {
   try {
     const operators = await getOperators();
@@ -108,21 +128,40 @@ export async function generateStaticParams() {
   }
 }
 
+export const dynamicParams = true;
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<PageParams>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const operator = await getOperator(slug);
+  let operator: Awaited<ReturnType<typeof getOperator>> = null;
+  try {
+    operator = await getOperator(slug);
+  } catch {
+    operator = null;
+  }
 
   if (!operator) {
     return {};
   }
 
+  let profile: OperatorProfile | null = null;
+  try {
+    profile = await sanityClient.fetch<OperatorProfile | null>(
+      OPERATOR_PROFILE_BY_ID,
+      { operatorId: operator.id },
+    );
+  } catch {
+    profile = null;
+  }
+
   return {
     title: `${operator.name} — Operators — RaffleRadar`,
-    description: `Live competitions, fairness and value metrics for ${operator.name}.`,
+    description:
+      profile?.shortDescription ??
+      `Live competitions, fairness and value metrics for ${operator.name}.`,
     alternates: { canonical: `/operators/${slug}` },
   };
 }
@@ -133,7 +172,12 @@ export default async function OperatorPage({
   params: Promise<PageParams>;
 }) {
   const { slug } = await params;
-  const operator = await getOperator(slug);
+  let operator: Awaited<ReturnType<typeof getOperator>> = null;
+  try {
+    operator = await getOperator(slug);
+  } catch {
+    operator = null;
+  }
 
   if (!operator) {
     notFound();
@@ -165,23 +209,72 @@ export default async function OperatorPage({
   const activeCompetitionsCount =
     operator.activeCompetitionsCount ?? competitionsWithOperator.length;
   const operatorNameVariants = getOperatorNameVariants(operator.name, slug);
-  const reviewFromOperatorId = await sanityClient.fetch<OperatorReviewCard | null>(
-    OPERATOR_REVIEW_BY_ID,
-    { operatorId: operator.id },
-  );
-  const linkedReview = reviewFromOperatorId
-    ? reviewFromOperatorId
-    : await sanityClient.fetch<OperatorReviewCard | null>(
+
+  let reviewFromOperatorId: OperatorReviewCard | null = null;
+  try {
+    reviewFromOperatorId = await sanityClient.fetch<OperatorReviewCard | null>(
+      OPERATOR_REVIEW_BY_ID,
+      { operatorId: operator.id },
+    );
+  } catch {
+    reviewFromOperatorId = null;
+  }
+  let linkedReview: OperatorReviewCard | null = reviewFromOperatorId;
+  if (!linkedReview) {
+    try {
+      linkedReview = await sanityClient.fetch<OperatorReviewCard | null>(
         OPERATOR_REVIEW_BY_NAME,
         { operatorNames: operatorNameVariants },
       );
+    } catch {
+      linkedReview = null;
+    }
+  }
   const reviewHref = linkedReview?.slug?.current
     ? `/reviews/${linkedReview.slug.current}`
     : null;
   const reviewDate = formatPublishedDate(linkedReview?.publishedAt);
 
+  let profile: OperatorProfile | null = null;
+  try {
+    const profileFromOperatorId = await sanityClient.fetch<
+      OperatorProfile | null
+    >(OPERATOR_PROFILE_BY_ID, { operatorId: operator.id });
+    profile = profileFromOperatorId
+      ? profileFromOperatorId
+      : await sanityClient.fetch<OperatorProfile | null>(
+          OPERATOR_PROFILE_BY_NAME,
+          { operatorNames: operatorNameVariants },
+        );
+  } catch {
+    profile = null;
+  }
+
+  const sanityLogoUrl = profile?.logo
+    ? urlFor(profile.logo).width(192).height(192).fit("max").auto("format").url()
+    : null;
+
+  const socialUrls = [
+    profile?.trustpilotUrl,
+    profile?.facebookUrl,
+    profile?.instagramUrl,
+    profile?.tiktokUrl,
+    profile?.youtubeUrl,
+  ].filter((value): value is string => typeof value === "string" && value.length > 0);
+
   return (
     <main className="bg-rr-bg">
+      <OperatorJsonLd
+        name={operator.name}
+        url={operator.baseUrl}
+        slug={operator.slug}
+        logoUrl={sanityLogoUrl ?? operator.logoUrl}
+        description={profile?.shortDescription ?? null}
+        companyNumber={profile?.companiesHouseNumber ?? null}
+        foundedYear={profile?.foundedYear ?? null}
+        sameAs={socialUrls}
+        ratingValue={profile?.trustpilotScore ?? null}
+      />
       <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
         <div className="container py-8 md:py-14">
           <div className="mx-auto max-w-[1100px]">
@@ -190,7 +283,7 @@ export default async function OperatorPage({
                 <div className="flex items-start gap-4">
                   <OperatorLogo
                     name={operator.name}
-                    logoUrl={operator.logoUrl}
+                    logoUrl={sanityLogoUrl ?? operator.logoUrl}
                   />
 
                   <div className="min-w-0">
@@ -210,11 +303,25 @@ export default async function OperatorPage({
                       <Badge variant="neutral">
                         {fairness.vrLabel}
                       </Badge>
+                      {profile?.verified ? (
+                        <Badge variant="green">Verified</Badge>
+                      ) : null}
                     </div>
                   </div>
                 </div>
 
-                <p className="mt-4 max-w-[760px] text-sm leading-6 text-rr-secondary md:text-base">
+                {profile?.shortDescription ? (
+                  <p className="mt-4 max-w-[760px] text-sm leading-6 text-rr-secondary md:text-base">
+                    {profile.shortDescription}
+                  </p>
+                ) : null}
+                <p
+                  className={
+                    profile?.shortDescription
+                      ? "mt-3 max-w-[760px] text-sm text-rr-muted"
+                      : "mt-4 max-w-[760px] text-sm leading-6 text-rr-secondary md:text-base"
+                  }
+                >
                   Fairness is based on the operator&apos;s median value ratio across
                   sampled competitions. Lower VR generally means more player-friendly
                   pricing.
@@ -269,6 +376,42 @@ export default async function OperatorPage({
                   {operator.vrSampleSize ?? "—"}
                 </p>
               </div>
+
+              <div className="rounded-xl border border-rr-border bg-rr-surface p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
+                  Ticket price from
+                </p>
+                <p className="mt-2 text-xl font-medium text-rr-primary">
+                  {money(operator.ticketPriceFrom)}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-rr-border bg-rr-surface p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
+                  Average ticket price
+                </p>
+                <p className="mt-2 text-xl font-medium text-rr-primary">
+                  {money(operator.ticketPriceAvg)}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-rr-border bg-rr-surface p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
+                  Highest live prize
+                </p>
+                <p className="mt-2 text-xl font-medium text-rr-primary">
+                  {money(operator.highestPrizeValue)}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-rr-border bg-rr-surface p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
+                  Instant wins
+                </p>
+                <p className="mt-2 text-xl font-medium text-rr-primary">
+                  {operator.instantWinsAvailable ? "Available" : "Not available"}
+                </p>
+              </div>
             </div>
 
             <div className="mt-6 rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
@@ -315,6 +458,8 @@ export default async function OperatorPage({
                 </div>
               )}
             </div>
+
+            <OperatorProfileSections profile={profile} operatorName={operator.name} />
           </div>
         </div>
       </section>

@@ -146,6 +146,10 @@ export type OperatorSummary = {
   avgVr: number | null;
   vrSampleSize: number | null;
   activeCompetitionsCount: number | null;
+  ticketPriceFrom: number | null;
+  ticketPriceAvg: number | null;
+  highestPrizeValue: number | null;
+  instantWinsAvailable: boolean;
 };
 
 export type OperatorDetail = {
@@ -156,6 +160,10 @@ export type OperatorDetail = {
   avgVr: number | null;
   vrSampleSize: number | null;
   activeCompetitionsCount: number | null;
+  ticketPriceFrom: number | null;
+  ticketPriceAvg: number | null;
+  highestPrizeValue: number | null;
+  instantWinsAvailable: boolean;
   baseUrl: string | null;
   competitions: CompetitionDetail[];
 };
@@ -288,6 +296,10 @@ function normalizeOperatorSummary(value: unknown): OperatorSummary[] {
         activeCompetitionsCount: toNum(
           data.activeCompetitionsCount ?? data.active_competitions_count,
         ),
+        ticketPriceFrom: toNum(data.ticketPriceFrom),
+        ticketPriceAvg: toNum(data.ticketPriceAvg),
+        highestPrizeValue: toNum(data.highestPrizeValue),
+        instantWinsAvailable: data.instantWinsAvailable === true,
       },
     ];
   });
@@ -320,6 +332,10 @@ function normalizeOperatorDetail(value: unknown): OperatorDetail | null {
     activeCompetitionsCount: toNum(
       data.activeCompetitionsCount ?? data.active_competitions_count,
     ),
+    ticketPriceFrom: toNum(data.ticketPriceFrom),
+    ticketPriceAvg: toNum(data.ticketPriceAvg),
+    highestPrizeValue: toNum(data.highestPrizeValue),
+    instantWinsAvailable: data.instantWinsAvailable === true,
     baseUrl:
       typeof data.baseUrl === "string"
         ? data.baseUrl

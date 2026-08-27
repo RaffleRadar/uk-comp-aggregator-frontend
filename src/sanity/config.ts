@@ -37,6 +37,16 @@ const sanityConfig = defineConfig({
               .schemaType("page")
               .child(S.documentTypeList("page")),
             S.listItem()
+              .title("Operator profiles")
+              .schemaType("operatorProfile")
+              .child(
+                S.documentTypeList("operatorProfile")
+                  .title("Operator profiles")
+                  .defaultOrdering([
+                    { field: "operatorName", direction: "asc" },
+                  ]),
+              ),
+            S.listItem()
               .title("Reviews")
               .schemaType("review")
               .child(S.documentTypeList("review")),

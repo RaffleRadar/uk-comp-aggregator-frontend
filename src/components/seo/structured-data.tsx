@@ -18,6 +18,71 @@ export function OrganizationJsonLd() {
   );
 }
 
+export function OperatorJsonLd({
+  name,
+  url,
+  slug,
+  logoUrl,
+  description,
+  companyNumber,
+  foundedYear,
+  sameAs,
+  ratingValue,
+}: {
+  name: string;
+  url: string | null;
+  slug: string;
+  logoUrl: string | null;
+  description: string | null;
+  companyNumber: string | null;
+  foundedYear: number | null;
+  sameAs: string[];
+  ratingValue: number | null;
+}) {
+  const data: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name,
+    url: `${CANONICAL_ORIGIN}/operators/${slug}`,
+  };
+
+  if (logoUrl) {
+    data.logo = logoUrl;
+  }
+  if (description) {
+    data.description = description;
+  }
+  if (foundedYear !== null && Number.isFinite(foundedYear)) {
+    data.foundingDate = String(foundedYear);
+  }
+  if (companyNumber) {
+    data.identifier = companyNumber;
+  }
+  const sameAsList: string[] = [];
+  if (url) {
+    sameAsList.push(url);
+  }
+  sameAsList.push(...sameAs);
+  if (sameAsList.length) {
+    data.sameAs = sameAsList;
+  }
+  if (ratingValue !== null && Number.isFinite(ratingValue)) {
+    data.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue,
+      bestRating: 5,
+      ratingCount: 1,
+    };
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
 export function WebSiteJsonLd() {
   const data = {
     "@context": "https://schema.org",

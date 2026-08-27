@@ -7,6 +7,7 @@ import { richTextBlock } from "./blocks/richTextBlock";
 import { statsBlock } from "./blocks/statsBlock";
 import { stepsBlock } from "./blocks/stepsBlock";
 import { howItWorksPage } from "./documents/howItWorksPage";
+import { operatorProfile } from "./documents/operatorProfile";
 import { page } from "./documents/page";
 import { post } from "./documents/post";
 import { review } from "./documents/review";
@@ -19,6 +20,7 @@ export const schemaTypes = [
   page,
   review,
   post,
+  operatorProfile,
   siteContent,
   siteSettings,
   howItWorksPage,

@@ -71,6 +71,43 @@ export const OPERATOR_REVIEW_BY_NAME = `*[_type == "review" && defined(slug.curr
   publishedAt
 }`;
 
+const OPERATOR_PROFILE_FIELDS = `
+  operatorId,
+  operatorName,
+  logo,
+  registeredCompanyName,
+  companiesHouseNumber,
+  foundedYear,
+  location,
+  verified,
+  drawMethod,
+  drawSchedule,
+  freeEntryUrl,
+  postalFreeEntry,
+  paymentMethods,
+  prizeDelivery,
+  voluntaryCodeMembership,
+  responsiblePlayControls,
+  publicEntryLists,
+  winnersPublished,
+  shortDescription,
+  fullProfile,
+  pros,
+  cons,
+  bestFor,
+  trustpilotUrl,
+  trustpilotScore,
+  facebookUrl,
+  instagramUrl,
+  tiktokUrl,
+  youtubeUrl,
+  supportEmail
+`;
+
+export const OPERATOR_PROFILE_BY_ID = `*[_type == "operatorProfile" && operatorId == $operatorId][0]{${OPERATOR_PROFILE_FIELDS}}`;
+
+export const OPERATOR_PROFILE_BY_NAME = `*[_type == "operatorProfile" && lower(operatorName) in $operatorNames][0]{${OPERATOR_PROFILE_FIELDS}}`;
+
 export const ALL_POSTS = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc){
   _id,
   title,
