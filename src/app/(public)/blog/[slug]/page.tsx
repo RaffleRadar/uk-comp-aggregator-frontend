@@ -6,7 +6,7 @@ import { CANONICAL_ORIGIN as SITE_URL } from "@/lib/site";
 import { sanityClient, urlFor } from "@/sanity/client";
 import { ALL_POST_SLUGS, POST_BY_SLUG, RELATED_POSTS } from "@/sanity/queries";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 type PageParams = {
   slug: string;

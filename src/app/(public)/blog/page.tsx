@@ -7,7 +7,7 @@ import { sanityClient } from "@/sanity/client";
 import { ALL_POSTS } from "@/sanity/queries";
 import { getSiteContent } from "@/sanity/queries";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 type PostSlug = {
   current: string;
