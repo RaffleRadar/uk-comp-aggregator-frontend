@@ -111,6 +111,7 @@ export type CompetitionDetail = {
   availableToBuy: boolean | null;
   valueRatio: number | string | null;
   operator: {
+    id: string | null;
     name: string;
     baseUrl: string;
     avgVr: number | null;
@@ -179,6 +180,7 @@ function normalizeEmbeddedOperator(
   if (!name) return null;
 
   return {
+    id: typeof data.id === "string" ? data.id : null,
     name,
     baseUrl:
       typeof data.baseUrl === "string"

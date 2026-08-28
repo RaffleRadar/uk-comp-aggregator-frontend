@@ -36,7 +36,10 @@ import type { Competition } from "@/types/competition";
 import { getEndsTimeLabel } from "@/lib/competition-display";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { sanityClient } from "@/sanity/client";
-import { OPERATOR_PROFILE_BY_NAME } from "@/sanity/queries";
+import {
+  OPERATOR_PROFILE_BY_ID,
+  OPERATOR_PROFILE_BY_NAME,
+} from "@/sanity/queries";
 import type { OperatorProfile } from "@/types/operator-profile";
 
 type CompetitionHistory = {
@@ -344,7 +347,17 @@ export default async function Page({
       : null;
   const operatorSlug = operatorNameToSlug(operator?.name);
   let operatorProfile: OperatorProfile | null = null;
-  if (operator?.name) {
+  if (operator?.id) {
+    try {
+      operatorProfile = await sanityClient.fetch<OperatorProfile | null>(
+        OPERATOR_PROFILE_BY_ID,
+        { operatorId: operator.id },
+      );
+    } catch {
+      operatorProfile = null;
+    }
+  }
+  if (!operatorProfile && operator?.name) {
     try {
       const nameVariants = getOperatorNameVariants(
         operator.name,

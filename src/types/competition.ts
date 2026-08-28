@@ -1,4 +1,5 @@
 export type CompetitionOperator = {
+  id?: string | null;
   name: string;
   baseUrl?: string;
   avgVr: number | null;
