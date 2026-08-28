@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { getOperators } from "@/lib/api";
 import type { OperatorSummary } from "@/lib/api";
 import { getOperatorFairness, MIN_BADGE_SAMPLE } from "@/lib/operator-display";
-import { getSiteContent } from "@/sanity/queries";
+import { sanityClient, urlFor } from "@/sanity/client";
+import { OPERATOR_PROFILE_LOGOS, getSiteContent } from "@/sanity/queries";
 
 export const revalidate = 60;
 
@@ -50,6 +51,34 @@ function OperatorLogo({
 export default async function OperatorsPage() {
   let operators: OperatorSummary[] = [];
   let operatorsIntro = "";
+  let profileLogos: {
+    operatorId?: string | null;
+    operatorName?: string | null;
+    logo?: unknown;
+  }[] = [];
+
+  try {
+    profileLogos = await sanityClient.fetch(OPERATOR_PROFILE_LOGOS);
+  } catch {
+    profileLogos = [];
+  }
+
+  const logoById = new Map<string, string>();
+  const logoByName = new Map<string, string>();
+
+  for (const profile of profileLogos) {
+    if (!profile.logo) continue;
+    const url = urlFor(profile.logo)
+      .width(128)
+      .height(128)
+      .fit("max")
+      .auto("format")
+      .url();
+    if (profile.operatorId) logoById.set(profile.operatorId, url);
+    if (profile.operatorName) {
+      logoByName.set(profile.operatorName.trim().toLowerCase(), url);
+    }
+  }
 
   try {
     const [operatorsResult, siteContent] = await Promise.all([
@@ -200,7 +229,13 @@ export default async function OperatorsPage() {
                         <div className="flex items-center gap-3">
                           <OperatorLogo
                             name={operator.name}
-                            logoUrl={operator.logoUrl}
+                            logoUrl={
+                              logoById.get(operator.id) ??
+                              logoByName.get(
+                                operator.name.trim().toLowerCase(),
+                              ) ??
+                              operator.logoUrl
+                            }
                           />
                           <div className="min-w-0">
                             <h2 className="truncate text-lg font-medium text-rr-primary">

@@ -108,6 +108,12 @@ export const OPERATOR_PROFILE_BY_ID = `*[_type == "operatorProfile" && operatorI
 
 export const OPERATOR_PROFILE_BY_NAME = `*[_type == "operatorProfile" && lower(operatorName) in $operatorNames][0]{${OPERATOR_PROFILE_FIELDS}}`;
 
+export const OPERATOR_PROFILE_LOGOS = `*[_type == "operatorProfile" && defined(logo)]{
+  operatorId,
+  operatorName,
+  logo
+}`;
+
 export const ALL_POSTS = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc){
   _id,
   title,
