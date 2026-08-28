@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "firebasestorage.googleapis.com", pathname: "/**" },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/uk-competitions-ending-today",
+        destination: "/competitions-ending-today",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
