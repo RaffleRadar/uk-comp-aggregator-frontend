@@ -23,6 +23,7 @@ const config: Config = {
         "rr-danger": "var(--vr-danger-text)",
         "rr-danger-bg": "var(--vr-danger-bg)",
         "rr-danger-border": "var(--vr-danger-border)",
+        "rr-warn": "var(--vr-warn-text)",
         "rr-bg-light": "#f3f4f6",
         "rr-surface-light": "#ffffff",
         "rr-elevated-light": "#f9fafb",

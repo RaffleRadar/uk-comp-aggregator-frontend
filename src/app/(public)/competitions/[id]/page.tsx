@@ -35,6 +35,9 @@ import {
 import type { Competition } from "@/types/competition";
 import { getEndsTimeLabel } from "@/lib/competition-display";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
+import { sanityClient } from "@/sanity/client";
+import { OPERATOR_PROFILE_BY_NAME } from "@/sanity/queries";
+import type { OperatorProfile } from "@/types/operator-profile";
 
 type CompetitionHistory = {
   scrapedAt: string;
@@ -54,6 +57,32 @@ function operatorNameToSlug(value: string | null | undefined) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   return slug || null;
+}
+
+function normalizeOperatorName(value: string, spacedDigits = false) {
+  const normalized = value
+    .toLowerCase()
+    .replace(/[-_]+/g, " ")
+    .replace(spacedDigits ? /([0-9])([a-z])/g : /$^/, "$1 $2")
+    .replace(spacedDigits ? /([a-z])([0-9])/g : /$^/, "$1 $2")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return normalized;
+}
+
+function getOperatorNameVariants(name: string, slug: string) {
+  const variants = new Set<string>();
+
+  for (const value of [name, slug]) {
+    const basic = normalizeOperatorName(value, false);
+    const spaced = normalizeOperatorName(value, true);
+
+    if (basic) variants.add(basic);
+    if (spaced) variants.add(spaced);
+  }
+
+  return Array.from(variants);
 }
 
 function PlaceholderIcon({ category }: { category: string | null }) {
@@ -314,6 +343,21 @@ export default async function Page({
       ? Number(operator.avgVr)
       : null;
   const operatorSlug = operatorNameToSlug(operator?.name);
+  let operatorProfile: OperatorProfile | null = null;
+  if (operator?.name) {
+    try {
+      const nameVariants = getOperatorNameVariants(
+        operator.name,
+        operatorSlug ?? "",
+      );
+      operatorProfile = await sanityClient.fetch<OperatorProfile | null>(
+        OPERATOR_PROFILE_BY_NAME,
+        { operatorNames: nameVariants },
+      );
+    } catch {
+      operatorProfile = null;
+    }
+  }
   const operatorVrLabel = operator
     ? operatorVrValue !== null
       ? `VR ${operatorVrValue.toFixed(1)}`
@@ -447,26 +491,6 @@ export default async function Page({
           </div>
         </AdminAccordion>
       ) : null}
-      <div className={`rounded-lg border border-rr-border bg-rr-elevated p-4 ${description ? "mt-4" : ""}`}>
-        <div className="space-y-3">
-          <div className="flex justify-between">
-            <span className="text-xs text-rr-muted">Winners</span>
-            <span className="text-xs text-rr-secondary">{numWinners ?? 1}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-xs text-rr-muted">Instant prize</span>
-            <span className="text-xs text-rr-secondary">
-              {instantPrizes ? "Yes" : "No"}
-            </span>
-          </div>
-          {makeModel && (
-            <div className="flex justify-between">
-              <span className="text-xs text-rr-muted">Make / model</span>
-              <span className="text-xs text-rr-secondary">{makeModel}</span>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
   return (
@@ -686,35 +710,64 @@ export default async function Page({
               ) : null}
               <SaveActions />
             </div>
-            {(cashAltNum || endsAt) && (
-              <div className="rounded-lg border border-rr-border bg-rr-elevated p-4 mb-6">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-xs text-rr-muted mb-1">
-                      <span className="text-rr-muted">
-                        Cash alternative
-                        <InfoTooltip text="What the winner receives instead of the prize. Often lower than the prize value, since the prize can include extras that are not part of the cash option." />
-                      </span>
-                    </p>
-                    <p className="text-lg font-semibold text-rr-primary">
-                      {cashAltNum ? (
-                        `£${cashAltNum.toLocaleString("en-GB")}`
-                      ) : (
-                        <span className="text-rr-muted text-sm font-normal">
-                          Not offered
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-rr-muted mb-1">Draw date</p>
-                    <p className="text-lg font-semibold text-rr-primary">
-                      <DrawCountdown endsAt={endsAt} />
-                    </p>
-                  </div>
-                </div>
+            <div className="rounded-lg border border-rr-border bg-rr-elevated mb-6 divide-y divide-rr-border">
+              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+                {operatorProfile?.freeEntryUrl ? (
+                  <a
+                    href={operatorProfile.freeEntryUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-rr-primary no-underline hover:underline"
+                  >
+                    Free Postal Entry Available
+                  </a>
+                ) : (
+                  <span className="text-sm font-semibold text-rr-primary">
+                    Free Postal Entry Available
+                  </span>
+                )}
+                <span className="text-sm font-semibold text-rr-green">Yes</span>
               </div>
-            )}
+              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+                <span className="text-sm text-rr-muted">
+                  Cash Alternative
+                  <InfoTooltip text="What the winner receives instead of the prize. Often lower than the prize value, since the prize can include extras that are not part of the cash option." />
+                </span>
+                {cashAltNum ? (
+                  <span className="text-sm font-medium text-rr-primary">
+                    £{cashAltNum.toLocaleString("en-GB")}
+                  </span>
+                ) : (
+                  <span className="text-sm font-normal text-rr-muted">
+                    Not offered
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+                <span className="text-sm text-rr-muted">Winners</span>
+                <span className="text-sm font-medium text-rr-primary">
+                  {numWinners ?? 1}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+                <span className="text-sm text-rr-muted">Instant Prize</span>
+                <span className="text-sm font-medium text-rr-primary">
+                  {instantPrizes ? "Yes" : "No"}
+                </span>
+              </div>
+              {makeModel && (
+                <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+                  <span className="text-sm text-rr-muted">Make / Model</span>
+                  <span className="text-sm font-medium text-rr-primary">
+                    {makeModel}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+                <span className="text-sm text-rr-muted">Draw Date Countdown</span>
+                <DrawCountdown endsAt={endsAt} colorByUrgency />
+              </div>
+            </div>
             <div className="mb-8">
               <ReportIssue competitionId={id} />
             </div>

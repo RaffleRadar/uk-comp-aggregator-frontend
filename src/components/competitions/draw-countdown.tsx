@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 type DrawCountdownProps = {
   endsAt: string | null;
+  colorByUrgency?: boolean;
 };
 
 function pluralize(n: number, one: string, many: string) {
@@ -24,7 +25,7 @@ function formatRemaining(ms: number) {
   return `${hours} ${pluralize(hours, "hour", "hours")} ${mins} ${pluralize(mins, "min", "mins")} ${secs} ${pluralize(secs, "sec", "secs")}`;
 }
 
-export function DrawCountdown({ endsAt }: DrawCountdownProps) {
+export function DrawCountdown({ endsAt, colorByUrgency = false }: DrawCountdownProps) {
   const targetMs = useMemo(() => {
     if (!endsAt) return null;
     const t = new Date(endsAt).getTime();
@@ -63,8 +64,16 @@ export function DrawCountdown({ endsAt }: DrawCountdownProps) {
     return <span className="text-rr-muted text-[13px] font-normal whitespace-nowrap md:text-sm">Ended</span>;
   }
 
+  const urgencyClass = colorByUrgency
+    ? diff < 86_400_000
+      ? " text-rr-danger"
+      : diff < 259_200_000
+        ? " text-rr-warn"
+        : " text-rr-green"
+    : "";
+
   return (
-    <span className="text-[13px] whitespace-nowrap md:text-sm">
+    <span className={`text-[13px] whitespace-nowrap md:text-sm${urgencyClass}`}>
       {formatRemaining(diff)}
     </span>
   );
