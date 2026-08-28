@@ -93,6 +93,7 @@ export type GetCompetitionsParams = {
 
 export type CompetitionDetail = {
   id: string;
+  slug: string | null;
   prize: string;
   imageUrl: string | null;
   ticketPrice: number | string | null;
@@ -131,6 +132,7 @@ export type CompetitionDetail = {
 
 export type CompetitionSearchResult = {
   id: string;
+  slug: string | null;
   prize: string;
   imageUrl: string | null;
   ticketPrice: number | string | null;
@@ -204,6 +206,7 @@ function normalizeCompetitionItem<T>(item: T): T {
 
   return {
     ...data,
+    slug: typeof data.slug === "string" ? data.slug : null,
     availableToBuy:
       typeof data.availableToBuy === "boolean"
         ? data.availableToBuy
@@ -242,6 +245,7 @@ function normalizeCompetitionSearchResponse(
 
     const data = item as {
       id?: string | number;
+      slug?: string | null;
       prize?: string;
       imageUrl?: string | null;
       image_url?: string | null;
@@ -255,6 +259,7 @@ function normalizeCompetitionSearchResponse(
     return [
       {
         id: String(data.id),
+        slug: typeof data.slug === "string" ? data.slug : null,
         prize: data.prize,
         imageUrl: data.imageUrl ?? data.image_url ?? null,
         ticketPrice: data.ticketPrice ?? data.ticket_price ?? null,
@@ -552,6 +557,35 @@ export async function unsubscribeFromNewsletter(token: string) {
     method: "POST",
     body: { token },
   });
+}
+
+export type CompetitionSitemapEntry = {
+  slug: string;
+  updatedAt: string | null;
+  endsAt: string | null;
+};
+
+export async function getCompetitionSitemapEntries(): Promise<
+  CompetitionSitemapEntry[]
+> {
+  try {
+    const response = await apiFetch<unknown>("/competitions/sitemap", {
+      revalidate: 3600,
+    });
+    if (!Array.isArray(response)) return [];
+    return response.flatMap((row) => {
+      if (!row || typeof row !== "object") return [];
+      const data = row as Record<string, unknown>;
+      const slug = typeof data.slug === "string" ? data.slug : null;
+      if (!slug) return [];
+      const updatedAt =
+        typeof data.updatedAt === "string" ? data.updatedAt : null;
+      const endsAt = typeof data.endsAt === "string" ? data.endsAt : null;
+      return [{ slug, updatedAt, endsAt }];
+    });
+  } catch {
+    return [];
+  }
 }
 
 export type CommentAuthor = { id: string; displayName: string; isStaff: boolean };

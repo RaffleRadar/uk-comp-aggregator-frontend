@@ -75,6 +75,28 @@ async function fetchMaintenanceMode() {
   return inflightRequest;
 }
 
+const COMPETITION_UUID_PATH =
+  /^\/competitions\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/?$/i;
+
+async function fetchCompetitionSlug(id: string): Promise<string | null> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) return null;
+
+  try {
+    const response = await fetch(`${apiUrl}/competitions/${id}`, {
+      method: "GET",
+      next: { revalidate: 3600 },
+    });
+
+    if (!response.ok) return null;
+
+    const data = (await response.json()) as { slug?: string | null };
+    return typeof data.slug === "string" && data.slug ? data.slug : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function proxy(request: NextRequest) {
   const host = (request.headers.get("host") || "").toLowerCase().split(":")[0];
 
@@ -84,6 +106,18 @@ export async function proxy(request: NextRequest) {
     url.host = CANONICAL_HOST;
     url.port = "";
     return NextResponse.redirect(url, 308);
+  }
+
+  const uuidMatch = request.nextUrl.pathname.match(COMPETITION_UUID_PATH);
+
+  if (uuidMatch) {
+    const competitionSlug = await fetchCompetitionSlug(uuidMatch[1]);
+
+    if (competitionSlug) {
+      const slugUrl = request.nextUrl.clone();
+      slugUrl.pathname = `/competitions/${competitionSlug}`;
+      return NextResponse.redirect(slugUrl, 308);
+    }
   }
 
   const isVercelPreviewHost = host.endsWith(".vercel.app");

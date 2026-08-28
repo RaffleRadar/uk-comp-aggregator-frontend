@@ -52,6 +52,7 @@ function getErrorMessage(error: unknown, fallback: string) {
 function toCompetition(item: CompetitionDetail): Competition {
   return {
     id: item.id,
+    slug: item.slug,
     prize: item.prize,
     imageUrl: item.imageUrl,
     ticketPrice: item.ticketPrice,

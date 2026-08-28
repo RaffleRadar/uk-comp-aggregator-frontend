@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import {
   IconCar,
@@ -121,11 +121,13 @@ function toFiniteNumber(value: unknown): number | null {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { slug } = await params;
+
+
   try {
-    const competition = await getCompetition(id);
+    const competition = await getCompetition(slug);
     if (!competition || typeof competition !== "object") {
       return {
         title: "Competition Not Found",
@@ -135,13 +137,21 @@ export async function generateMetadata({
     const comp = competition as CompetitionDetail;
     const { prize, imageUrl } = comp;
     const metaDescription = `Win ${prize} in this UK prize draw competition.`;
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        slug,
+      );
+    const canonicalPath =
+      isUuid && comp.slug && comp.slug !== slug
+        ? `/competitions/${comp.slug}`
+        : `/competitions/${slug}`;
     return {
       title: prize,
       description: metaDescription,
       openGraph: buildOpenGraph({
         title: prize,
         description: metaDescription,
-        path: `/competitions/${id}`,
+        path: canonicalPath,
         image: imageUrl,
       }),
       twitter: buildTwitter({
@@ -165,12 +175,12 @@ function isCompetitionNotFoundError(error: unknown) {
   );
 }
 
-async function fetchCompetitionData(id: string) {
+async function fetchCompetitionData(slug: string) {
   try {
-    const competitionPromise = getCompetition(id);
-    const historyPromise = getCompetitionHistory(id);
-    const commentsPromise = getComments(id).catch(() => []);
-    const similarPromise = getSimilarCompetitions(id, 8).catch(() => []);
+    const competitionPromise = getCompetition(slug);
+    const historyPromise = getCompetitionHistory(slug);
+    const commentsPromise = getComments(slug).catch(() => []);
+    const similarPromise = getSimilarCompetitions(slug, 8).catch(() => []);
     const moreFromOperatorPromise = competitionPromise.then((value) => {
       if (!value || typeof value !== "object") return [];
       const comp = value as Competition;
@@ -183,19 +193,25 @@ async function fetchCompetitionData(id: string) {
         limit: 6,
       });
     });
-    const [competition, historyData, moreFromOperatorData, similarData, comments] =
-      await Promise.all([
-        competitionPromise,
-        historyPromise,
-        moreFromOperatorPromise,
-        similarPromise,
-        commentsPromise,
-      ]);
+    const [
+      competition,
+      historyData,
+      moreFromOperatorData,
+      similarData,
+      comments,
+    ] = await Promise.all([
+      competitionPromise,
+      historyPromise,
+      moreFromOperatorPromise,
+      similarPromise,
+      commentsPromise,
+    ]);
     if (!competition || typeof competition !== "object") {
       notFound();
     }
     const comp = competition as CompetitionDetail;
     const {
+      slug: compSlug,
       prize,
       imageUrl,
       ticketPrice,
@@ -219,8 +235,10 @@ async function fetchCompetitionData(id: string) {
       description,
       sourceUrl,
     } = comp;
-    const totalTicketsValue = typeof ticketsTotal === "number" ? ticketsTotal : null;
-    const ticketsLeftValue = typeof ticketsLeft === "number" ? ticketsLeft : null;
+    const totalTicketsValue =
+      typeof ticketsTotal === "number" ? ticketsTotal : null;
+    const ticketsLeftValue =
+      typeof ticketsLeft === "number" ? ticketsLeft : null;
     const percentSoldValue = toFiniteNumber(percentSold);
 
     const soldTickets =
@@ -235,24 +253,29 @@ async function fetchCompetitionData(id: string) {
     const percentValue =
       percentSoldValue !== null
         ? percentSoldValue
-        : soldTickets !== null && totalTicketsValue !== null && totalTicketsValue > 0
+        : soldTickets !== null &&
+            totalTicketsValue !== null &&
+            totalTicketsValue > 0
           ? (soldTickets / totalTicketsValue) * 100
           : null;
 
-    const priceValue = ticketPrice !== null ? toFiniteNumber(ticketPrice) : null;
+    const priceValue =
+      ticketPrice !== null ? toFiniteNumber(ticketPrice) : null;
     let history: CompetitionHistory[] = [];
     if (Array.isArray(historyData)) {
       history = historyData as CompetitionHistory[];
     }
     const moreFromOperator = Array.isArray(moreFromOperatorData)
       ? (moreFromOperatorData as Competition[])
-          .filter((c) => c.id !== id)
+          .filter((c) => c.id !== slug)
           .slice(0, 4)
       : [];
     const similar = Array.isArray(similarData)
-      ? (similarData as Competition[]).filter((c) => c.id !== id).slice(0, 4)
+      ? (similarData as Competition[]).filter((c) => c.id !== slug).slice(0, 4)
       : [];
     return {
+      compId: comp.id,
+      compSlug,
       prize,
       imageUrl,
       endsAt,
@@ -293,14 +316,22 @@ async function fetchCompetitionData(id: string) {
 export default async function Page({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
-  const data = await fetchCompetitionData(id);
+  const { slug } = await params;
+  const data = await fetchCompetitionData(slug);
   if (!data) {
     notFound();
   }
+  const isUuid =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      slug,
+    );
+  if (isUuid && data.compSlug && data.compSlug !== slug) {
+    permanentRedirect(`/competitions/${data.compSlug}`);
+  }
   const {
+    compId,
     prize,
     imageUrl,
     category,
@@ -396,7 +427,9 @@ export default async function Page({
   const salesCoveragePercent = canShowSalesVsPrize
     ? Math.round(salesCoverage * 100)
     : 0;
-  const salesDifference = canShowSalesVsPrize ? salesRevenue - prizeValueNum : 0;
+  const salesDifference = canShowSalesVsPrize
+    ? salesRevenue - prizeValueNum
+    : 0;
   const salesBadgeClass =
     salesCoverage >= 1
       ? "border-[var(--accent-border)] bg-[var(--accent-bg)] text-[var(--accent)]"
@@ -480,13 +513,18 @@ export default async function Page({
           <div className="space-y-3">
             {description.split(/\n{2,}/).map((block, index) => {
               const lines = block.split("\n").filter(Boolean);
-              const isList = lines.every((line) => line.trimStart().startsWith("•"));
+              const isList = lines.every((line) =>
+                line.trimStart().startsWith("•"),
+              );
 
               if (isList) {
                 return (
                   <ul key={index} className="grid gap-1.5 pl-1 sm:grid-cols-2">
                     {lines.map((line, i) => (
-                      <li key={i} className="flex gap-2 text-[15px] leading-6 text-rr-secondary">
+                      <li
+                        key={i}
+                        className="flex gap-2 text-[15px] leading-6 text-rr-secondary"
+                      >
                         <span className="text-rr-green">•</span>
                         {line.replace(/^\s*•\s*/, "")}
                       </li>
@@ -496,7 +534,10 @@ export default async function Page({
               }
 
               return (
-                <p key={index} className="text-[15px] leading-7 text-rr-secondary">
+                <p
+                  key={index}
+                  className="text-[15px] leading-7 text-rr-secondary"
+                >
                   {lines.join(" ")}
                 </p>
               );
@@ -509,7 +550,7 @@ export default async function Page({
   return (
     <main>
       <CompetitionViewTracker
-        competition={id}
+        competition={compId}
         operator={operator?.name ?? undefined}
       />
       <div className="container py-6 md:py-8">
@@ -593,7 +634,7 @@ export default async function Page({
                   )}
                 </div>
               )}
-              <CategoryBadgeAdmin competitionId={id} category={category} />
+              <CategoryBadgeAdmin competitionId={compId} category={category} />
               {getEndsTimeLabel(endsAt) && (
                 <Badge variant="red">{getEndsTimeLabel(endsAt)}</Badge>
               )}
@@ -705,7 +746,9 @@ export default async function Page({
                 </>
               )}
             </div>
-            {!instantPrizes && totalTicketsValue !== null && soldTickets !== null ? (
+            {!instantPrizes &&
+            totalTicketsValue !== null &&
+            soldTickets !== null ? (
               <TicketCalculator
                 ticketsSold={soldTickets}
                 ticketsTotal={totalTicketsValue}
@@ -716,7 +759,7 @@ export default async function Page({
             <div className="flex gap-3 mt-6 mb-6">
               {!hasEnded ? (
                 <EnterButton
-                  competitionId={id}
+                  competitionId={compId}
                   sourceUrl={sourceUrl}
                   operatorName={operator?.name ?? "Operator"}
                 />
@@ -777,12 +820,14 @@ export default async function Page({
                 </div>
               )}
               <div className="flex items-center justify-between gap-4 px-4 py-3.5">
-                <span className="text-sm text-rr-muted">Draw Date Countdown</span>
+                <span className="text-sm text-rr-muted">
+                  Draw Date Countdown
+                </span>
                 <DrawCountdown endsAt={endsAt} colorByUrgency />
               </div>
             </div>
             <div className="mb-8">
-              <ReportIssue competitionId={id} />
+              <ReportIssue competitionId={compId} />
             </div>
           </div>
         </div>
@@ -828,7 +873,7 @@ export default async function Page({
             </div>
           </div>
         )}
-        <CommentsSection competitionId={id} initialComments={comments} />
+        <CommentsSection competitionId={compId} initialComments={comments} />
       </div>
     </main>
   );

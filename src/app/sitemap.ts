@@ -1,5 +1,9 @@
 import type { MetadataRoute } from "next";
-import { getOperators } from "@/lib/api";
+import {
+  getOperators,
+  getCompetitionSitemapEntries,
+  type CompetitionSitemapEntry,
+} from "@/lib/api";
 import { sanityClient } from "@/sanity/client";
 import { CANONICAL_ORIGIN } from "@/lib/site";
 
@@ -64,13 +68,23 @@ async function fetchOperatorSlugs(): Promise<string[]> {
   }
 }
 
+async function fetchCompetitionRows(): Promise<CompetitionSitemapEntry[]> {
+  try {
+    return await getCompetitionSitemapEntries();
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [pages, posts, reviews, operatorSlugs] = await Promise.all([
-    fetchSlugs(SANITY_PAGE_SLUGS),
-    fetchSlugs(SANITY_POST_SLUGS),
-    fetchSlugs(SANITY_REVIEW_SLUGS),
-    fetchOperatorSlugs(),
-  ]);
+  const [pages, posts, reviews, operatorSlugs, competitions] =
+    await Promise.all([
+      fetchSlugs(SANITY_PAGE_SLUGS),
+      fetchSlugs(SANITY_POST_SLUGS),
+      fetchSlugs(SANITY_REVIEW_SLUGS),
+      fetchOperatorSlugs(),
+      fetchCompetitionRows(),
+    ]);
 
   const now = new Date();
 
@@ -114,6 +128,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.7,
+    });
+  }
+
+  for (const competition of competitions) {
+    const hasEnded = competition.endsAt
+      ? new Date(competition.endsAt) < now
+      : false;
+
+    entries.push({
+      url: `${CANONICAL_ORIGIN}/competitions/${competition.slug}`,
+      lastModified: toDate(competition.updatedAt),
+      changeFrequency: hasEnded ? "yearly" : "daily",
+      priority: hasEnded ? 0.3 : 0.6,
     });
   }
 

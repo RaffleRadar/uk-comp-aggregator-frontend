@@ -130,7 +130,7 @@ function CompetitionSearchInput({
     setOpen(false);
     setResults([]);
     setActiveIndex(-1);
-    router.push(`/competitions/${item.id}`);
+    router.push(`/competitions/${item.slug ?? item.id}`);
   }
 
   function handleClear() {

@@ -98,7 +98,9 @@ export async function CompetitionListBlock({
             "@type": "ListItem",
             position: index + 1,
             name: competition.prize,
-            url: `https://raffleradar.co.uk/competitions/${competition.id}`,
+            url: `https://raffleradar.co.uk/competitions/${
+              competition.slug ?? competition.id
+            }`,
           })),
         }
       : null;

@@ -8,6 +8,7 @@ export type CompetitionOperator = {
 
 export type Competition = {
   id: string;
+  slug: string | null;
   prize: string;
   imageUrl: string | null;
   ticketPrice: number | string | null;

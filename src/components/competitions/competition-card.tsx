@@ -56,6 +56,7 @@ export function CompetitionCard({
   variant = "default",
   interactiveWhenEnded = false,
 }: Props) {
+  const { id, slug } = competition;
   const pathname = usePathname();
   const [now, setNow] = useState<number | null>(null);
 
@@ -71,7 +72,6 @@ export function CompetitionCard({
 
   const isCompetitionDetailPage = pathname.startsWith("/competitions/");
   const {
-    id,
     prize,
     imageUrl,
     ticketPrice,
@@ -276,7 +276,7 @@ export function CompetitionCard({
   return (
     <div className="relative h-full">
       <ViewAllLink
-        href={`/competitions/${id}`}
+        href={`/competitions/${slug ?? id}`}
         className={cardClassName}
         scroll={isCompetitionDetailPage ? false : undefined}
       >
