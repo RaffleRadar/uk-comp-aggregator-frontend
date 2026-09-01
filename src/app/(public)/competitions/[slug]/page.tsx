@@ -33,7 +33,7 @@ import {
   type CompetitionDetail,
 } from "@/lib/api";
 import type { Competition } from "@/types/competition";
-import { getEndsTimeLabel } from "@/lib/competition-display";
+import { getEndedLabel, getEndsTimeLabel } from "@/lib/competition-display";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { sanityClient } from "@/sanity/client";
 import {
@@ -135,8 +135,22 @@ export async function generateMetadata({
       };
     }
     const comp = competition as CompetitionDetail;
-    const { prize, imageUrl } = comp;
-    const metaDescription = `Win ${prize} in this UK prize draw competition.`;
+    const { prize, imageUrl, hasEnded } = comp;
+    const metaFinalSold =
+      typeof comp.finalSold === "number" && Number.isFinite(comp.finalSold)
+        ? comp.finalSold
+        : null;
+    const metaFinalPercent = toFiniteNumber(comp.finalPercentSold);
+    const metaTitle = hasEnded ? `${prize} (Ended)` : prize;
+    const metaResult =
+      metaFinalSold !== null && metaFinalPercent !== null
+        ? ` ${metaFinalSold.toLocaleString("en-GB")} tickets sold, ${metaFinalPercent.toFixed(0)}% of the draw.`
+        : metaFinalSold !== null
+          ? ` ${metaFinalSold.toLocaleString("en-GB")} tickets sold.`
+          : "";
+    const metaDescription = hasEnded
+      ? `${prize} has ended.${metaResult} See the final sales figures and live competitions from this operator.`
+      : `Win ${prize} in this UK prize draw competition.`;
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         slug,
@@ -146,16 +160,16 @@ export async function generateMetadata({
         ? `/competitions/${comp.slug}`
         : `/competitions/${slug}`;
     return {
-      title: prize,
+      title: metaTitle,
       description: metaDescription,
       openGraph: buildOpenGraph({
-        title: prize,
+        title: metaTitle,
         description: metaDescription,
         path: canonicalPath,
         image: imageUrl,
       }),
       twitter: buildTwitter({
-        title: prize,
+        title: metaTitle,
         description: metaDescription,
         image: imageUrl,
       }),
@@ -219,6 +233,10 @@ async function fetchCompetitionData(slug: string) {
       ticketsLeft,
       ticketsSold,
       percentSold,
+      finalPercentSold,
+      finalSold,
+      closedAt,
+      finalVerifiedAt,
       endsAt,
       hasEnded,
       category,
@@ -241,23 +259,34 @@ async function fetchCompetitionData(slug: string) {
       typeof ticketsLeft === "number" ? ticketsLeft : null;
     const percentSoldValue = toFiniteNumber(percentSold);
 
-    const soldTickets =
+    const finalSoldValue =
+      typeof finalSold === "number" && Number.isFinite(finalSold)
+        ? finalSold
+        : null;
+    const finalPercentValue = toFiniteNumber(finalPercentSold);
+
+    const liveSoldTickets =
       typeof ticketsSold === "number"
         ? ticketsSold
         : totalTicketsValue !== null && ticketsLeftValue !== null
           ? Math.max(0, totalTicketsValue - ticketsLeftValue)
           : null;
+
+    const soldTickets =
+      hasEnded && finalSoldValue !== null ? finalSoldValue : liveSoldTickets;
     const remainingTickets = ticketsLeftValue;
     const ticketsSoldForOdds = soldTickets;
 
     const percentValue =
-      percentSoldValue !== null
-        ? percentSoldValue
-        : soldTickets !== null &&
-            totalTicketsValue !== null &&
-            totalTicketsValue > 0
-          ? (soldTickets / totalTicketsValue) * 100
-          : null;
+      hasEnded && finalPercentValue !== null
+        ? finalPercentValue
+        : percentSoldValue !== null
+          ? percentSoldValue
+          : soldTickets !== null &&
+              totalTicketsValue !== null &&
+              totalTicketsValue > 0
+            ? (soldTickets / totalTicketsValue) * 100
+            : null;
 
     const priceValue =
       ticketPrice !== null ? toFiniteNumber(ticketPrice) : null;
@@ -304,6 +333,10 @@ async function fetchCompetitionData(slug: string) {
       moreFromOperator,
       comments,
       hasEnded,
+      closedAt,
+      finalVerifiedAt,
+      finalSoldValue,
+      finalPercentValue,
     };
   } catch (error) {
     if (!isCompetitionNotFoundError(error)) {
@@ -359,6 +392,10 @@ export default async function Page({
     similar,
     moreFromOperator,
     comments,
+    closedAt,
+    finalVerifiedAt,
+    finalSoldValue,
+    finalPercentValue,
   } = data;
   const prizeValueNum = prizeValue ? Number(prizeValue) : null;
   const cashAltNum = cashAlternative ? Number(cashAlternative) : null;
@@ -448,7 +485,7 @@ export default async function Page({
         <div>
           <p className="text-xs text-rr-muted mb-1">Sales vs prize value</p>
           <p className="text-sm font-medium text-rr-primary">
-            Sales so far: £
+            {hasEnded ? "Final sales: " : "Sales so far: "}£
             {salesRevenue.toLocaleString("en-GB", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -499,13 +536,21 @@ export default async function Page({
       </div>
     </div>
   ) : null;
-  const endedLabel = endsAt
-    ? new Date(endsAt).toLocaleDateString("en-GB", {
+  const endedLabel = getEndedLabel(endsAt, closedAt ?? null);
+  const finalVerifiedLabel = finalVerifiedAt
+    ? new Date(finalVerifiedAt).toLocaleDateString("en-GB", {
+        timeZone: "Europe/London",
         day: "numeric",
         month: "long",
         year: "numeric",
       })
     : null;
+  const finalRevenue =
+    finalSoldValue !== null && priceValue !== null && priceValue > 0
+      ? finalSoldValue * priceValue
+      : null;
+  const hasFinalResult =
+    hasEnded && (finalSoldValue !== null || finalPercentValue !== null);
   const aboutBlock = (
     <div>
       {description ? (
@@ -547,6 +592,64 @@ export default async function Page({
       ) : null}
     </div>
   );
+  const similarSection = similar.length > 0 && (
+          <div className="mt-10">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <h2 className="text-lg font-semibold text-rr-primary">
+                Similar prizes
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {similar.map((competition) => (
+                <CompetitionCard
+                  key={competition.id}
+                  competition={competition}
+                />
+              ))}
+            </div>
+          </div>
+        );
+  const operatorSection = moreFromOperator.length > 0 && (
+          <div className="mt-10">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <h2 className="text-lg font-semibold text-rr-primary">
+                More from {operator?.name ?? "Operator"}
+              </h2>
+              {operatorSlug ? (
+                <ViewAllLink
+                  href={`/operators/${operatorSlug}`}
+                  className="shrink-0 text-sm font-medium text-rr-green no-underline transition-opacity hover:opacity-80"
+                >
+                  View All →
+                </ViewAllLink>
+              ) : null}
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {moreFromOperator.map((competition) => (
+                <CompetitionCard
+                  key={competition.id}
+                  competition={competition}
+                />
+              ))}
+            </div>
+          </div>
+        );
+  const endedOperatorCta =
+    hasEnded && operatorSlug ? (
+      <div className="mb-6 rounded-lg border border-rr-border bg-rr-elevated p-4">
+        <p className="text-sm text-rr-secondary">
+          This draw is closed. {operator?.name ?? "This operator"} has live
+          competitions running now.
+        </p>
+        <Link
+          href={`/operators/${operatorSlug}`}
+          className="mt-2 inline-flex text-sm font-medium text-rr-green no-underline hover:underline"
+        >
+          See live competitions from {operator?.name ?? "this operator"} →
+        </Link>
+      </div>
+    ) : null;
+
   return (
     <main>
       <CompetitionViewTracker
@@ -555,15 +658,62 @@ export default async function Page({
       />
       <div className="container py-6 md:py-8">
         {hasEnded ? (
-          <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-3 mb-6">
-            <div className="text-rr-primary font-medium">
-              This competition has ended
+          <div className="rounded-lg border border-rr-border bg-rr-elevated p-4 mb-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <div className="text-rr-primary font-medium">
+                This competition has ended
+              </div>
+              {endedLabel ? (
+                <div className="text-sm text-rr-muted">{endedLabel}</div>
+              ) : null}
             </div>
-            {endedLabel ? (
-              <div className="text-rr-muted text-sm">{endedLabel}</div>
-            ) : null}
+            {hasFinalResult ? (
+              <>
+                <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  <div>
+                    <p className="text-xs text-rr-muted mb-1">
+                      Final tickets sold
+                    </p>
+                    <p className="text-xl font-semibold text-rr-primary">
+                      {finalSoldValue !== null
+                        ? finalSoldValue.toLocaleString("en-GB")
+                        : "\u2014"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-rr-muted mb-1">Final % sold</p>
+                    <p className="text-xl font-semibold text-rr-primary">
+                      {finalPercentValue !== null
+                        ? `${finalPercentValue.toFixed(0)}%`
+                        : "\u2014"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-rr-muted mb-1">Final sales</p>
+                    <p className="text-xl font-semibold text-rr-primary">
+                      {finalRevenue !== null
+                        ? `\u00a3${Math.round(finalRevenue).toLocaleString("en-GB")}`
+                        : "\u2014"}
+                    </p>
+                  </div>
+                </div>
+                {finalPercentValue !== null ? (
+                  <ProgressBar value={finalPercentValue} className="mt-4" />
+                ) : null}
+                {finalVerifiedLabel ? (
+                  <p className="mt-3 text-xs text-rr-muted">
+                    Final figures recorded {finalVerifiedLabel}
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <p className="mt-2 text-sm text-rr-muted">
+                Final sales figures were not published by the operator.
+              </p>
+            )}
           </div>
         ) : null}
+        {endedOperatorCta}
         <div className="mb-4 hidden md:block">
           <nav className="flex items-center gap-2 text-sm text-rr-muted">
             <Link href="/" className="hover:text-rr-primary transition-colors">
@@ -635,7 +785,7 @@ export default async function Page({
                 </div>
               )}
               <CategoryBadgeAdmin competitionId={compId} category={category} />
-              {getEndsTimeLabel(endsAt) && (
+              {!hasEnded && getEndsTimeLabel(endsAt) && (
                 <Badge variant="red">{getEndsTimeLabel(endsAt)}</Badge>
               )}
             </div>
@@ -703,7 +853,9 @@ export default async function Page({
                 </p>
               ) : (
                 <>
-                  {soldTickets !== null && remainingTickets !== null ? (
+                  {!hasEnded &&
+                  soldTickets !== null &&
+                  remainingTickets !== null ? (
                     <div className="flex justify-between mb-2">
                       <span className="text-sm text-rr-secondary">
                         {soldTickets.toLocaleString("en-GB")} sold
@@ -729,8 +881,14 @@ export default async function Page({
                     <div className="mt-3">
                       <p className="flex items-center gap-1 text-xs text-rr-muted">
                         <span className="text-rr-muted">
-                          Odds per ticket
-                          <InfoTooltip text="Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw." />
+                          {hasEnded ? "Final odds per ticket" : "Odds per ticket"}
+                          <InfoTooltip
+                            text={
+                              hasEnded
+                                ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
+                                : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
+                            }
+                          />
                         </span>
                       </p>
                       <p className="text-sm font-medium text-rr-primary">
@@ -739,14 +897,17 @@ export default async function Page({
                           : "No tickets sold yet"}
                       </p>
                       <p className="text-xs text-rr-muted">
-                        based on tickets sold so far
+                        {hasEnded
+                          ? "based on final tickets sold"
+                          : "based on tickets sold so far"}
                       </p>
                     </div>
                   ) : null}
                 </>
               )}
             </div>
-            {!instantPrizes &&
+            {!hasEnded &&
+            !instantPrizes &&
             totalTicketsValue !== null &&
             soldTickets !== null ? (
               <TicketCalculator
@@ -819,59 +980,30 @@ export default async function Page({
                   </span>
                 </div>
               )}
-              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
-                <span className="text-sm text-rr-muted">
-                  Draw Date Countdown
-                </span>
-                <DrawCountdown endsAt={endsAt} colorByUrgency />
-              </div>
+              {!hasEnded ? (
+                <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+                  <span className="text-sm text-rr-muted">
+                    Draw Date Countdown
+                  </span>
+                  <DrawCountdown endsAt={endsAt} colorByUrgency />
+                </div>
+              ) : null}
             </div>
             <div className="mb-8">
               <ReportIssue competitionId={compId} />
             </div>
           </div>
         </div>
-        {similar.length > 0 && (
-          <div className="mt-10">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="text-lg font-semibold text-rr-primary">
-                Similar prizes
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-              {similar.map((competition) => (
-                <CompetitionCard
-                  key={competition.id}
-                  competition={competition}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        {moreFromOperator.length > 0 && (
-          <div className="mt-10">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="text-lg font-semibold text-rr-primary">
-                More from {operator?.name ?? "Operator"}
-              </h2>
-              {operatorSlug ? (
-                <ViewAllLink
-                  href={`/operators/${operatorSlug}`}
-                  className="shrink-0 text-sm font-medium text-rr-green no-underline transition-opacity hover:opacity-80"
-                >
-                  View All →
-                </ViewAllLink>
-              ) : null}
-            </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-              {moreFromOperator.map((competition) => (
-                <CompetitionCard
-                  key={competition.id}
-                  competition={competition}
-                />
-              ))}
-            </div>
-          </div>
+        {hasEnded ? (
+          <>
+            {operatorSection}
+            {similarSection}
+          </>
+        ) : (
+          <>
+            {similarSection}
+            {operatorSection}
+          </>
         )}
         <CommentsSection competitionId={compId} initialComments={comments} />
       </div>
