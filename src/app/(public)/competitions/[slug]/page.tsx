@@ -669,12 +669,12 @@ export default async function Page({
             </div>
             {hasFinalResult ? (
               <>
-                <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="mt-4 grid grid-cols-3 gap-3 sm:gap-4">
                   <div>
                     <p className="text-xs text-rr-muted mb-1">
                       Final tickets sold
                     </p>
-                    <p className="text-xl font-semibold text-rr-primary">
+                    <p className="text-lg font-semibold text-rr-primary sm:text-xl">
                       {finalSoldValue !== null
                         ? finalSoldValue.toLocaleString("en-GB")
                         : "\u2014"}
@@ -682,7 +682,7 @@ export default async function Page({
                   </div>
                   <div>
                     <p className="text-xs text-rr-muted mb-1">Final % sold</p>
-                    <p className="text-xl font-semibold text-rr-primary">
+                    <p className="text-lg font-semibold text-rr-primary sm:text-xl">
                       {finalPercentValue !== null
                         ? `${finalPercentValue.toFixed(0)}%`
                         : "\u2014"}
@@ -690,7 +690,7 @@ export default async function Page({
                   </div>
                   <div>
                     <p className="text-xs text-rr-muted mb-1">Final sales</p>
-                    <p className="text-xl font-semibold text-rr-primary">
+                    <p className="text-lg font-semibold text-rr-primary sm:text-xl">
                       {finalRevenue !== null
                         ? `\u00a3${Math.round(finalRevenue).toLocaleString("en-GB")}`
                         : "\u2014"}
