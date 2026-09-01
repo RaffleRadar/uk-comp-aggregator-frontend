@@ -35,6 +35,7 @@ const defaultCategoryOptions: FilterOption[] = [
   { value: "cash", label: "Cash" },
   { value: "tech", label: "Tech" },
   { value: "games", label: "Games" },
+  { value: "tickets", label: "Tickets" },
   { value: "other", label: "Other" },
   { value: "free", label: "Free" },
 ];
@@ -78,6 +79,7 @@ const otherSubcategoryOptions: FilterOption[] = [
   { value: "home", label: "Home" },
   { value: "holidays", label: "Holidays" },
   { value: "collectibles", label: "Collectibles" },
+  { value: "music", label: "Music" },
   { value: "experiences", label: "Experiences" },
   { value: "sports", label: "Sports" },
   { value: "none", label: "Uncategorised" },

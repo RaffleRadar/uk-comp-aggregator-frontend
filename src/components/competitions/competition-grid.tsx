@@ -54,6 +54,8 @@ const categoryLabelMap: Record<string, string> = {
   watches: "Watches",
   cash: "Cash",
   tech: "Tech",
+  music: "Music",
+  tickets: "Tickets",
   other: "Other",
 };
 
