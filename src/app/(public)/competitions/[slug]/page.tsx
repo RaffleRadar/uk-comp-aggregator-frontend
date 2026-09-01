@@ -162,6 +162,7 @@ export async function generateMetadata({
     return {
       title: metaTitle,
       description: metaDescription,
+      alternates: { canonical: canonicalPath },
       openGraph: buildOpenGraph({
         title: metaTitle,
         description: metaDescription,
