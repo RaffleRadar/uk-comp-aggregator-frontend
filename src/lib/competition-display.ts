@@ -1,7 +1,18 @@
 import { formatValueRatio, valueRatioColor } from "@/lib/value-ratio";
 
+const LONDON_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/London",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
 export function getUtcDateValue(date: Date): number {
-  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  const [year, month, day] = LONDON_DATE_FORMATTER.format(date)
+    .split("-")
+    .map(Number);
+
+  return Date.UTC(year, month - 1, day);
 }
 
 export type StatusBadge = {
