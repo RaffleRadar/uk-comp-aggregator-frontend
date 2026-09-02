@@ -746,7 +746,6 @@ export default async function Page({
                     <span className="text-3xl font-semibold tabular-nums text-rr-primary">
                       {soldTickets.toLocaleString("en-GB")}
                     </span>
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">sold</span>
                   </div>
                 </div>
                 {remainingTickets !== null ? (
@@ -756,7 +755,6 @@ export default async function Page({
                       <span className="text-3xl font-semibold tabular-nums text-rr-primary">
                         {remainingTickets.toLocaleString("en-GB")}
                       </span>
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">remaining</span>
                     </div>
                   </div>
                 ) : null}
@@ -776,7 +774,6 @@ export default async function Page({
                         <span className="text-3xl font-semibold text-rr-green">
                           {percentValue.toFixed(0)}%
                         </span>
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">sold</span>
                       </p>
                     ) : null}
                     {percentValue !== null ? (
