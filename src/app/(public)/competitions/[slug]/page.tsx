@@ -743,7 +743,7 @@ export default async function Page({
                 <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Tickets sold</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-semibold tabular-nums text-rr-primary">
+                    <span className="text-2xl font-semibold tabular-nums text-rr-primary sm:text-3xl">
                       {soldTickets.toLocaleString("en-GB")}
                     </span>
                   </div>
@@ -752,7 +752,7 @@ export default async function Page({
                   <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Tickets remaining</p>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-semibold tabular-nums text-rr-primary">
+                      <span className="text-2xl font-semibold tabular-nums text-rr-primary sm:text-3xl">
                         {remainingTickets.toLocaleString("en-GB")}
                       </span>
                     </div>
@@ -882,7 +882,9 @@ export default async function Page({
               <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
                 <p className="text-xs text-rr-muted mb-1">Max per person</p>
                 <p className="text-xl font-semibold text-rr-primary">
-                  {maxPerPerson ?? "—"}
+                  {maxPerPerson !== null && maxPerPerson !== undefined
+                    ? maxPerPerson.toLocaleString("en-GB")
+                    : "—"}
                 </p>
               </div>
             </div>
