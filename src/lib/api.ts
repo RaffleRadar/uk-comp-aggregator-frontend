@@ -2,7 +2,7 @@ import type { Competition } from "@/types/competition";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
-const DEFAULT_REVALIDATE: number | false = false;
+const DEFAULT_REVALIDATE: number | false = 86400;
 
 type RequestOptions = {
   method?: string;

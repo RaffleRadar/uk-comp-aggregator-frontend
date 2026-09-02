@@ -3,7 +3,7 @@ import { CompetitionResultsHeading } from "@/components/competitions/competition
 import { getRecentlyEnded } from "@/lib/api";
 import type { Competition } from "@/types/competition";
 
-export const revalidate = 60;
+export const revalidate = 86400;
 
 export const metadata = {
   title: "Recent Draws",

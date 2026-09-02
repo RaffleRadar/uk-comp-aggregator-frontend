@@ -23,7 +23,7 @@ import {
 import type { OperatorProfile } from "@/types/operator-profile";
 import type { Competition } from "@/types/competition";
 
-export const revalidate = 60;
+export const revalidate = 86400;
 
 type PageParams = {
   slug: string;

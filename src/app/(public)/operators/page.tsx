@@ -10,7 +10,7 @@ import { getOperatorFairness, MIN_BADGE_SAMPLE } from "@/lib/operator-display";
 import { sanityClient, urlFor } from "@/sanity/client";
 import { OPERATOR_PROFILE_LOGOS, getSiteContent } from "@/sanity/queries";
 
-export const revalidate = 60;
+export const revalidate = 86400;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
