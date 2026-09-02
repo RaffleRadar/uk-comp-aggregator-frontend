@@ -33,6 +33,7 @@ import {
 } from "@/lib/api";
 import type { Competition } from "@/types/competition";
 import { getEndedLabel, getEndsTimeLabel } from "@/lib/competition-display";
+import { getUrgencyMessage } from "@/lib/urgency-message";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { sanityClient } from "@/sanity/client";
 import {
@@ -418,6 +419,7 @@ export default async function Page({
     operator.vrSampleSize >= MIN_VR_SAMPLE
       ? Number(operator.avgVr)
       : null;
+  const urgency = getUrgencyMessage(endsAt, percentValue);
   const operatorSlug = operatorNameToSlug(operator?.name);
   let operatorProfile: OperatorProfile | null = null;
   if (operator?.id) {
@@ -713,17 +715,26 @@ export default async function Page({
             </div>
             {!hasEnded && endsAt ? (
               <div className="order-5 mb-6 rounded-lg border border-rr-border bg-rr-elevated md:order-none md:mb-0">
-                <div className="grid grid-cols-1 items-center sm:grid-cols-[1fr_auto_1fr]">
-                  <div className="px-5 py-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Time left to enter</p>
+                <div className="flex flex-col divide-y divide-rr-border lg:flex-row lg:items-center lg:divide-x lg:divide-y-0">
+                  <div className="px-5 py-4 lg:flex-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">
+                      Time left to enter
+                    </p>
                     <DrawCountdown endsAt={endsAt} colorByUrgency size="lg" />
                   </div>
-                  <div className="hidden h-12 w-px bg-rr-border sm:block" />
-                  <p className="px-5 pb-4 text-sm font-semibold uppercase leading-5 tracking-wide text-[#f2545b] [text-shadow:0_0_6px_rgba(242,84,91,0.45),0_0_18px_rgba(242,84,91,0.25)] sm:py-4">
-                    Hurry! Get your tickets
-                    <br />
-                    before it&apos;s too late.
-                  </p>
+                  {urgency ? (
+                    <p
+                      className={`px-5 py-4 text-sm font-semibold leading-5 lg:flex-1 ${
+                        urgency.tone === "urgent"
+                          ? "text-[#f2545b]"
+                          : urgency.tone === "soon"
+                            ? "text-rr-warn"
+                            : "text-rr-secondary"
+                      }`}
+                    >
+                      {urgency.text}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             ) : null}
@@ -878,14 +889,14 @@ export default async function Page({
                 </p>
               </div>
             </div>
-            <div className="order-6 flex gap-3 mt-6 mb-6 md:order-none">
-              {!hasEnded ? (
-                <EnterButton
-                  competitionId={compId}
-                  sourceUrl={sourceUrl}
-                  operatorName={operator?.name ?? "Operator"}
-                />
-              ) : null}
+            <div className="order-6 flex flex-wrap items-center gap-3 mt-6 mb-6 md:order-none">
+              <EnterButton
+                competitionId={compId}
+                sourceUrl={sourceUrl}
+                operatorName={operator?.name ?? "Operator"}
+                operatorUrl={operator?.baseUrl ?? null}
+                hasEnded={hasEnded}
+              />
               <SaveActions />
             </div>
             {!instantPrizes && ticketsSoldForOdds !== null ? (
