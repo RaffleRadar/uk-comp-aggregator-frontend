@@ -23,7 +23,6 @@ import { ViewAllLink } from "@/components/ui/view-all-link";
 import { CommentsSection } from "@/components/comments/comments-section";
 import { CategoryBadgeAdmin } from "@/components/competitions/category-badge-admin";
 import { ReportIssue } from "@/components/competitions/report-issue";
-import { AdminAccordion } from "@/components/profile/admin-accordion";
 import {
   getCompetition,
   getCompetitionHistory,
@@ -194,7 +193,13 @@ async function fetchCompetitionData(slug: string) {
   try {
     const competitionPromise = getCompetition(slug);
     const historyPromise = getCompetitionHistory(slug);
-    const commentsPromise = getComments(slug).catch(() => []);
+    const commentsPromise = competitionPromise
+      .then((value) => {
+        if (!value || typeof value !== "object") return [];
+        const comp = value as Competition;
+        return comp.id ? getComments(comp.id) : [];
+      })
+      .catch(() => []);
     const similarPromise = getSimilarCompetitions(slug, 8).catch(() => []);
     const moreFromOperatorPromise = competitionPromise.then((value) => {
       if (!value || typeof value !== "object") return [];
@@ -387,7 +392,6 @@ export default async function Page({
     numWinners,
     prizeMake,
     prizeModel,
-    description,
     sourceUrl,
     history,
     similar,
@@ -481,10 +485,10 @@ export default async function Page({
         ? "var(--vr-warn-text)"
         : "var(--vr-danger-text)";
   const salesVsPrizeBlock = canShowSalesVsPrize ? (
-    <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
+    <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs text-rr-muted mb-1">Sales vs prize value</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Sales vs prize value</p>
           <p className="text-sm font-medium text-rr-primary">
             {hasEnded ? "Final sales: " : "Sales so far: "}£
             {salesRevenue.toLocaleString("en-GB", {
@@ -552,47 +556,6 @@ export default async function Page({
       : null;
   const hasFinalResult =
     hasEnded && (finalSoldValue !== null || finalPercentValue !== null);
-  const aboutBlock = (
-    <div>
-      {description ? (
-        <AdminAccordion title="About this competition">
-          <div className="space-y-3">
-            {description.split(/\n{2,}/).map((block, index) => {
-              const lines = block.split("\n").filter(Boolean);
-              const isList = lines.every((line) =>
-                line.trimStart().startsWith("•"),
-              );
-
-              if (isList) {
-                return (
-                  <ul key={index} className="grid gap-1.5 pl-1 sm:grid-cols-2">
-                    {lines.map((line, i) => (
-                      <li
-                        key={i}
-                        className="flex gap-2 text-[15px] leading-6 text-rr-secondary"
-                      >
-                        <span className="text-rr-green">•</span>
-                        {line.replace(/^\s*•\s*/, "")}
-                      </li>
-                    ))}
-                  </ul>
-                );
-              }
-
-              return (
-                <p
-                  key={index}
-                  className="text-[15px] leading-7 text-rr-secondary"
-                >
-                  {lines.join(" ")}
-                </p>
-              );
-            })}
-          </div>
-        </AdminAccordion>
-      ) : null}
-    </div>
-  );
   const similarSection = similar.length > 0 && (
           <div className="mt-10">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -732,8 +695,8 @@ export default async function Page({
           </nav>
         </div>
         <div className="flex flex-col md:grid md:grid-cols-2 md:gap-8 md:items-start">
-          <div className="order-2 md:order-1 mt-8 md:mt-0 flex flex-col gap-8">
-            <div className="relative hidden rounded-[10px] overflow-hidden border border-rr-border bg-rr-elevated h-[300px] md:flex md:h-[350px] items-center justify-center">
+          <div className="contents md:order-1 md:flex md:flex-col md:gap-8">
+            <div className="relative hidden rounded-[10px] overflow-hidden border border-rr-border bg-rr-elevated h-[300px] md:flex md:h-[350px] items-center justify-center md:order-none">
               {imageUrl ? (
                 <CompetitionImage
                   src={imageUrl}
@@ -748,30 +711,98 @@ export default async function Page({
                 <PlaceholderIcon category={category} />
               )}
             </div>
-            {!(history.length === 0 && percentSoldValue === null) ? (
-              <div>
-                <h2 className="text-lg font-semibold text-rr-primary mb-4">
-                  Ticket sales history
-                </h2>
-                <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
-                  <TicketSalesChart
-                    history={history}
-                    hasEnded={hasEnded}
-                    isSoldOut={
-                      totalTicketsValue != null &&
-                      totalTicketsValue > 0 &&
-                      soldTickets != null &&
-                      soldTickets >= totalTicketsValue
-                    }
-                  />
+            {!hasEnded && endsAt ? (
+              <div className="order-5 mb-6 rounded-lg border border-rr-border bg-rr-elevated md:order-none md:mb-0">
+                <div className="grid grid-cols-1 items-center sm:grid-cols-[1fr_auto_1fr]">
+                  <div className="px-5 py-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Time left to enter</p>
+                    <DrawCountdown endsAt={endsAt} colorByUrgency size="lg" />
+                  </div>
+                  <div className="hidden h-12 w-px bg-rr-border sm:block" />
+                  <p className="px-5 pb-4 text-sm font-semibold uppercase leading-5 tracking-wide text-[#f2545b] [text-shadow:0_0_6px_rgba(242,84,91,0.45),0_0_18px_rgba(242,84,91,0.25)] sm:py-4">
+                    Hurry! Get your tickets
+                    <br />
+                    before it&apos;s too late.
+                  </p>
                 </div>
               </div>
             ) : null}
-            {salesVsPrizeBlock}
-            {aboutBlock}
+            {soldTickets !== null ? (
+              <div className="order-7 mb-6 grid grid-cols-2 gap-5 md:order-none md:mb-0">
+                <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Tickets sold</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-semibold tabular-nums text-rr-primary">
+                      {soldTickets.toLocaleString("en-GB")}
+                    </span>
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">sold</span>
+                  </div>
+                </div>
+                {remainingTickets !== null ? (
+                  <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Tickets remaining</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-semibold tabular-nums text-rr-primary">
+                        {remainingTickets.toLocaleString("en-GB")}
+                      </span>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">remaining</span>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+            {totalTicketsValue !== null || percentSoldValue !== null ? (
+              <div className="order-8 mb-6 rounded-lg border border-rr-border bg-rr-elevated px-5 py-5 md:order-none md:mb-0">
+                {totalTicketsValue === null && percentSoldValue === null ? (
+                  <p className="text-sm text-rr-muted">
+                    Sales data not published by the operator
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Overall progress</p>
+                    {percentValue !== null ? (
+                      <p className="mb-3 flex items-baseline gap-2">
+                        <span className="text-3xl font-semibold text-rr-green">
+                          {percentValue.toFixed(0)}%
+                        </span>
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">sold</span>
+                      </p>
+                    ) : null}
+                    {percentValue !== null ? (
+                      <ProgressBar value={percentValue} className="mb-3" />
+                    ) : null}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-rr-secondary">
+                        {soldTickets !== null
+                          ? `${soldTickets.toLocaleString("en-GB")} sold`
+                          : ""}
+                      </span>
+                      <span className="text-sm text-rr-secondary">
+                        {totalTicketsValue !== null
+                          ? `${totalTicketsValue.toLocaleString("en-GB")} total tickets`
+                          : ""}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : null}
+            {!hasEnded &&
+            !instantPrizes &&
+            totalTicketsValue !== null &&
+            soldTickets !== null ? (
+              <div className="order-9 md:order-none">
+                <TicketCalculator
+                  ticketsSold={soldTickets}
+                  ticketsTotal={totalTicketsValue}
+                  ticketPrice={priceValue}
+                  maxPerPerson={maxPerPerson}
+                />
+              </div>
+            ) : null}
           </div>
-          <div className="order-1 md:order-2">
-            <div className="flex flex-wrap items-start gap-2 mb-4">
+          <div className="contents md:order-2 md:block">
+            <div className="order-1 flex flex-wrap items-start gap-2 mb-4 md:order-none">
               {operator && (
                 <div className="flex items-center gap-2">
                   <Badge variant="operator">{operator.name}</Badge>
@@ -790,10 +821,10 @@ export default async function Page({
                 <Badge variant="red">{getEndsTimeLabel(endsAt)}</Badge>
               )}
             </div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-rr-primary mb-6">
+            <h1 className="order-2 text-2xl md:text-3xl font-semibold text-rr-primary mb-6 md:order-none">
               {prize}
             </h1>
-            <div className="relative mb-6 rounded-[10px] overflow-hidden border border-rr-border bg-rr-elevated h-[300px] flex items-center justify-center md:hidden">
+            <div className="order-3 relative mb-6 rounded-[10px] overflow-hidden border border-rr-border bg-rr-elevated h-[300px] flex items-center justify-center md:hidden">
               {imageUrl ? (
                 <CompetitionImage
                   src={imageUrl}
@@ -808,8 +839,8 @@ export default async function Page({
                 <PlaceholderIcon category={category} />
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
+            <div className="order-4 grid grid-cols-2 gap-5 mb-6 md:order-none">
+              <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
                 <p className="text-xs text-rr-muted mb-1">Ticket price</p>
                 <p className="text-xl font-semibold text-rr-green">
                   {priceValue === 0
@@ -819,7 +850,7 @@ export default async function Page({
                       : "—"}
                 </p>
               </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
+              <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
                 <p className="text-xs text-rr-muted mb-1">Prize value</p>
                 <p className="flex items-center gap-1 text-xl font-semibold text-rr-primary">
                   <span>
@@ -832,93 +863,22 @@ export default async function Page({
                   )}
                 </p>
               </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
+              <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
                 <p className="text-xs text-rr-muted mb-1">Total tickets</p>
-                <p className="text-xl font-semibold text-rr-primary">
+                <p className="text-xl font-semibold text-rr-primary tabular-nums">
                   {totalTicketsValue !== null
                     ? totalTicketsValue.toLocaleString("en-GB")
                     : "—"}
                 </p>
               </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated p-4">
+              <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
                 <p className="text-xs text-rr-muted mb-1">Max per person</p>
                 <p className="text-xl font-semibold text-rr-primary">
                   {maxPerPerson ?? "—"}
                 </p>
               </div>
             </div>
-            <div className="rounded-lg border border-rr-border bg-rr-elevated p-4 mb-6">
-              {totalTicketsValue === null && percentSoldValue === null ? (
-                <p className="text-sm text-rr-muted">
-                  Sales data not published by the operator
-                </p>
-              ) : (
-                <>
-                  {!hasEnded &&
-                  soldTickets !== null &&
-                  remainingTickets !== null ? (
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-rr-secondary">
-                        {soldTickets.toLocaleString("en-GB")} sold
-                      </span>
-                      <span className="text-sm text-rr-secondary">
-                        {remainingTickets.toLocaleString("en-GB")} remaining
-                      </span>
-                    </div>
-                  ) : null}
-
-                  {percentValue !== null ? (
-                    <>
-                      <ProgressBar value={percentValue} className="mb-2" />
-                      <div>
-                        <span className="text-sm font-medium text-rr-green">
-                          {percentValue.toFixed(0)}% sold
-                        </span>
-                      </div>
-                    </>
-                  ) : null}
-
-                  {!instantPrizes && ticketsSoldForOdds !== null ? (
-                    <div className="mt-3">
-                      <p className="flex items-center gap-1 text-xs text-rr-muted">
-                        <span className="text-rr-muted">
-                          {hasEnded ? "Final odds per ticket" : "Odds per ticket"}
-                          <InfoTooltip
-                            text={
-                              hasEnded
-                                ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
-                                : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
-                            }
-                          />
-                        </span>
-                      </p>
-                      <p className="text-sm font-medium text-rr-primary">
-                        {liveOdds
-                          ? `1 in ${liveOdds.toLocaleString("en-GB")}`
-                          : "No tickets sold yet"}
-                      </p>
-                      <p className="text-xs text-rr-muted">
-                        {hasEnded
-                          ? "based on final tickets sold"
-                          : "based on tickets sold so far"}
-                      </p>
-                    </div>
-                  ) : null}
-                </>
-              )}
-            </div>
-            {!hasEnded &&
-            !instantPrizes &&
-            totalTicketsValue !== null &&
-            soldTickets !== null ? (
-              <TicketCalculator
-                ticketsSold={soldTickets}
-                ticketsTotal={totalTicketsValue}
-                ticketPrice={priceValue}
-                maxPerPerson={maxPerPerson}
-              />
-            ) : null}
-            <div className="flex gap-3 mt-6 mb-6">
+            <div className="order-6 flex gap-3 mt-6 mb-6 md:order-none">
               {!hasEnded ? (
                 <EnterButton
                   competitionId={compId}
@@ -928,7 +888,46 @@ export default async function Page({
               ) : null}
               <SaveActions />
             </div>
-            <div className="rounded-lg border border-rr-border bg-rr-elevated mb-6 divide-y divide-rr-border">
+            {!instantPrizes && ticketsSoldForOdds !== null ? (
+              <div className="order-10 mt-6 mb-6 rounded-lg border border-rr-border bg-rr-elevated md:order-none">
+                <div className="grid grid-cols-1 items-center sm:grid-cols-[1fr_auto_1fr]">
+                  <div className="px-5 py-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1 flex items-center gap-1">
+                      <span>
+                        {hasEnded
+                          ? "Final odds per ticket"
+                          : "Odds per ticket (estimate)"}
+                      </span>
+                      <InfoTooltip
+                        text={
+                          hasEnded
+                            ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
+                            : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
+                        }
+                      />
+                    </p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Based on tickets sold</p>
+                    <p className="text-2xl font-semibold text-rr-green">
+                      {liveOdds
+                        ? `1 in ${liveOdds.toLocaleString("en-GB")}`
+                        : "No tickets sold yet"}
+                    </p>
+                  </div>
+                  {!hasEnded ? (
+                    <>
+                      <div className="hidden h-16 w-px bg-rr-border sm:block" />
+                      <p className="px-5 pb-4 text-xs leading-5 text-rr-muted sm:py-4">
+                        These odds improve as fewer tickets are sold.
+                        <br />
+                        More tickets sold ={" "}
+                        <span className="text-rr-green">lower odds</span>
+                      </p>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+            <div className="order-11 rounded-lg border border-rr-border bg-rr-elevated mb-6 divide-y divide-rr-border md:order-none">
               <div className="flex items-center justify-between gap-4 px-4 py-3.5">
                 {operatorProfile?.freeEntryUrl ? (
                   <a
@@ -952,7 +951,7 @@ export default async function Page({
                   <InfoTooltip text="What the winner receives instead of the prize. Often lower than the prize value, since the prize can include extras that are not part of the cash option." />
                 </span>
                 {cashAltNum ? (
-                  <span className="text-sm font-medium text-rr-primary">
+                  <span className="text-sm font-medium text-rr-primary tabular-nums">
                     £{cashAltNum.toLocaleString("en-GB")}
                   </span>
                 ) : (
@@ -981,18 +980,30 @@ export default async function Page({
                   </span>
                 </div>
               )}
-              {!hasEnded ? (
-                <div className="flex items-center justify-between gap-4 px-4 py-3.5">
-                  <span className="text-sm text-rr-muted">
-                    Draw Date Countdown
-                  </span>
-                  <DrawCountdown endsAt={endsAt} colorByUrgency />
+            </div>
+            {history.length >= 3 ? (
+              <div className="order-12 mb-6 md:order-none">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-3">Ticket sales history</h2>
+                <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
+                  <TicketSalesChart
+                    history={history}
+                    hasEnded={hasEnded}
+                    isSoldOut={
+                      totalTicketsValue != null &&
+                      totalTicketsValue > 0 &&
+                      soldTickets != null &&
+                      soldTickets >= totalTicketsValue
+                    }
+                  />
                 </div>
-              ) : null}
-            </div>
-            <div className="mb-8">
-              <ReportIssue competitionId={compId} />
-            </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+        <div className="mt-8 md:mt-0 space-y-8">
+          {salesVsPrizeBlock}
+          <div>
+            <ReportIssue competitionId={compId} />
           </div>
         </div>
         {hasEnded ? (
@@ -1006,7 +1017,9 @@ export default async function Page({
             {operatorSection}
           </>
         )}
-        <CommentsSection competitionId={compId} initialComments={comments} />
+        <div id="comments" className="mt-10">
+          <CommentsSection competitionId={compId} initialComments={comments} />
+        </div>
       </div>
     </main>
   );

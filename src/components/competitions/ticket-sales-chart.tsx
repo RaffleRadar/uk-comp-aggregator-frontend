@@ -93,7 +93,7 @@ export function TicketSalesChart({ history, hasEnded = false, isSoldOut = false 
         {hasEnded || isSoldOut ? `Final: ${currentLabel}` : `Current: ${currentLabel}`}
       </div>
       <div className="ticket-sales-chart__canvas">
-        <ResponsiveContainer width="100%" height={256}>
+        <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={data} margin={{ top: 12, right: 36, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="ticketSalesFill" x1="0" y1="0" x2="0" y2="1">
@@ -155,7 +155,7 @@ export function TicketSalesChart({ history, hasEnded = false, isSoldOut = false 
           position: relative;
         }
         .ticket-sales-chart__canvas {
-          height: 256px;
+          height: 200px;
         }
         .ticket-sales-chart__chip {
           position: absolute;

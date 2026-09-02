@@ -1,9 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { IconBell } from "@tabler/icons-react";
 import { SaveHeart } from "@/components/competitions/save-heart";
-import { Button } from "@/components/ui/button";
+import { CommentLink } from "@/components/competitions/comment-link";
 
 export function SaveActions() {
   const pathname = usePathname();
@@ -12,9 +11,7 @@ export function SaveActions() {
   return (
     <>
       {competitionId ? <SaveHeart competitionId={competitionId} /> : null}
-      <Button variant="icon" disabled title="Alerts — coming soon" aria-label="Set alert">
-        <IconBell size={20} />
-      </Button>
+      <CommentLink />
     </>
   );
 }
