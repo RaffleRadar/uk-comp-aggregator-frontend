@@ -107,7 +107,7 @@ export function DrawCountdown({
 
   const urgencyClass = colorByUrgency
     ? diff < 86_400_000
-      ? "text-[#f2545b]"
+      ? "text-[#f95353]"
       : diff < 259_200_000
         ? "text-rr-warn"
         : "text-rr-green"
@@ -115,11 +115,11 @@ export function DrawCountdown({
 
   if (size === "lg") {
     return (
-      <div className="flex items-baseline gap-5 sm:gap-7">
+      <div className="flex items-baseline gap-2.5 sm:gap-4">
         {buildSegments(diff).map((segment) => (
           <span key={segment.unit} className="flex items-baseline gap-1">
             <span
-              className={`text-3xl font-semibold tabular-nums leading-none ${urgencyClass}`}
+              className={`text-2xl font-semibold tabular-nums leading-none sm:text-3xl ${urgencyClass}`}
             >
               {segment.value}
             </span>

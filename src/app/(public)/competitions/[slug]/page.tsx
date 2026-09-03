@@ -487,11 +487,11 @@ export default async function Page({
         ? "var(--vr-warn-text)"
         : "var(--vr-danger-text)";
   const salesVsPrizeBlock = canShowSalesVsPrize ? (
-    <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
-      <div className="flex items-start justify-between gap-3">
+    <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+      <div className="flex items-start justify-between gap-1.5">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Sales vs prize value</p>
-          <p className="text-sm font-medium text-rr-primary">
+          <p className="text-xs font-semibold uppercase tracking-wide text-rr-primary">
             {hasEnded ? "Final sales: " : "Sales so far: "}£
             {salesRevenue.toLocaleString("en-GB", {
               minimumFractionDigits: 2,
@@ -506,30 +506,32 @@ export default async function Page({
           {salesCoveragePercent}%
         </span>
       </div>
-      <div className="mt-3 space-y-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-rr-muted">Ticket sales</span>
-          <span className="font-medium text-rr-primary">
-            £
-            {salesRevenue.toLocaleString("en-GB", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-        </div>
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-rr-muted">Prize value</span>
-          <span className="font-medium text-rr-primary">
-            £{prizeValueNum.toLocaleString("en-GB")}
-          </span>
-        </div>
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-rr-muted">
-            {salesDifference >= 0 ? "Above prize value" : "Below prize value"}
-          </span>
-          <span className="text-rr-secondary">
-            £{Math.abs(salesDifference).toLocaleString("en-GB")}
-          </span>
+      <div className="mt-1.5">
+        <div className="mb-1.5 grid grid-cols-1 rounded-lg border border-rr-border divide-y divide-rr-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Ticket sales</span>
+            <span className="text-sm font-medium text-rr-primary">
+              £
+              {salesRevenue.toLocaleString("en-GB", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Prize value</span>
+            <span className="text-sm font-medium text-rr-primary">
+              £{prizeValueNum.toLocaleString("en-GB")}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+              {salesDifference >= 0 ? "Above prize value" : "Below prize value"}
+            </span>
+            <span className="text-sm font-medium text-rr-primary">
+              £{Math.abs(salesDifference).toLocaleString("en-GB")}
+            </span>
+          </div>
         </div>
         <div className="h-2 w-full rounded-full bg-rr-border overflow-hidden">
           <div
@@ -559,13 +561,13 @@ export default async function Page({
   const hasFinalResult =
     hasEnded && (finalSoldValue !== null || finalPercentValue !== null);
   const similarSection = similar.length > 0 && (
-          <div className="mt-10">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mt-5">
+            <div className="mb-2 flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
               <h2 className="text-lg font-semibold text-rr-primary">
                 Similar prizes
               </h2>
             </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
               {similar.map((competition) => (
                 <CompetitionCard
                   key={competition.id}
@@ -576,8 +578,8 @@ export default async function Page({
           </div>
         );
   const operatorSection = moreFromOperator.length > 0 && (
-          <div className="mt-10">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mt-5">
+            <div className="mb-2 flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
               <h2 className="text-lg font-semibold text-rr-primary">
                 More from {operator?.name ?? "Operator"}
               </h2>
@@ -590,7 +592,7 @@ export default async function Page({
                 </ViewAllLink>
               ) : null}
             </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
               {moreFromOperator.map((competition) => (
                 <CompetitionCard
                   key={competition.id}
@@ -602,7 +604,7 @@ export default async function Page({
         );
   const endedOperatorCta =
     hasEnded && operatorSlug ? (
-      <div className="mb-6 rounded-lg border border-rr-border bg-rr-elevated p-4">
+      <div className="mb-1.5 rounded-lg border border-rr-border bg-rr-elevated p-4">
         <p className="text-sm text-rr-secondary">
           This draw is closed. {operator?.name ?? "This operator"} has live
           competitions running now.
@@ -624,7 +626,7 @@ export default async function Page({
       />
       <div className="container py-6 md:py-8">
         {hasEnded ? (
-          <div className="rounded-lg border border-rr-border bg-rr-elevated p-4 mb-6">
+          <div className="rounded-lg border border-rr-border bg-rr-elevated p-4 mb-1.5">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div className="text-rr-primary font-medium">
                 This competition has ended
@@ -635,7 +637,7 @@ export default async function Page({
             </div>
             {hasFinalResult ? (
               <>
-                <div className="mt-4 grid grid-cols-3 gap-3 sm:gap-4">
+                <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2">
                   <div>
                     <p className="text-xs text-rr-muted mb-1">
                       Final tickets sold
@@ -664,10 +666,10 @@ export default async function Page({
                   </div>
                 </div>
                 {finalPercentValue !== null ? (
-                  <ProgressBar value={finalPercentValue} className="mt-4" />
+                  <ProgressBar value={finalPercentValue} className="mt-2" />
                 ) : null}
                 {finalVerifiedLabel ? (
-                  <p className="mt-3 text-xs text-rr-muted">
+                  <p className="mt-1.5 text-xs text-rr-muted">
                     Final figures recorded {finalVerifiedLabel}
                   </p>
                 ) : null}
@@ -680,7 +682,7 @@ export default async function Page({
           </div>
         ) : null}
         {endedOperatorCta}
-        <div className="mb-4 hidden md:block">
+        <div className="mb-2 hidden md:block">
           <nav className="flex items-center gap-2 text-sm text-rr-muted">
             <Link href="/" className="hover:text-rr-primary transition-colors">
               Home
@@ -696,8 +698,32 @@ export default async function Page({
             <span className="text-rr-secondary">{prize}</span>
           </nav>
         </div>
-        <div className="flex flex-col md:grid md:grid-cols-2 md:gap-8 md:items-start">
-          <div className="contents md:order-1 md:flex md:flex-col md:gap-8">
+        <div className="mb-2 flex flex-col gap-1.5 md:mb-1.5 md:flex-row md:items-center md:justify-between md:gap-1.5">
+          <h1 className="order-2 min-w-0 truncate text-[clamp(1rem,3.4vw,1.875rem)] font-semibold uppercase leading-tight text-rr-primary md:order-1 md:flex-1">
+            {prize}
+          </h1>
+          <div className="order-1 flex shrink-0 flex-wrap items-center gap-2 md:order-2 md:justify-end">
+            {operator && (
+              <div className="flex items-center gap-2">
+                <Badge variant="operator">{operator.name}</Badge>
+                {operatorVrLabel && (
+                  <span
+                    className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium ${operatorVrBadgeClass}`}
+                  >
+                    <span>{operatorVrLabel}</span>
+                    <InfoTooltip text="Typical tickets-value vs prize across this operator's competitions. Lower = more player-friendly." />
+                  </span>
+                )}
+              </div>
+            )}
+            <CategoryBadgeAdmin competitionId={compId} category={category} />
+            {!hasEnded && getEndsTimeLabel(endsAt) && (
+              <Badge variant="red">{getEndsTimeLabel(endsAt)}</Badge>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col md:grid md:grid-cols-[1.08fr_0.92fr] md:gap-1.5 md:items-stretch">
+          <div className="contents md:order-1 md:flex md:flex-col md:gap-2">
             <div className="relative hidden rounded-[10px] overflow-hidden border border-rr-border bg-rr-elevated h-[300px] md:flex md:h-[350px] items-center justify-center md:order-none">
               {imageUrl ? (
                 <CompetitionImage
@@ -714,9 +740,9 @@ export default async function Page({
               )}
             </div>
             {!hasEnded && endsAt ? (
-              <div className="order-5 mb-6 rounded-lg border border-rr-border bg-rr-elevated md:order-none md:mb-0">
-                <div className="flex flex-col divide-y divide-rr-border lg:flex-row lg:items-center lg:divide-x lg:divide-y-0">
-                  <div className="px-5 py-4 lg:flex-1">
+              <div className="order-5 mb-1.5 rounded-lg border border-rr-border bg-rr-elevated md:order-none md:mb-0">
+                <div className="flex flex-row items-center divide-x divide-rr-border">
+                  <div className="shrink-0 px-3 py-2 sm:px-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">
                       Time left to enter
                     </p>
@@ -724,9 +750,9 @@ export default async function Page({
                   </div>
                   {urgency ? (
                     <p
-                      className={`px-5 py-4 text-sm font-semibold leading-5 lg:flex-1 ${
+                      className={`flex-1 px-3 py-2 text-[10px] font-semibold uppercase leading-3 sm:px-4 sm:text-xs sm:leading-4 ${
                         urgency.tone === "urgent"
-                          ? "text-[#f2545b]"
+                          ? "text-[#f95353]"
                           : urgency.tone === "soon"
                             ? "text-rr-warn"
                             : "text-rr-secondary"
@@ -739,29 +765,31 @@ export default async function Page({
               </div>
             ) : null}
             {soldTickets !== null ? (
-              <div className="order-7 mb-6 grid grid-cols-2 gap-5 md:order-none md:mb-0">
-                <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Tickets sold</p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-semibold tabular-nums text-rr-primary sm:text-3xl">
-                      {soldTickets.toLocaleString("en-GB")}
-                    </span>
-                  </div>
-                </div>
-                {remainingTickets !== null ? (
-                  <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Tickets remaining</p>
-                    <div className="flex items-baseline gap-2">
+              <div className="order-7 mb-2 rounded-lg border border-rr-border bg-rr-elevated md:order-none md:mb-0">
+                <div className="grid grid-cols-2 divide-x divide-rr-border">
+                  <div className="px-4 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Tickets sold</p>
+                    <p className="flex items-baseline gap-2">
                       <span className="text-2xl font-semibold tabular-nums text-rr-primary sm:text-3xl">
-                        {remainingTickets.toLocaleString("en-GB")}
+                        {soldTickets.toLocaleString("en-GB")}
                       </span>
-                    </div>
+                    </p>
                   </div>
-                ) : null}
+                  {remainingTickets !== null ? (
+                    <div className="px-4 py-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Tickets remaining</p>
+                      <p className="flex items-baseline gap-2">
+                        <span className="text-2xl font-semibold tabular-nums text-rr-primary sm:text-3xl">
+                          {remainingTickets.toLocaleString("en-GB")}
+                        </span>
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
               </div>
             ) : null}
             {totalTicketsValue !== null || percentSoldValue !== null ? (
-              <div className="order-8 mb-6 rounded-lg border border-rr-border bg-rr-elevated px-5 py-5 md:order-none md:mb-0">
+              <div className="order-8 mb-2 rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:order-none md:mb-0">
                 {totalTicketsValue === null && percentSoldValue === null ? (
                   <p className="text-sm text-rr-muted">
                     Sales data not published by the operator
@@ -770,22 +798,23 @@ export default async function Page({
                   <>
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Overall progress</p>
                     {percentValue !== null ? (
-                      <p className="mb-3 flex items-baseline gap-2">
+                      <p className="mb-1.5 flex items-baseline gap-2">
                         <span className="text-3xl font-semibold text-rr-green">
                           {percentValue.toFixed(0)}%
                         </span>
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">sold</span>
                       </p>
                     ) : null}
                     {percentValue !== null ? (
-                      <ProgressBar value={percentValue} className="mb-3" />
+                      <ProgressBar value={percentValue} className="mb-1.5" />
                     ) : null}
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-rr-secondary">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
                         {soldTickets !== null
                           ? `${soldTickets.toLocaleString("en-GB")} sold`
                           : ""}
                       </span>
-                      <span className="text-sm text-rr-secondary">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
                         {totalTicketsValue !== null
                           ? `${totalTicketsValue.toLocaleString("en-GB")} total tickets`
                           : ""}
@@ -809,30 +838,8 @@ export default async function Page({
               </div>
             ) : null}
           </div>
-          <div className="contents md:order-2 md:block">
-            <div className="order-1 flex flex-wrap items-start gap-2 mb-4 md:order-none">
-              {operator && (
-                <div className="flex items-center gap-2">
-                  <Badge variant="operator">{operator.name}</Badge>
-                  {operatorVrLabel && (
-                    <span
-                      className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium ${operatorVrBadgeClass}`}
-                    >
-                      <span>{operatorVrLabel}</span>
-                      <InfoTooltip text="Typical tickets-value vs prize across this operator's competitions. Lower = more player-friendly." />
-                    </span>
-                  )}
-                </div>
-              )}
-              <CategoryBadgeAdmin competitionId={compId} category={category} />
-              {!hasEnded && getEndsTimeLabel(endsAt) && (
-                <Badge variant="red">{getEndsTimeLabel(endsAt)}</Badge>
-              )}
-            </div>
-            <h1 className="order-2 text-2xl md:text-3xl font-semibold text-rr-primary mb-6 md:order-none">
-              {prize}
-            </h1>
-            <div className="order-3 relative mb-6 rounded-[10px] overflow-hidden border border-rr-border bg-rr-elevated h-[300px] flex items-center justify-center md:hidden">
+          <div className="contents md:order-2 md:flex md:min-h-full md:flex-col">
+            <div className="order-3 relative mb-1.5 rounded-[10px] overflow-hidden border border-rr-border bg-rr-elevated h-[300px] flex items-center justify-center md:hidden">
               {imageUrl ? (
                 <CompetitionImage
                   src={imageUrl}
@@ -847,9 +854,9 @@ export default async function Page({
                 <PlaceholderIcon category={category} />
               )}
             </div>
-            <div className="order-4 grid grid-cols-2 gap-5 mb-6 md:order-none">
-              <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
-                <p className="text-xs text-rr-muted mb-1">Ticket price</p>
+            <div className="order-4 grid grid-cols-2 gap-1.5 mb-2 md:order-none">
+              <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Ticket price</p>
                 <p className="text-xl font-semibold text-rr-green">
                   {priceValue === 0
                     ? "FREE"
@@ -858,8 +865,8 @@ export default async function Page({
                       : "—"}
                 </p>
               </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
-                <p className="text-xs text-rr-muted mb-1">Prize value</p>
+              <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Prize value</p>
                 <p className="flex items-center gap-1 text-xl font-semibold text-rr-primary">
                   <span>
                     {prizeValueNum
@@ -871,16 +878,16 @@ export default async function Page({
                   )}
                 </p>
               </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
-                <p className="text-xs text-rr-muted mb-1">Total tickets</p>
+              <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Total tickets</p>
                 <p className="text-xl font-semibold text-rr-primary tabular-nums">
                   {totalTicketsValue !== null
                     ? totalTicketsValue.toLocaleString("en-GB")
                     : "—"}
                 </p>
               </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
-                <p className="text-xs text-rr-muted mb-1">Max per person</p>
+              <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Max per person</p>
                 <p className="text-xl font-semibold text-rr-primary">
                   {maxPerPerson !== null && maxPerPerson !== undefined
                     ? maxPerPerson.toLocaleString("en-GB")
@@ -888,7 +895,7 @@ export default async function Page({
                 </p>
               </div>
             </div>
-            <div className="order-6 flex flex-wrap items-center gap-3 mt-6 mb-6 md:order-none">
+            <div className="order-6 flex flex-wrap items-center gap-1.5 mt-2 mb-2 md:order-none">
               <EnterButton
                 competitionId={compId}
                 sourceUrl={sourceUrl}
@@ -899,9 +906,9 @@ export default async function Page({
               <SaveActions />
             </div>
             {!instantPrizes && ticketsSoldForOdds !== null ? (
-              <div className="order-10 mt-6 mb-6 rounded-lg border border-rr-border bg-rr-elevated md:order-none">
-                <div className="grid grid-cols-1 items-center sm:grid-cols-[1fr_auto_1fr]">
-                  <div className="px-5 py-4">
+              <div className="order-10 mt-2 mb-2 rounded-lg border border-rr-border bg-rr-elevated md:order-none">
+                <div className="flex flex-row items-stretch divide-x divide-rr-border">
+                  <div className="w-[46%] shrink-0 px-4 py-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1 flex items-center gap-1">
                       <span>
                         {hasEnded
@@ -917,7 +924,7 @@ export default async function Page({
                       />
                     </p>
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Based on tickets sold</p>
-                    <p className="text-2xl font-semibold text-rr-green">
+                    <p className="text-xl font-semibold text-rr-green sm:text-2xl">
                       {liveOdds
                         ? `1 in ${liveOdds.toLocaleString("en-GB")}`
                         : "No tickets sold yet"}
@@ -925,38 +932,41 @@ export default async function Page({
                   </div>
                   {!hasEnded ? (
                     <>
-                      <div className="hidden h-16 w-px bg-rr-border sm:block" />
-                      <p className="px-5 pb-4 text-xs leading-5 text-rr-muted sm:py-4">
-                        These odds improve as fewer tickets are sold.
-                        <br />
-                        More tickets sold ={" "}
-                        <span className="text-rr-green">lower odds</span>
-                      </p>
+                      
+                      <div className="flex-1 px-4 py-5">
+                        <p className="text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
+                          These odds improve as fewer tickets are sold.
+                        </p>
+                        <p className="mt-5 text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
+                          More tickets sold ={" "}
+                          <span className="text-rr-green">lower odds</span>
+                        </p>
+                      </div>
                     </>
                   ) : null}
                 </div>
               </div>
             ) : null}
-            <div className="order-11 rounded-lg border border-rr-border bg-rr-elevated mb-6 divide-y divide-rr-border md:order-none">
-              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+            <div className="order-11 rounded-lg border border-rr-border bg-rr-elevated mb-2 divide-y divide-rr-border md:order-none">
+              <div className="flex items-center justify-between gap-2 px-4 py-2.5">
                 {operatorProfile?.freeEntryUrl ? (
                   <a
                     href={operatorProfile.freeEntryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-semibold text-rr-primary no-underline hover:underline"
+                    className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted !text-rr-primary no-underline hover:underline"
                   >
                     Free Postal Entry Available
                   </a>
                 ) : (
-                  <span className="text-sm font-semibold text-rr-primary">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted !text-rr-primary">
                     Free Postal Entry Available
                   </span>
                 )}
                 <span className="text-sm font-semibold text-rr-green">Yes</span>
               </div>
-              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
-                <span className="text-sm text-rr-muted">
+              <div className="flex items-center justify-between gap-2 px-4 py-2.5">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
                   Cash Alternative
                   <InfoTooltip text="What the winner receives instead of the prize. Often lower than the prize value, since the prize can include extras that are not part of the cash option." />
                 </span>
@@ -970,21 +980,21 @@ export default async function Page({
                   </span>
                 )}
               </div>
-              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
-                <span className="text-sm text-rr-muted">Winners</span>
+              <div className="flex items-center justify-between gap-2 px-4 py-2.5">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Winners</span>
                 <span className="text-sm font-medium text-rr-primary">
                   {numWinners ?? 1}
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-4 px-4 py-3.5">
-                <span className="text-sm text-rr-muted">Instant Prize</span>
+              <div className="flex items-center justify-between gap-2 px-4 py-2.5">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Instant Prize</span>
                 <span className="text-sm font-medium text-rr-primary">
                   {instantPrizes ? "Yes" : "No"}
                 </span>
               </div>
               {makeModel && (
-                <div className="flex items-center justify-between gap-4 px-4 py-3.5">
-                  <span className="text-sm text-rr-muted">Make / Model</span>
+                <div className="flex items-center justify-between gap-2 px-4 py-2.5">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Make / Model</span>
                   <span className="text-sm font-medium text-rr-primary">
                     {makeModel}
                   </span>
@@ -992,9 +1002,9 @@ export default async function Page({
               )}
             </div>
             {history.length >= 3 ? (
-              <div className="order-12 mb-6 md:order-none">
-                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-3">Ticket sales history</h2>
-                <div className="rounded-lg border border-rr-border bg-rr-elevated px-5 py-5">
+              <div className="order-12 mb-2 md:order-none md:mb-0 md:flex md:min-h-[220px] md:flex-1 md:flex-col">
+                <div className="flex flex-col rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:flex-1">
+                  <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1.5">Ticket sales history</h2>
                   <TicketSalesChart
                     history={history}
                     hasEnded={hasEnded}
@@ -1010,7 +1020,7 @@ export default async function Page({
             ) : null}
           </div>
         </div>
-        <div className="mt-8 md:mt-0 space-y-8">
+        <div className="space-y-2 md:mt-2">
           {salesVsPrizeBlock}
           <div>
             <ReportIssue competitionId={compId} />
@@ -1027,7 +1037,7 @@ export default async function Page({
             {operatorSection}
           </>
         )}
-        <div id="comments" className="mt-10">
+        <div id="comments" className="mt-5">
           <CommentsSection competitionId={compId} initialComments={comments} />
         </div>
       </div>

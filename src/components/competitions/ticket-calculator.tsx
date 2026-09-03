@@ -60,18 +60,18 @@ export function TicketCalculator({
   const winChance = formatWinChance(winChanceValue);
 
   return (
-    <div className="mb-6 rounded-xl border border-rr-border bg-rr-elevated p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-rr-primary">
+    <div className="rounded-xl border border-rr-border bg-rr-elevated px-4 py-2 shadow-sm">
+      <div className="mb-1.5 flex items-center justify-between gap-1.5">
+        <h2 className="text-base font-semibold uppercase tracking-wide text-rr-primary">
           Ticket calculator
         </h2>
-        <span className="text-xs text-rr-muted">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
           Up to {buyable.toLocaleString("en-GB")} ticket{buyable === 1 ? "" : "s"}
         </span>
       </div>
 
       {buyable > 1 ? (
-        <div className="mb-4 flex items-center gap-3 rounded-lg border border-rr-border bg-rr-surface px-3 py-3">
+        <div className="mb-2 flex items-center gap-1.5 rounded-lg border border-rr-border bg-rr-surface px-3 py-2">
           <input
             type="range"
             min={1}
@@ -95,25 +95,27 @@ export function TicketCalculator({
           />
         </div>
       ) : (
-        <div className="mb-4 inline-flex h-10 items-center rounded-md border border-rr-border bg-rr-surface px-3 text-sm font-semibold text-rr-primary">
+        <div className="mb-2 inline-flex h-10 items-center rounded-md border border-rr-border bg-rr-surface px-3 text-sm font-semibold text-rr-primary">
           1 ticket
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-3 text-center">
-          <p className="mb-1 text-[11px] uppercase tracking-wide text-rr-muted">Live odds</p>
-          <p className="text-sm font-semibold text-rr-primary">
+      <div className="space-y-1.5">
+        <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-2 text-center">
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Live odds</p>
+          <p className="text-base font-semibold text-rr-primary">
             1 in {liveOdds.toLocaleString("en-GB")}
           </p>
         </div>
-        <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-3 text-center">
-          <p className="mb-1 text-[11px] uppercase tracking-wide text-rr-muted">Cost</p>
-          <p className="text-sm font-semibold text-rr-primary">{cost}</p>
-        </div>
-        <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-3 text-center">
-          <p className="mb-1 text-[11px] uppercase tracking-wide text-rr-muted">Win chance</p>
-          <p className="text-sm font-semibold text-rr-primary">{winChance}</p>
+        <div className="grid grid-cols-2 gap-1.5">
+          <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-2 text-center">
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Cost</p>
+            <p className="text-base font-semibold text-rr-primary">{cost}</p>
+          </div>
+          <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-2 text-center">
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Win chance</p>
+            <p className="text-base font-semibold text-rr-primary">{winChance}</p>
+          </div>
         </div>
       </div>
     </div>
