@@ -699,7 +699,7 @@ export default async function Page({
           </nav>
         </div>
         <div className="mb-2 flex flex-col gap-1.5 md:mb-1.5 md:flex-row md:items-center md:justify-between md:gap-1.5">
-          <h1 className="order-2 min-w-0 truncate text-[clamp(1rem,3.4vw,1.875rem)] font-semibold uppercase leading-tight text-rr-primary md:order-1 md:flex-1">
+          <h1 className="order-2 min-w-0 text-2xl font-semibold uppercase leading-tight text-rr-primary md:order-1 md:flex-1 md:truncate md:text-[clamp(1.125rem,2.6vw,1.875rem)]">
             {prize}
           </h1>
           <div className="order-1 flex shrink-0 flex-wrap items-center gap-2 md:order-2 md:justify-end">
@@ -1003,7 +1003,7 @@ export default async function Page({
             </div>
             {history.length >= 3 ? (
               <div className="order-12 mb-2 md:order-none md:mb-0 md:flex md:min-h-[220px] md:flex-1 md:flex-col">
-                <div className="flex flex-col rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:flex-1">
+                <div className="flex h-[260px] flex-col rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:h-auto md:flex-1">
                   <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1.5">Ticket sales history</h2>
                   <TicketSalesChart
                     history={history}
