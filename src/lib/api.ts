@@ -3,6 +3,8 @@ import type { Competition } from "@/types/competition";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 const DEFAULT_REVALIDATE: number | false = 86400;
+const COMPETITION_TTL = 60;
+const OPERATOR_TTL = 60;
 
 type RequestOptions = {
   method?: string;
@@ -380,7 +382,9 @@ export async function getCompetitions(
 
   const path =
     query.size > 0 ? `/competitions?${query.toString()}` : "/competitions";
-  const response = await apiFetch<unknown>(path);
+  const response = await apiFetch<unknown>(path, {
+    revalidate: COMPETITION_TTL,
+  });
   return normalizeCompetitionsResponse<Competition>(response);
 }
 
@@ -404,12 +408,16 @@ export async function getCompetitionSearch(
 }
 
 export async function getOperators() {
-  const response = await apiFetch<unknown>("/operators");
+  const response = await apiFetch<unknown>("/operators", {
+    revalidate: OPERATOR_TTL,
+  });
   return normalizeOperatorSummary(response);
 }
 
 export async function getOperator(slug: string) {
-  const response = await apiFetch<unknown>(`/operators/${slug}`);
+  const response = await apiFetch<unknown>(`/operators/${slug}`, {
+    revalidate: OPERATOR_TTL,
+  });
   return normalizeOperatorDetail(response);
 }
 
@@ -457,7 +465,9 @@ export async function getTopOpportunities(
       ? `/competitions/top-opportunities?${query.toString()}`
       : "/competitions/top-opportunities";
 
-  const response = await apiFetch<unknown>(path);
+  const response = await apiFetch<unknown>(path, {
+    revalidate: COMPETITION_TTL,
+  });
   return normalizeCompetitionsResponse<Competition>(response);
 }
 
@@ -481,7 +491,9 @@ export async function getMostUndersold(
       ? `/competitions/most-undersold?${query.toString()}`
       : "/competitions/most-undersold";
 
-  const response = await apiFetch<unknown>(path);
+  const response = await apiFetch<unknown>(path, {
+    revalidate: COMPETITION_TTL,
+  });
   return normalizeCompetitionsResponse<Competition>(response);
 }
 
@@ -496,16 +508,22 @@ export async function getRecentlyEnded(limit = 8): Promise<Competition[]> {
 }
 
 export async function getCompetition(id: string) {
-  const response = await apiFetch<CompetitionDetail>(`/competitions/${id}`);
+  const response = await apiFetch<CompetitionDetail>(`/competitions/${id}`, {
+    revalidate: COMPETITION_TTL,
+  });
   return normalizeCompetitionItem(response);
 }
 
 export async function getCompetitionHistory(id: string) {
-  return apiFetch<unknown>(`/competitions/${id}/history`);
+  return apiFetch<unknown>(`/competitions/${id}/history`, {
+    revalidate: COMPETITION_TTL,
+  });
 }
 
 export async function getSimilarCompetitions(id: string, limit = 8) {
-  return apiFetch<unknown>(`/competitions/${id}/similar?limit=${limit}`);
+  return apiFetch<unknown>(`/competitions/${id}/similar?limit=${limit}`, {
+    revalidate: COMPETITION_TTL,
+  });
 }
 
 export async function subscribeToNewsletter(email: string) {

@@ -42,6 +42,8 @@ import {
 } from "@/sanity/queries";
 import type { OperatorProfile } from "@/types/operator-profile";
 
+export const revalidate = 60;
+
 type CompetitionHistory = {
   scrapedAt: string;
   ticketsSold: number;
