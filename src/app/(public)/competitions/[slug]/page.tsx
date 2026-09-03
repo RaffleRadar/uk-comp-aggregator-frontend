@@ -910,25 +910,22 @@ export default async function Page({
             {!instantPrizes && ticketsSoldForOdds !== null ? (
               <div className="order-10 mt-2 mb-2 rounded-lg border border-rr-border bg-rr-elevated md:order-none">
                 <div className="flex flex-row items-center divide-x divide-rr-border md:items-stretch">
-                  <div className="flex flex-1 items-center justify-between gap-3 px-4 py-3 md:w-[46%] md:flex-none md:shrink-0 md:flex-col md:items-start md:justify-start md:py-5">
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted flex items-center gap-1 md:mb-1">
-                        <span>
-                          {hasEnded ? "Final odds per ticket" : "Odds per ticket"}
-                        </span>
-                        <InfoTooltip
-                          text={
-                            hasEnded
-                              ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
-                              : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
-                          }
-                        />
-                      </p>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted md:mb-2">
-                        Based on tickets sold
-                      </p>
-                    </div>
-                    <p className="whitespace-nowrap text-lg font-semibold text-rr-green sm:text-xl md:text-2xl">
+                  <div className="flex flex-1 flex-col items-center px-4 py-3 text-center md:w-[46%] md:flex-none md:shrink-0 md:items-start md:py-5 md:text-left">
+                    <p className="flex items-center justify-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted md:mb-1 md:justify-start">
+                      <span>
+                        {hasEnded
+                          ? "Final odds per ticket based on tickets sold"
+                          : "Odds per ticket based on tickets sold"}
+                      </span>
+                      <InfoTooltip
+                        text={
+                          hasEnded
+                            ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
+                            : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
+                        }
+                      />
+                    </p>
+                    <p className="mt-2 whitespace-nowrap text-[clamp(1.5rem,8vw,2.5rem)] font-semibold leading-none text-rr-green md:mt-0 md:text-2xl">
                       {liveOdds
                         ? `1 in ${liveOdds.toLocaleString("en-GB")}`
                         : "No tickets sold yet"}
