@@ -718,7 +718,9 @@ export default async function Page({
             )}
             <CategoryBadgeAdmin competitionId={compId} category={category} />
             {!hasEnded && getEndsTimeLabel(endsAt) && (
-              <Badge variant="red">{getEndsTimeLabel(endsAt)}</Badge>
+              <Badge variant="red" className="hidden md:inline-block">
+                {getEndsTimeLabel(endsAt)}
+              </Badge>
             )}
           </div>
         </div>
@@ -770,16 +772,16 @@ export default async function Page({
                   <div className="px-4 py-2">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Tickets sold</p>
                     <p className="flex items-baseline gap-2">
-                      <span className="text-2xl font-semibold tabular-nums text-rr-primary sm:text-3xl">
+                      <span className="whitespace-nowrap text-[clamp(1.05rem,5.2vw,1.875rem)] font-semibold tabular-nums text-rr-primary">
                         {soldTickets.toLocaleString("en-GB")}
                       </span>
                     </p>
                   </div>
                   {remainingTickets !== null ? (
                     <div className="px-4 py-2">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Tickets remaining</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1 whitespace-nowrap">Remaining</p>
                       <p className="flex items-baseline gap-2">
-                        <span className="text-2xl font-semibold tabular-nums text-rr-primary sm:text-3xl">
+                        <span className="whitespace-nowrap text-[clamp(1.05rem,5.2vw,1.875rem)] font-semibold tabular-nums text-rr-primary">
                           {remainingTickets.toLocaleString("en-GB")}
                         </span>
                       </p>
@@ -808,15 +810,15 @@ export default async function Page({
                     {percentValue !== null ? (
                       <ProgressBar value={percentValue} className="mb-1.5" />
                     ) : null}
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
                         {soldTickets !== null
                           ? `${soldTickets.toLocaleString("en-GB")} sold`
                           : ""}
                       </span>
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                      <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
                         {totalTicketsValue !== null
-                          ? `${totalTicketsValue.toLocaleString("en-GB")} total tickets`
+                          ? `${totalTicketsValue.toLocaleString("en-GB")} total`
                           : ""}
                       </span>
                     </div>
@@ -907,42 +909,41 @@ export default async function Page({
             </div>
             {!instantPrizes && ticketsSoldForOdds !== null ? (
               <div className="order-10 mt-2 mb-2 rounded-lg border border-rr-border bg-rr-elevated md:order-none">
-                <div className="flex flex-row items-stretch divide-x divide-rr-border">
-                  <div className="w-[46%] shrink-0 px-4 py-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1 flex items-center gap-1">
-                      <span>
-                        {hasEnded
-                          ? "Final odds per ticket"
-                          : "Odds per ticket (estimate)"}
-                      </span>
-                      <InfoTooltip
-                        text={
-                          hasEnded
-                            ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
-                            : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
-                        }
-                      />
-                    </p>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Based on tickets sold</p>
-                    <p className="text-xl font-semibold text-rr-green sm:text-2xl">
+                <div className="flex flex-row items-center divide-x divide-rr-border md:items-stretch">
+                  <div className="flex flex-1 items-center justify-between gap-3 px-4 py-3 md:w-[46%] md:flex-none md:shrink-0 md:flex-col md:items-start md:justify-start md:py-5">
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted flex items-center gap-1 md:mb-1">
+                        <span>
+                          {hasEnded ? "Final odds per ticket" : "Odds per ticket"}
+                        </span>
+                        <InfoTooltip
+                          text={
+                            hasEnded
+                              ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
+                              : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
+                          }
+                        />
+                      </p>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted md:mb-2">
+                        Based on tickets sold
+                      </p>
+                    </div>
+                    <p className="whitespace-nowrap text-lg font-semibold text-rr-green sm:text-xl md:text-2xl">
                       {liveOdds
                         ? `1 in ${liveOdds.toLocaleString("en-GB")}`
                         : "No tickets sold yet"}
                     </p>
                   </div>
                   {!hasEnded ? (
-                    <>
-                      
-                      <div className="flex-1 px-4 py-5">
-                        <p className="text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
-                          These odds improve as fewer tickets are sold.
-                        </p>
-                        <p className="mt-5 text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
-                          More tickets sold ={" "}
-                          <span className="text-rr-green">lower odds</span>
-                        </p>
-                      </div>
-                    </>
+                    <div className="hidden flex-1 px-4 py-5 md:block">
+                      <p className="text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
+                        These odds improve as fewer tickets are sold.
+                      </p>
+                      <p className="mt-5 text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
+                        More tickets sold ={" "}
+                        <span className="text-rr-green">lower odds</span>
+                      </p>
+                    </div>
                   ) : null}
                 </div>
               </div>

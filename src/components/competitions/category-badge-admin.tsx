@@ -152,7 +152,7 @@ export function CategoryBadgeAdmin({
 
   if (!isAdmin) {
     return currentCategory ? (
-      <Badge variant="neutral" className="text-rr-muted bg-rr-elevated">
+      <Badge variant="neutral" className="inline-flex h-[22px] items-center text-rr-muted bg-rr-elevated">
         {currentCategory}
       </Badge>
     ) : null;
@@ -160,32 +160,32 @@ export function CategoryBadgeAdmin({
 
   if (!isEditing) {
     return (
-      <div className="flex flex-col items-start">
+      <span className="inline-flex items-center">
         <button
           type="button"
           onClick={() => {
             void openEdit();
           }}
-          className="cursor-pointer"
+          className="inline-flex cursor-pointer items-center leading-none"
         >
           <Badge
             variant="neutral"
-            className="text-rr-muted bg-rr-elevated hover:bg-rr-elevated/80"
+            className="inline-flex h-[22px] items-center text-rr-muted bg-rr-elevated hover:bg-rr-elevated/80"
           >
             {currentCategory ?? "Uncategorised"}
           </Badge>
         </button>
         {error ? (
-          <span className="mt-1 text-xs text-red-700 dark:text-red-300">
+          <span className="ml-2 text-xs text-red-700 dark:text-red-300">
             {error}
           </span>
         ) : null}
-      </div>
+      </span>
     );
   }
 
   return (
-    <div className="flex flex-col items-start">
+    <span className="inline-flex items-center">
       <select
         disabled={isSaving || categories === null}
         value={currentCategory ?? ""}
@@ -194,7 +194,7 @@ export function CategoryBadgeAdmin({
           const next = raw === "" ? null : raw;
           void saveCategory(next);
         }}
-        className="h-8 min-w-[120px] rounded-xl border border-rr-border bg-rr-elevated px-2 text-xs text-rr-primary outline-none transition focus-visible:border-rr-green focus-visible:ring-2 focus-visible:ring-rr-green/20 disabled:cursor-not-allowed disabled:opacity-70"
+        className="h-[22px] min-w-[120px] rounded border border-rr-border bg-rr-elevated px-2 text-[10px] text-rr-primary outline-none transition focus-visible:border-rr-green focus-visible:ring-2 focus-visible:ring-rr-green/20 disabled:cursor-not-allowed disabled:opacity-70"
       >
         <option value="">Uncategorised</option>
         {(categories ?? []).map((cat) => (
@@ -204,10 +204,10 @@ export function CategoryBadgeAdmin({
         ))}
       </select>
       {error ? (
-        <span className="mt-1 text-xs text-red-700 dark:text-red-300">
+        <span className="ml-2 text-xs text-red-700 dark:text-red-300">
           {error}
         </span>
       ) : null}
-    </div>
+    </span>
   );
 }

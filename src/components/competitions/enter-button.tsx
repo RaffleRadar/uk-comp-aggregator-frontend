@@ -42,9 +42,12 @@ export function EnterButton({
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleClick}
-      className="flex-1 bg-rr-green text-rr-on-accent font-semibold uppercase tracking-wide text-sm rounded-lg py-3 px-4 text-center hover:opacity-90 transition-opacity flex items-center justify-center"
+      className="flex-1 bg-rr-green text-rr-on-accent font-semibold uppercase tracking-wide text-sm whitespace-nowrap rounded-lg py-3 px-4 text-center hover:opacity-90 transition-opacity flex items-center justify-center"
     >
-      {hasEnded ? `Visit ${operatorName}` : `Enter on ${operatorName}`}
+      <span className="md:hidden">{hasEnded ? "Visit site" : "Enter here"}</span>
+      <span className="hidden md:inline">
+        {hasEnded ? `Visit ${operatorName}` : `Enter on ${operatorName}`}
+      </span>
       <IconExternalLink size={16} className="ml-2" />
     </a>
   );
