@@ -757,7 +757,7 @@ export default async function Page({
                           ? "text-[#f95353]"
                           : urgency.tone === "soon"
                             ? "text-rr-warn"
-                            : "text-rr-secondary"
+                            : "text-rr-green"
                       }`}
                     >
                       {urgency.text}
