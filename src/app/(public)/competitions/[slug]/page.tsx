@@ -999,10 +999,10 @@ export default async function Page({
                 </div>
               )}
             </div>
-            {history.length >= 3 ? (
-              <div className="order-12 mb-2 md:order-none md:mb-0 md:flex md:min-h-[220px] md:flex-1 md:flex-col">
-                <div className="flex h-[260px] flex-col rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:h-auto md:flex-1">
-                  <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1.5">Ticket sales history</h2>
+            <div className="order-12 mb-2 md:order-none md:mb-0 md:flex md:min-h-[220px] md:flex-1 md:flex-col">
+              <div className="flex h-[260px] flex-col rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:h-auto md:flex-1">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1.5">Ticket sales history</h2>
+                {history.length >= 3 ? (
                   <TicketSalesChart
                     history={history}
                     hasEnded={hasEnded}
@@ -1013,9 +1013,22 @@ export default async function Page({
                       soldTickets >= totalTicketsValue
                     }
                   />
-                </div>
+                ) : (
+                  <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
+                    <p className="text-3xl font-semibold text-rr-green">
+                      {soldTickets !== null
+                        ? `${soldTickets.toLocaleString("en-GB")} sold`
+                        : "0 sold"}
+                    </p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                      {soldTickets === 0
+                        ? "No sales yet, the chart starts once tickets move"
+                        : "Tracking started, the chart fills in over the next few hours"}
+                    </p>
+                  </div>
+                )}
               </div>
-            ) : null}
+            </div>
           </div>
         </div>
         <div className="space-y-2 md:mt-2">
