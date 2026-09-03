@@ -63,10 +63,10 @@ export function TicketCalculator({
   return (
     <div className="rounded-xl border border-rr-border bg-rr-elevated px-4 py-2 shadow-sm">
       <div className="mb-1.5 flex items-center justify-between gap-1.5">
-        <h2 className="text-base font-semibold uppercase tracking-wide text-rr-primary">
+        <h2 className="whitespace-nowrap text-sm font-semibold uppercase tracking-wide text-rr-primary md:text-base">
           Ticket calculator
         </h2>
-        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+        <span className="whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.1em] text-rr-muted md:text-[11px] md:tracking-[0.14em]">
           {maxPerPerson !== null
             ? `Up to ${buyable.toLocaleString("en-GB")} ticket${buyable === 1 ? "" : "s"}`
             : `${buyable.toLocaleString("en-GB")} ticket${buyable === 1 ? "" : "s"} left`}
