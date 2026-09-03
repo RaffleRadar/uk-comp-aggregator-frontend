@@ -30,11 +30,12 @@ export function TicketCalculator({
   const [ticketCount, setTicketCount] = useState(1);
   const ticketsLeft = Math.max(0, ticketsTotal - ticketsSold);
 
-  if (maxPerPerson === null || ticketsLeft <= 0 || ticketsTotal <= 0) {
+  if (ticketsLeft <= 0 || ticketsTotal <= 0) {
     return null;
   }
 
-  const buyable = Math.min(maxPerPerson, ticketsLeft);
+  const buyable =
+    maxPerPerson !== null ? Math.min(maxPerPerson, ticketsLeft) : ticketsLeft;
 
   if (buyable <= 0) {
     return null;
@@ -66,7 +67,9 @@ export function TicketCalculator({
           Ticket calculator
         </h2>
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
-          Up to {buyable.toLocaleString("en-GB")} ticket{buyable === 1 ? "" : "s"}
+          {maxPerPerson !== null
+            ? `Up to ${buyable.toLocaleString("en-GB")} ticket${buyable === 1 ? "" : "s"}`
+            : `${buyable.toLocaleString("en-GB")} ticket${buyable === 1 ? "" : "s"} left`}
         </span>
       </div>
 
