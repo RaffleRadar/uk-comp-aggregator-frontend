@@ -11,6 +11,7 @@ type OperatorRecord = {
   isHidden: boolean;
   baseUrl: string;
   competitionCount: number;
+  defaultCategory: string | null;
 };
 
 type LoadResult =
@@ -46,6 +47,10 @@ export function OperatorModeration() {
   const [isLoading, setIsLoading] = useState(false);
   const [togglingIds, setTogglingIds] = useState<Record<string, boolean>>({});
   const [rowErrors, setRowErrors] = useState<Record<string, string>>({});
+  const [categories, setCategories] = useState<string[]>([]);
+  const [savingCategoryIds, setSavingCategoryIds] = useState<
+    Record<string, boolean>
+  >({});
 
   const requestOperators = useCallback(async (): Promise<LoadResult> => {
     try {
@@ -151,6 +156,115 @@ export function OperatorModeration() {
       cancelled = true;
     };
   }, [requestOperators]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCategories() {
+      try {
+        const response = await fetch("/api/admin/competitions/categories", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = await parseJsonResponse<string[]>(response);
+
+        if (!cancelled && Array.isArray(payload)) {
+          setCategories(payload);
+        }
+      } catch {
+        // categories are optional, the selector simply stays empty
+      }
+    }
+
+    void loadCategories();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const updateDefaultCategory = useCallback(
+    async (id: string, nextCategory: string) => {
+      const previous = items.find((item) => item.id === id);
+
+      if (!previous) {
+        return;
+      }
+
+      const value = nextCategory === "" ? null : nextCategory;
+
+      setSavingCategoryIds((current) => ({ ...current, [id]: true }));
+      setRowErrors((current) => {
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+      setItems((current) =>
+        current.map((item) =>
+          item.id === id ? { ...item, defaultCategory: value } : item,
+        ),
+      );
+
+      try {
+        const response = await fetch(
+          `/api/admin/operators/${encodeURIComponent(id)}/default-category`,
+          {
+            method: "PATCH",
+            credentials: "include",
+            cache: "no-store",
+            headers: {
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({ defaultCategory: value }),
+          },
+        );
+
+        if (!response.ok) {
+          let message = "Failed to save the default category.";
+
+          try {
+            const payload = await parseJsonResponse<unknown>(response);
+            message = readMessage(payload, message);
+          } catch {
+            message = "Failed to save the default category.";
+          }
+
+          setItems((current) =>
+            current.map((item) =>
+              item.id === id
+                ? { ...item, defaultCategory: previous.defaultCategory }
+                : item,
+            ),
+          );
+          setRowErrors((current) => ({ ...current, [id]: message }));
+        }
+      } catch {
+        setItems((current) =>
+          current.map((item) =>
+            item.id === id
+              ? { ...item, defaultCategory: previous.defaultCategory }
+              : item,
+          ),
+        );
+        setRowErrors((current) => ({
+          ...current,
+          [id]: "Failed to save the default category.",
+        }));
+      } finally {
+        setSavingCategoryIds((current) => {
+          const next = { ...current };
+          delete next[id];
+          return next;
+        });
+      }
+    },
+    [items],
+  );
 
   const toggleOperator = useCallback(
     async (id: string, nextHidden: boolean) => {
@@ -286,6 +400,7 @@ export function OperatorModeration() {
         <ul className="mt-6 space-y-4">
           {items.map((item) => {
             const isToggling = Boolean(togglingIds[item.id]);
+            const isSavingCategory = Boolean(savingCategoryIds[item.id]);
             const rowError = rowErrors[item.id];
             return (
               <li
@@ -308,6 +423,33 @@ export function OperatorModeration() {
                 <p className="mt-1 text-xs text-rr-muted">
                   {item.competitionCount} active competitions
                 </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <label
+                    htmlFor={`default-category-${item.id}`}
+                    className="text-xs text-rr-secondary"
+                  >
+                    Default category
+                  </label>
+                  <select
+                    id={`default-category-${item.id}`}
+                    value={item.defaultCategory ?? ""}
+                    disabled={isSavingCategory || categories.length === 0}
+                    onChange={(event) =>
+                      void updateDefaultCategory(item.id, event.target.value)
+                    }
+                    className="rounded-lg border border-rr-border bg-rr-elevated px-2 py-1 text-xs text-rr-primary disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <option value="">None</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-xs text-rr-muted">
+                    Used only when the prize title gives no category
+                  </span>
+                </div>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0 text-xs text-rr-secondary">
                     <a
