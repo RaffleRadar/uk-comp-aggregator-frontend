@@ -828,8 +828,7 @@ export default async function Page({
                 )}
               </div>
             ) : null}
-            {!hasEnded &&
-            !instantPrizes &&
+            {!instantPrizes &&
             totalTicketsValue !== null &&
             soldTickets !== null ? (
               <div className="order-9 md:order-none">
@@ -838,6 +837,7 @@ export default async function Page({
                   ticketsTotal={totalTicketsValue}
                   ticketPrice={priceValue}
                   maxPerPerson={maxPerPerson}
+                  hasEnded={hasEnded}
                 />
               </div>
             ) : null}

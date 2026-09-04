@@ -7,6 +7,7 @@ type TicketCalculatorProps = {
   ticketsTotal: number;
   ticketPrice: number | null;
   maxPerPerson: number | null;
+  hasEnded?: boolean;
 };
 
 function clampTicketCount(value: number, buyable: number) {
@@ -26,12 +27,68 @@ export function TicketCalculator({
   ticketsTotal,
   ticketPrice,
   maxPerPerson,
+  hasEnded = false,
 }: TicketCalculatorProps) {
   const [ticketCount, setTicketCount] = useState(1);
   const ticketsLeft = Math.max(0, ticketsTotal - ticketsSold);
 
-  if (ticketsLeft <= 0 || ticketsTotal <= 0) {
+  if (ticketsTotal <= 0) {
     return null;
+  }
+
+  if (hasEnded || ticketsLeft <= 0) {
+    if (ticketsSold <= 0) {
+      return null;
+    }
+
+    const finalOdds = Math.max(1, ticketsSold);
+    const finalChance = formatWinChance((1 / ticketsSold) * 100);
+    const finalCost =
+      ticketPrice !== null && ticketPrice > 0
+        ? `£${ticketPrice.toFixed(2)}`
+        : "Free";
+
+    return (
+      <div className="rounded-xl border border-rr-border bg-rr-elevated px-4 py-2 shadow-sm">
+        <div className="mb-1.5 flex items-center justify-between gap-1.5">
+          <h2 className="whitespace-nowrap text-sm font-semibold uppercase tracking-wide text-rr-primary md:text-base">
+            Final odds
+          </h2>
+          <span className="whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.1em] text-rr-muted md:text-[11px] md:tracking-[0.14em]">
+            Per ticket entered
+          </span>
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-2 text-center">
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+              Odds per ticket
+            </p>
+            <p className="text-base font-semibold text-rr-primary">
+              1 in {finalOdds.toLocaleString("en-GB")}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-2 text-center">
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                Ticket price
+              </p>
+              <p className="text-base font-semibold text-rr-primary">
+                {finalCost}
+              </p>
+            </div>
+            <div className="rounded-lg border border-rr-border bg-rr-surface px-3 py-2 text-center">
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                Win chance
+              </p>
+              <p className="text-base font-semibold text-rr-primary">
+                {finalChance}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const buyable =
