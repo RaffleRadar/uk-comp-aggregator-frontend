@@ -710,7 +710,7 @@ export default async function Page({
                 {operatorSlug ? (
                   <Link
                     href={`/operators/${operatorSlug}`}
-                    className="rounded transition hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rr-green"
+                    className="inline-flex items-center rounded transition hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rr-green"
                     aria-label={`View ${operator.name} operator page`}
                   >
                     <Badge variant="operator">{operator.name}</Badge>
