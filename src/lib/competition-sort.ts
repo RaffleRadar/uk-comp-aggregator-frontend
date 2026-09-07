@@ -15,6 +15,7 @@ export type CompetitionSortIdentity =
   | "topPrizes"
   | "sellingFast"
   | "lowestPrice"
+  | "highestPrice"
   | "newest"
   | "mostTicketsLeft";
 
@@ -57,6 +58,10 @@ export function getCompetitionSortIdentity(
 
   if (sortBy === "ticketPrice" && sortOrder === "asc") {
     return "lowestPrice";
+  }
+
+  if (sortBy === "ticketPrice" && sortOrder === "desc") {
+    return "highestPrice";
   }
 
   if (sortBy === "createdAt" && sortOrder === "desc") {
@@ -110,6 +115,12 @@ export function getCompetitionSortPresentation(state: CompetitionSortState) {
       return {
         identity,
         label: "Lowest Ticket Price",
+        headingSuffix: "By Ticket Price",
+      };
+    case "highestPrice":
+      return {
+        identity,
+        label: "Highest Ticket Price",
         headingSuffix: "By Ticket Price",
       };
     case "newest":

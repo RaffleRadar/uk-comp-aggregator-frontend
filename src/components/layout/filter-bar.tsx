@@ -70,6 +70,7 @@ const defaultSortOptions: SortOption[] = [
   { label: "Top Prizes", sortBy: "prizeValue", sortOrder: "desc" },
   { label: "Selling Fast", sortBy: "percentSold", sortOrder: "desc" },
   { label: "Lowest Ticket Price", sortBy: "ticketPrice", sortOrder: "asc" },
+  { label: "Highest Ticket Price", sortBy: "ticketPrice", sortOrder: "desc" },
   { label: "Newest", sortBy: "createdAt", sortOrder: "desc" },
   { label: "Most Tickets Left", sortBy: "ticketsLeft", sortOrder: "desc" },
 ];
