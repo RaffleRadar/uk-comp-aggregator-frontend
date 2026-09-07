@@ -53,7 +53,7 @@ export default async function BlogPage({
 
   try {
     const [postsResult, siteContent] = await Promise.all([
-      sanityClient.fetch<PostListItem[]>(ALL_POSTS, {}, { next: { revalidate: 3600 } }),
+      sanityClient.fetch<PostListItem[]>(ALL_POSTS, {}, { next: { revalidate: 60 } }),
       getSiteContent(),
     ]);
     posts = postsResult;

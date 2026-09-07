@@ -51,7 +51,7 @@ export default async function ReviewsPage({
 
   try {
     const [reviewsResult, siteContent] = await Promise.all([
-      sanityClient.fetch<ReviewListItem[] | null>(ALL_REVIEWS, {}, { next: { revalidate: 3600 } }),
+      sanityClient.fetch<ReviewListItem[] | null>(ALL_REVIEWS, {}, { next: { revalidate: 60 } }),
       getSiteContent(),
     ]);
     reviewsResponse = reviewsResult;
