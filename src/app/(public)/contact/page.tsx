@@ -11,7 +11,7 @@ export default function ContactPage() {
     <main className="bg-rr-bg">
       <section className="py-10">
         <div className="container">
-          <div className="mx-auto max-w-[780px] lg:max-w-[860px]">
+          <div className="mx-auto max-w-[1100px]">
             <div id="contact-page-intro">
               <h1 className="text-4xl font-medium leading-tight tracking-[-0.03em] text-rr-primary md:text-5xl">
                 Let’s fix it, build it, or talk about it

@@ -11,7 +11,7 @@ export function RichTextBlock({ block }: { block: RichTextBlockData }) {
   return (
     <section className="py-7">
       <div className="container">
-        <div className="mx-auto max-w-[880px]">
+        <div className="mx-auto max-w-[1100px]">
           <PortableText value={block.content ?? []} components={portableTextComponents} />
         </div>
       </div>

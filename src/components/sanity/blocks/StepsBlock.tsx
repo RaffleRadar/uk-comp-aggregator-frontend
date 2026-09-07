@@ -26,7 +26,7 @@ export function StepsBlock({ block }: { block: StepsBlockData }) {
   return (
     <section className="py-7">
       <div className="container">
-        <div className="mx-auto max-w-[880px]">
+        <div className="mx-auto max-w-[1100px]">
           {block.eyebrow ? (
             <p className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-rr-green">
               <span className="h-px w-6 bg-rr-green" />

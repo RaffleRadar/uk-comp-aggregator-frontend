@@ -100,7 +100,7 @@ export function PostArticle({
 
       <section className="py-10">
         <div className="container">
-          <div className="mx-auto max-w-[780px] lg:max-w-[860px]">
+          <div className="mx-auto max-w-[1100px]">
             <ShareBar url={shareUrl} title={post.title} />
             <div className="mb-4 mt-8 flex flex-wrap items-center gap-3">
               {post.category ? (
@@ -137,7 +137,7 @@ export function PostArticle({
             </div>
           </div>
 
-          <div className="mx-auto mt-12 max-w-[780px] lg:max-w-[860px]">
+          <div className="mx-auto mt-12 max-w-[1100px]">
             <RelatedPosts posts={relatedPosts ?? []} />
           </div>
         </div>

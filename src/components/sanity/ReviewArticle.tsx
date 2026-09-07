@@ -119,7 +119,7 @@ export function ReviewArticle({
 
       <section className="py-10">
         <div className="container">
-          <div className="mx-auto max-w-[780px] lg:max-w-[860px]">
+          <div className="mx-auto max-w-[1100px]">
             <ShareBar url={shareUrl} title={review.title} />
             <div className="mb-4 mt-8 flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-col gap-1">
@@ -165,7 +165,7 @@ export function ReviewArticle({
             </div>
           </div>
 
-          <div className="mx-auto mt-12 max-w-[780px] lg:max-w-[860px]">
+          <div className="mx-auto mt-12 max-w-[1100px]">
             <RelatedReviews reviews={relatedReviews ?? []} />
           </div>
         </div>

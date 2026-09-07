@@ -20,7 +20,7 @@ export function StatsBlock({ block }: { block: StatsBlockData }) {
   return (
     <section className="pb-7">
       <div className="container">
-        <div className="mx-auto grid max-w-[880px] grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="mx-auto grid max-w-[1100px] grid-cols-2 gap-4 md:grid-cols-4">
           {items.map((item, index) => (
             <div
               key={item._key ?? `${item.label}-${index}`}
