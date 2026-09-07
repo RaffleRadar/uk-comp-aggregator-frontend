@@ -233,7 +233,7 @@ export default async function Page({
       <CompetitionSection
         titleStart={siteContent?.section2TitleStart?.trim() || "Most undersold"}
         titleAccent={siteContent?.section2TitleAccent?.trim() || "ending soon"}
-        subtitle={siteContent?.section2Subtitle?.trim() || "Low ticket sales, closing within 3 days — your best odds right now"}
+        subtitle={siteContent?.section2Subtitle?.trim() || "Low-sold competitions closing today"}
         viewAllHref="/competitions?section=most-undersold&sortBy=percentSold&sortOrder=asc"
         competitions={undersold}
       />
