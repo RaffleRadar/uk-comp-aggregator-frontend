@@ -707,7 +707,17 @@ export default async function Page({
           <div className="order-1 flex shrink-0 flex-wrap items-center gap-2 md:order-2 md:justify-end">
             {operator && (
               <div className="flex items-center gap-2">
-                <Badge variant="operator">{operator.name}</Badge>
+                {operatorSlug ? (
+                  <Link
+                    href={`/operators/${operatorSlug}`}
+                    className="rounded transition hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rr-green"
+                    aria-label={`View ${operator.name} operator page`}
+                  >
+                    <Badge variant="operator">{operator.name}</Badge>
+                  </Link>
+                ) : (
+                  <Badge variant="operator">{operator.name}</Badge>
+                )}
                 {operatorVrLabel && (
                   <span
                     className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium ${operatorVrBadgeClass}`}
