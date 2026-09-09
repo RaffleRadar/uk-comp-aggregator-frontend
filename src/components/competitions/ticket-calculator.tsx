@@ -166,16 +166,6 @@ export function TicketCalculator({
     setShowHint(false);
   };
 
-  const applySpend = (amount: number) => {
-    if (!ticketPriceValid) return;
-    const nextCount = clampTicketCount(
-      Math.floor(amount / ticketPriceNum),
-      buyable,
-    );
-    setTicketCount(nextCount);
-    setShowHint(false);
-  };
-
   const pickPreset = (amount: SpendPreset) => {
     if (!ticketPriceValid) return;
     const nextCount = clampTicketCount(

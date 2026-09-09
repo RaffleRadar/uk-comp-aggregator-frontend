@@ -46,6 +46,7 @@ type HomePageSearchParams = {
   search?: string;
   sortBy?: string;
   sortOrder?: string;
+  spend?: string;
   operator?: string;
   minPrizeValue?: string;
   freeOnly?: string;
@@ -65,6 +66,7 @@ export default async function Page({
     params.closing ||
     params.search ||
     params.sortBy ||
+    params.spend ||
     params.sortOrder ||
     params.operator ||
     params.minPrizeValue ||
@@ -98,6 +100,7 @@ export default async function Page({
               closing: params.closing,
               search: params.search,
               sortBy: params.sortBy,
+              spend: params.spend ? Number(params.spend) : undefined,
               sortOrder: params.sortOrder,
               operator: params.operator,
               minPrizeValue: params.minPrizeValue
