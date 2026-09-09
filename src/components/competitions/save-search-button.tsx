@@ -46,7 +46,14 @@ const booleanParams = [
   "freeOnly",
 ] as const;
 
-const nonMeaningfulOnlyParams = new Set(["sortBy", "sortOrder"]);
+const nonMeaningfulOnlyParams = new Set([
+  "sortBy",
+  "sortOrder",
+  "closing",
+  "excludeInstant",
+  "excludeFree",
+  "spend",
+]);
 
 function parseSavedSearchParams(searchParams: URLSearchParams) {
   const payload: Record<string, string | number | boolean> = {};
@@ -170,6 +177,7 @@ export function SaveSearchButton() {
     [searchParams],
   );
   const canSave = useMemo(() => hasMeaningfulFilters(payload), [payload]);
+  const isSectionPage = searchParams.has("section");
   const isSignedIn = status === "authenticated";
   const userId = user?.id ?? null;
   const payloadComparisonKey = useMemo(
@@ -323,7 +331,7 @@ export function SaveSearchButton() {
     }
   }
 
-  if (!canSave) {
+  if (isSectionPage || !canSave) {
     return null;
   }
 
