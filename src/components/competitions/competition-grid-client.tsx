@@ -12,6 +12,7 @@ type CompetitionGridClientProps = {
   embedded?: boolean;
   xlThreeCols?: boolean;
   interactiveWhenEnded?: boolean;
+  spendMetric?: "odds" | "entries" | "prize";
 };
 
 export function CompetitionGridClient({
@@ -21,6 +22,7 @@ export function CompetitionGridClient({
   embedded = false,
   xlThreeCols = false,
   interactiveWhenEnded = false,
+  spendMetric,
 }: CompetitionGridClientProps) {
   const { visibleItems, hasMore, loadMoreRef } = useInfinitePagination({
     items: competitions,
@@ -42,6 +44,7 @@ export function CompetitionGridClient({
               featured={featuredSet.has(competition.id)}
               variant={competition.isActive === false ? "ended" : "default"}
               interactiveWhenEnded={interactiveWhenEnded}
+              spendMetric={spendMetric}
             />
           </div>
         ))}

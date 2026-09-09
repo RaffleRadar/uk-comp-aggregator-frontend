@@ -3,6 +3,7 @@ export type CompetitionSortState = {
   sortOrder?: "asc" | "desc";
   excludeInstant?: boolean;
   excludeFree?: boolean;
+  spend?: number | null;
 };
 
 export type CompetitionSortIdentity =
@@ -17,12 +18,25 @@ export type CompetitionSortIdentity =
   | "lowestPrice"
   | "highestPrice"
   | "newest"
-  | "mostTicketsLeft";
+  | "mostTicketsLeft"
+  | "spendOdds"
+  | "spendEntries"
+  | "spendPrize";
+
+export function formatSpendAmount(amount: number): string {
+  return Number.isInteger(amount) ? `£${amount}` : `£${amount.toFixed(2)}`;
+}
+
+export const SPEND_OPTIONS = [1, 5, 10, 20, 50, 100] as const;
 
 export function getCompetitionSortIdentity(
   state: CompetitionSortState,
 ): CompetitionSortIdentity | null {
   const { sortBy, sortOrder, excludeInstant = false, excludeFree = false } = state;
+
+  if (sortBy === "spendOdds") return "spendOdds";
+  if (sortBy === "spendEntries") return "spendEntries";
+  if (sortBy === "spendPrize") return "spendPrize";
 
   if ((sortBy === "bestValue" || sortBy === "valueRatio") && sortOrder === "desc") {
     return "bestValue";
@@ -82,7 +96,28 @@ export function getCompetitionSortPresentation(state: CompetitionSortState) {
     return null;
   }
 
+  const amount = state.spend ?? null;
+  const amountLabel = amount != null ? formatSpendAmount(amount) : "Spend";
+
   switch (identity) {
+    case "spendOdds":
+      return {
+        identity,
+        label: `Best Odds for ${amountLabel}`,
+        headingSuffix: `Best Odds for ${amountLabel}`,
+      };
+    case "spendEntries":
+      return {
+        identity,
+        label: `Most Entries for ${amountLabel}`,
+        headingSuffix: `Most Entries for ${amountLabel}`,
+      };
+    case "spendPrize":
+      return {
+        identity,
+        label: `Biggest Prize for ${amountLabel}`,
+        headingSuffix: `Biggest Prize for ${amountLabel}`,
+      };
     case "bestValue":
       return { identity, label: "Best Value", headingSuffix: "By Value" };
     case "mostUndersold":

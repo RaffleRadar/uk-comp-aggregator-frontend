@@ -21,6 +21,7 @@ import {
   getStatusBadge,
   getEndsLabel,
 } from "@/lib/competition-display";
+import { formatSpendAmount } from "@/lib/competition-sort";
 
 function PlaceholderIcon({ category }: { category: string | null }) {
   const cls = "text-rr-border";
@@ -45,6 +46,7 @@ interface Props {
   featured?: boolean;
   variant?: "default" | "ended";
   interactiveWhenEnded?: boolean;
+  spendMetric?: "odds" | "entries" | "prize";
 }
 
 const ticketCountFormatter = new Intl.NumberFormat("en-GB");
@@ -55,8 +57,12 @@ export function CompetitionCard({
   featured,
   variant = "default",
   interactiveWhenEnded = false,
+  spendMetric,
 }: Props) {
   const { id, slug } = competition;
+  const spend = competition.spend ?? null;
+  const showSpend =
+    variant === "default" && spend !== null && spendMetric !== undefined;
   const pathname = usePathname();
   const [now, setNow] = useState<number | null>(null);
 
@@ -238,6 +244,40 @@ export function CompetitionCard({
           <div className="h-2">
             {percent !== null ? <ProgressBar value={percent} /> : null}
           </div>
+
+          {showSpend ? (
+            <div className="mt-2 rounded-lg border border-rr-border bg-rr-elevated px-2 py-1.5">
+              <div className="flex items-stretch">
+                <div className="min-w-0 flex-1 pr-2">
+                  <p className="text-[9px] font-medium uppercase leading-none tracking-[0.06em] text-rr-muted">
+                    {formatSpendAmount(spend.amount)} Spend
+                  </p>
+                  <p className="mt-1 truncate text-[13px] font-medium leading-none tabular-nums text-rr-green">
+                    {formatSpendAmount(spend.amount)}
+                  </p>
+                </div>
+                <div className="w-px shrink-0 bg-rr-border" />
+                <div className="min-w-0 flex-1 pl-2">
+                  <p className="text-[9px] font-medium uppercase leading-none tracking-[0.06em] text-rr-muted">
+                    {spendMetric === "odds"
+                      ? `Best Odds for ${formatSpendAmount(spend.amount)}`
+                      : spendMetric === "entries"
+                        ? `Entries for ${formatSpendAmount(spend.amount)}`
+                        : "Prize Value"}
+                  </p>
+                  <p className="mt-1 truncate text-[13px] font-medium leading-none tabular-nums text-rr-green">
+                    {spendMetric === "odds"
+                      ? `1 in ${ticketCountFormatter.format(spend.odds)}`
+                      : spendMetric === "entries"
+                        ? ticketCountFormatter.format(spend.entries)
+                        : spend.prizeValue !== null
+                          ? `£${ticketCountFormatter.format(spend.prizeValue)}`
+                          : "—"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div

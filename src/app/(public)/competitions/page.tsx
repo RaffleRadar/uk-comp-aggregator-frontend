@@ -9,6 +9,7 @@ import {
 } from "@/components/competitions/competition-grid";
 import { NewsletterSignupBanner } from "@/components/competitions/newsletter-signup-banner";
 import { SaveSearchButton } from "@/components/competitions/save-search-button";
+import { SpendModeBanner } from "@/components/competitions/spend-mode-banner";
 import { FilterBar } from "@/components/layout/filter-bar";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { getSiteContent } from "@/sanity/queries";
@@ -44,6 +45,7 @@ const FILTER_ROBOT_KEYS = [
   "excludeInstant",
   "excludeFree",
   "section",
+  "spend",
 ] as const;
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<CompetitionsPageSearchParams> }): Promise<Metadata> {
@@ -71,6 +73,7 @@ type CompetitionsPageSearchParams = {
   excludeInstant?: string;
   excludeFree?: string;
   section?: string;
+  spend?: string;
 };
 
 export default async function CompetitionsPage({
@@ -86,6 +89,13 @@ export default async function CompetitionsPage({
     params.category
       ?.split(",")
       .some((value) => value.trim().toLowerCase() === "games") ?? false;
+  const spendParam = params.spend?.trim() || undefined;
+  const spendNum = spendParam
+    ? (() => {
+        const n = Number(spendParam);
+        return Number.isFinite(n) && n > 0 ? n : undefined;
+      })()
+    : undefined;
 
   const defaultSortOrderBySortBy: Record<string, "asc" | "desc"> = {
     bestValue: "desc",
@@ -97,11 +107,16 @@ export default async function CompetitionsPage({
     ticketPrice: "asc",
     percentSold: "asc",
     createdAt: "desc",
+    spendOdds: "asc",
+    spendEntries: "desc",
+    spendPrize: "desc",
   };
 
   const closing = params.closing ?? "";
   const searchTerm = params.search?.trim() || undefined;
-  const sortBy = params.sortBy ?? "valueRatio";
+  const defaultSortBy =
+    spendNum != null && !params.sortBy ? "spendOdds" : params.sortBy ?? "valueRatio";
+  const sortBy = defaultSortBy;
   const sortOrder =
     (params.sortOrder as "asc" | "desc" | undefined) ??
     defaultSortOrderBySortBy[sortBy] ??
@@ -132,6 +147,7 @@ export default async function CompetitionsPage({
       nextParams.set("excludeInstant", params.excludeInstant);
     if (params.excludeFree) nextParams.set("excludeFree", params.excludeFree);
     if (trimmedSection) nextParams.set("section", trimmedSection);
+    if (spendParam) nextParams.set("spend", spendParam);
     if (params.closing) nextParams.set("closing", params.closing);
     else if (shouldApplyDefaultClosing) nextParams.set("closing", defaultClosing);
 
@@ -153,6 +169,7 @@ export default async function CompetitionsPage({
     excludeInstant: params.excludeInstant,
     excludeFree: params.excludeFree,
     section: params.section,
+    spend: params.spend,
   });
 
   const resetOperatorParams = new URLSearchParams();
@@ -169,6 +186,7 @@ export default async function CompetitionsPage({
   if (params.excludeFree)
     resetOperatorParams.set("excludeFree", params.excludeFree);
   if (params.section) resetOperatorParams.set("section", params.section);
+  if (params.spend) resetOperatorParams.set("spend", params.spend);
   const resetOperatorHref = resetOperatorParams.toString()
     ? `/competitions?${resetOperatorParams.toString()}`
     : "/competitions";
@@ -194,6 +212,10 @@ export default async function CompetitionsPage({
       </Suspense>
 
       <Suspense fallback={null}>
+        <SpendModeBanner />
+      </Suspense>
+
+      <Suspense fallback={null}>
         <SaveSearchButton />
       </Suspense>
 
@@ -210,6 +232,7 @@ export default async function CompetitionsPage({
           excludeInstant: params.excludeInstant,
           excludeFree: params.excludeFree,
           section: params.section,
+          spend: params.spend,
         }}
         operatorLabel={operatorLabel}
         resetOperatorHref={resetOperatorHref}
@@ -246,6 +269,7 @@ export default async function CompetitionsPage({
             excludeInstant: params.excludeInstant === "true",
             excludeFree: params.excludeFree === "true",
             excludeGames: !includesGamesCategory,
+            spend: spendNum,
             limit: 500,
           }}
         />

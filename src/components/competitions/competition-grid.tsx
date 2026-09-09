@@ -20,6 +20,7 @@ export type CompetitionResultsHeadingParams = {
   excludeFree?: string;
   excludeGames?: string;
   section?: string;
+  spend?: string;
 };
 
 const sectionBaseTitles: Record<string, string> = {
@@ -116,6 +117,13 @@ export async function resolveCompetitionOperatorLabel(
     params.category
       ?.split(",")
       .some((value) => value.trim().toLowerCase() === "games") ?? false;
+  const spendParam = params.spend?.trim() || undefined;
+  const spendNum = spendParam
+    ? (() => {
+        const n = Number(spendParam);
+        return Number.isFinite(n) && n > 0 ? n : undefined;
+      })()
+    : undefined;
 
   if (!operatorSlug) {
     return null;
@@ -138,6 +146,7 @@ export async function resolveCompetitionOperatorLabel(
       excludeInstant: params.excludeInstant === "true",
       excludeFree: params.excludeFree === "true",
       excludeGames: !includesGamesCategory,
+      spend: spendNum,
       limit: 1,
     });
     const matches = Array.isArray(matchesResponse) ? matchesResponse : [];
@@ -171,6 +180,13 @@ export function CompetitionResultsHeading({
   const closingKey = params.closing?.trim() || "";
   const closingLabel =
     section === "ending-today" ? null : (closingLabelMap[closingKey] ?? null);
+  const spendParam = params.spend?.trim() || undefined;
+  const spend = spendParam
+    ? (() => {
+        const n = Number(spendParam);
+        return Number.isFinite(n) && n > 0 ? n : null;
+      })()
+    : null;
   const filterLabels = [
     getCategoryTitleLabel(params.category),
     operatorLabel ?? null,
@@ -195,6 +211,7 @@ export function CompetitionResultsHeading({
     sortOrder,
     excludeInstant: params.excludeInstant === "true",
     excludeFree: params.excludeFree === "true",
+    spend,
   });
   const sortSuffixRedundant =
     closingLabel !== null && sortPresentation?.identity === "endingSoon";
@@ -283,12 +300,23 @@ export async function CompetitionGrid({
   }
 
   const featuredIds = getFeaturedIds(competitions);
+  const spend = params?.spend;
+  const sortBy = params?.sortBy;
+  const spendMetric =
+    spend != null
+      ? sortBy === "spendEntries"
+        ? "entries"
+        : sortBy === "spendPrize"
+          ? "prize"
+          : "odds"
+      : undefined;
 
   return (
     <CompetitionGridClient
       competitions={competitions}
       featuredIds={featuredIds}
       pageSize={20}
+      spendMetric={spendMetric}
     />
   );
 }

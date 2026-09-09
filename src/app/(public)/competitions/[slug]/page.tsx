@@ -34,6 +34,7 @@ import {
 import type { Competition } from "@/types/competition";
 import { getEndedLabel, getEndsTimeLabel } from "@/lib/competition-display";
 import { getUrgencyMessage } from "@/lib/urgency-message";
+import { parseSpend } from "@/lib/spend-mode";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { sanityClient } from "@/sanity/client";
 import {
@@ -357,10 +358,14 @@ async function fetchCompetitionData(slug: string) {
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ spend?: string }>;
 }) {
   const { slug } = await params;
+  const paramsObj = searchParams ? await searchParams : undefined;
+  const initialSpend = paramsObj ? parseSpend(paramsObj.spend) : undefined;
   const data = await fetchCompetitionData(slug);
   if (!data) {
     notFound();
@@ -848,6 +853,7 @@ export default async function Page({
                   ticketPrice={priceValue}
                   maxPerPerson={maxPerPerson}
                   hasEnded={hasEnded}
+                  initialSpend={initialSpend}
                 />
               </div>
             ) : null}

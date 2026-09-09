@@ -35,4 +35,10 @@ export type Competition = {
   description: string | null;
   sourceUrl: string | null;
   commentCount?: number;
+  spend?: {
+    amount: number;
+    entries: number;
+    odds: number;
+    prizeValue: number | null;
+  } | null;
 };

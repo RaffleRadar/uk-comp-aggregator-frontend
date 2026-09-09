@@ -91,6 +91,7 @@ export type GetCompetitionsParams = {
   excludeInstant?: boolean;
   excludeFree?: boolean;
   excludeGames?: boolean;
+  spend?: number;
 };
 
 export type CompetitionDetail = {
@@ -379,6 +380,7 @@ export async function getCompetitions(
   if (params?.excludeInstant) query.set("excludeInstant", "true");
   if (params?.excludeFree) query.set("excludeFree", "true");
   if (params?.excludeGames) query.set("excludeGames", "true");
+  if (params?.spend) query.set("spend", String(params.spend));
 
   const path =
     query.size > 0 ? `/competitions?${query.toString()}` : "/competitions";
