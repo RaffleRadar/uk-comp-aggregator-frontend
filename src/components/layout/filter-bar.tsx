@@ -530,9 +530,9 @@ export function FilterBar({
   return (
     <div className={cn("border-b border-rr-border bg-rr-surface", className)}>
       <div className="container py-3">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-3">
+        <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:gap-3">
           {showCategory ? (
-            <div className="order-2 flex flex-wrap gap-1.5 lg:order-1 lg:flex-1 lg:min-w-0 lg:flex-nowrap lg:gap-1 lg:overflow-x-auto lg:overscroll-x-contain lg:pb-0.5 lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden">
+            <div className="order-2 flex flex-wrap gap-1.5 2xl:order-1 2xl:flex-1 2xl:min-w-0 2xl:flex-nowrap 2xl:gap-1 2xl:overflow-x-auto 2xl:overscroll-x-contain 2xl:pb-0.5 2xl:[scrollbar-width:none] 2xl:[&::-webkit-scrollbar]:hidden">
               {categoryOpts.map((opt) => {
                 const isActive = opt.value === currentMainCategory;
 
@@ -635,8 +635,8 @@ export function FilterBar({
 
           <div
             className={cn(
-              "order-1 grid grid-cols-2 gap-2 lg:order-2 lg:flex lg:items-center lg:gap-1",
-              showCategory ? "lg:flex-shrink-0" : "",
+              "order-1 grid grid-cols-2 gap-2 lg:flex lg:items-center lg:gap-1 2xl:order-2",
+              showCategory ? "2xl:flex-shrink-0" : "",
             )}
           >
             {showSort ? (
