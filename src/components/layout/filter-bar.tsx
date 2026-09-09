@@ -165,6 +165,7 @@ export function FilterBar({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isListingPage = pathname === "/competitions";
 
   const [sortOpen, setSortOpen] = useState(false);
   const [closingOpen, setClosingOpen] = useState(false);
@@ -172,7 +173,6 @@ export function FilterBar({
   const sortWrapRef = useRef<HTMLDivElement | null>(null);
   const closingWrapRef = useRef<HTMLDivElement | null>(null);
   const spendWrapRef = useRef<HTMLDivElement | null>(null);
-  const spendRestoredRef = useRef(false);
 
   const categoryOpts = categoryOptions ?? defaultCategoryOptions;
   const closingOpts = closingOptions ?? defaultClosingOptions;
@@ -408,18 +408,24 @@ export function FilterBar({
         );
       } else {
         writeSpendCookie(amount);
-        updateParams(
-          {
-            spend: String(amount),
-            sortBy: "spendOdds",
-            sortOrder: "asc",
-          },
-          { filterType: "spend", filterValue: String(amount) },
-        );
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete("section");
+        params.delete("closing");
+        params.delete("page");
+        params.delete("search");
+        params.set("spend", String(amount));
+        params.set("sortBy", "spendOdds");
+        params.set("sortOrder", "asc");
+        const qs = params.toString();
+        router.push(`/competitions?${qs}`);
+        pushEvent("filter_applied", {
+          filter_type: "spend",
+          filter_value: String(amount),
+        });
       }
       setSpendOpen(false);
     },
-    [sortBy, updateParams],
+    [sortBy, updateParams, searchParams, router],
   );
 
   const activeSort = useMemo(() => {
@@ -453,9 +459,11 @@ export function FilterBar({
   }, [closing, closingOpts]);
 
   const spendLabel = useMemo(() => {
-    if (spend == null) return "Spend: Off";
+    if (!isListingPage || spend == null) return "Spend: Off";
     return `${formatSpendAmount(spend)} Spend`;
-  }, [spend]);
+  }, [isListingPage, spend]);
+
+  const spendActive = isListingPage ? spend : null;
 
   useEffect(() => {
     if (!isSortOpen && !closingOpen && !isSpendOpen) return;
@@ -506,9 +514,7 @@ export function FilterBar({
   }, []);
 
   useEffect(() => {
-    if (spendRestoredRef.current) return;
-    spendRestoredRef.current = true;
-
+    if (!isListingPage) return;
     if (spend != null) return;
 
     const cookieAmount = readSpendCookie();
@@ -525,7 +531,7 @@ export function FilterBar({
     const qs = params.toString();
     const nextHref = qs ? `${pathname}?${qs}` : pathname;
     router.replace(nextHref);
-  }, [pathname, router, searchParams, spend]);
+  }, [pathname, router, searchParams, spend, isListingPage]);
 
   return (
     <div className={cn("border-b border-rr-border bg-rr-surface", className)}>
@@ -954,10 +960,10 @@ export function FilterBar({
                       <button
                         type="button"
                         role="option"
-                        aria-selected={spend == null}
+                        aria-selected={spendActive == null}
                         className={cn(
                           "w-full text-left rounded px-2.5 py-2 text-sm transition cursor-pointer whitespace-nowrap",
-                          spend == null
+                          spendActive == null
                             ? "bg-rr-elevated text-rr-primary"
                             : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
                         )}
@@ -967,7 +973,7 @@ export function FilterBar({
                       </button>
 
                       {SPEND_OPTIONS.map((amount) => {
-                        const isActive = spend === amount;
+                        const isActive = spendActive === amount;
 
                         return (
                           <button
@@ -1024,10 +1030,10 @@ export function FilterBar({
                       <button
                         type="button"
                         role="option"
-                        aria-selected={spend == null}
+                        aria-selected={spendActive == null}
                         className={cn(
                           "w-full text-left rounded px-2.5 py-2 text-sm transition cursor-pointer whitespace-nowrap",
-                          spend == null
+                          spendActive == null
                             ? "bg-rr-elevated text-rr-primary"
                             : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
                         )}
@@ -1037,7 +1043,7 @@ export function FilterBar({
                       </button>
 
                       {SPEND_OPTIONS.map((amount) => {
-                        const isActive = spend === amount;
+                        const isActive = spendActive === amount;
 
                         return (
                           <button

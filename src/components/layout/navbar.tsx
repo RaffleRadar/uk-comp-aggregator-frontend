@@ -27,6 +27,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { CompetitionSearch } from "@/components/layout/competition-search";
 import { useTheme } from "@/components/theme/theme-provider";
 import { Button } from "@/components/ui/button";
+import { ViewAllLink } from "@/components/ui/view-all-link";
 
 function getInitials(value: string): string {
   const parts = value.trim().split(/\s+/).filter(Boolean);
@@ -186,7 +187,7 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:ml-8 md:flex md:gap-1 ml-4">
-            <Link href="/competitions" aria-current={isCompetitionsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isCompetitionsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Competitions</Link>
+            <ViewAllLink href="/competitions" aria-current={isCompetitionsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isCompetitionsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Competitions</ViewAllLink>
             <Link href="/operators" aria-current={isOperatorsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isOperatorsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Operators</Link>
             <Link href="/reviews" aria-current={isReviewsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isReviewsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Reviews</Link>
             <Link href="/blog" aria-current={isBlogActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isBlogActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Blog</Link>
@@ -276,7 +277,7 @@ export function Navbar() {
       {menuOpen ? (
         <div className="absolute left-0 right-0 top-full z-50 border-t border-rr-border bg-rr-surface shadow-lg md:hidden">
           <div className="flex flex-col gap-2 px-4 py-4">
-            <Link
+            <ViewAllLink
               href="/competitions"
               aria-current={isCompetitionsActive ? "page" : undefined}
               className={cn(mobileItemBase, isCompetitionsActive ? mobileItemActive : mobileItemIdle)}
@@ -284,7 +285,7 @@ export function Navbar() {
             >
               <IconTrophy size={20} className={cn("shrink-0", isCompetitionsActive ? "text-rr-on-accent" : "text-rr-green")} />
               Competitions
-            </Link>
+            </ViewAllLink>
             <Link
               href="/operators"
               aria-current={isOperatorsActive ? "page" : undefined}
