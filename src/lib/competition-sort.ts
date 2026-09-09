@@ -11,7 +11,6 @@ export type CompetitionSortIdentity =
   | "mostUndersold"
   | "endingSoon"
   | "bestOdds"
-  | "fewestTickets"
   | "topPicks"
   | "topPrizes"
   | "sellingFast"
@@ -32,7 +31,7 @@ export const SPEND_OPTIONS = [1, 5, 10, 20, 50, 100] as const;
 export function getCompetitionSortIdentity(
   state: CompetitionSortState,
 ): CompetitionSortIdentity | null {
-  const { sortBy, sortOrder, excludeInstant = false, excludeFree = false } = state;
+  const { sortBy, sortOrder } = state;
 
   if (sortBy === "spendOdds") return "spendOdds";
   if (sortBy === "spendEntries") return "spendEntries";
@@ -47,11 +46,7 @@ export function getCompetitionSortIdentity(
   }
 
   if (sortBy === "percentSold" && sortOrder === "asc") {
-    if (excludeInstant && excludeFree) {
-      return "mostUndersold";
-    }
-
-    return "bestOdds";
+    return "mostUndersold";
   }
 
   if (sortBy === "percentSold" && sortOrder === "desc") {
@@ -83,7 +78,7 @@ export function getCompetitionSortIdentity(
   }
 
   if (sortBy === "ticketsTotal" && sortOrder === "asc") {
-    return "fewestTickets";
+    return "bestOdds";
   }
 
   return null;
@@ -130,12 +125,6 @@ export function getCompetitionSortPresentation(state: CompetitionSortState) {
       return { identity, label: "Ending Soon", headingSuffix: "By Ending Soon" };
     case "bestOdds":
       return { identity, label: "Best Odds", headingSuffix: "By Best Odds" };
-    case "fewestTickets":
-      return {
-        identity,
-        label: "Fewest Total Tickets",
-        headingSuffix: "By Ticket Pool",
-      };
     case "topPicks":
       return { identity, label: "Top Picks", headingSuffix: "By Top Picks" };
     case "topPrizes":
