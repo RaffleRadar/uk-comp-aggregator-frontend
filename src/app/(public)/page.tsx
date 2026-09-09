@@ -237,7 +237,7 @@ export default async function Page({
         titleStart={siteContent?.section2TitleStart?.trim() || "Most undersold"}
         titleAccent={siteContent?.section2TitleAccent?.trim() || "ending soon"}
         subtitle={siteContent?.section2Subtitle?.trim() || "Low-sold competitions closing today"}
-        viewAllHref="/competitions?section=most-undersold&sortBy=percentSold&sortOrder=asc"
+        viewAllHref="/competitions?section=most-undersold&sortBy=undersoldCascade&sortOrder=asc"
         competitions={undersold}
       />
       <CompetitionSection

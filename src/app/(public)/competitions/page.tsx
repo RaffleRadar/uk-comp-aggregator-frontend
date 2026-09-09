@@ -110,6 +110,7 @@ export default async function CompetitionsPage({
     spendOdds: "asc",
     spendEntries: "desc",
     spendPrize: "desc",
+    undersoldCascade: "asc",
   };
 
   const closing = params.closing ?? "";

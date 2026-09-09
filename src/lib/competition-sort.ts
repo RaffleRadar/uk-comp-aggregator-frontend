@@ -33,6 +33,7 @@ export function getCompetitionSortIdentity(
 ): CompetitionSortIdentity | null {
   const { sortBy, sortOrder } = state;
 
+  if (sortBy === "undersoldCascade") return "mostUndersold";
   if (sortBy === "spendOdds") return "spendOdds";
   if (sortBy === "spendEntries") return "spendEntries";
   if (sortBy === "spendPrize") return "spendPrize";

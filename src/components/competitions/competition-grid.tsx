@@ -36,7 +36,7 @@ const sectionDefaultSorts: Record<
   string,
   { sortBy: string; sortOrder: "asc" | "desc" }
 > = {
-  "most-undersold": { sortBy: "percentSold", sortOrder: "asc" },
+  "most-undersold": { sortBy: "undersoldCascade", sortOrder: "asc" },
   "top-opportunities": { sortBy: "opportunityScore", sortOrder: "desc" },
   "top-prizes": { sortBy: "prizeValue", sortOrder: "desc" },
   "selling-fast": { sortBy: "percentSold", sortOrder: "desc" },
