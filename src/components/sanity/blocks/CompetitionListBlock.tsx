@@ -46,7 +46,13 @@ export async function CompetitionListBlock({
 }) {
   const category = block.category?.trim() || undefined;
   const closing = block.closing?.trim() || undefined;
-  const sortOrder = block.sortOrder === "asc" ? "asc" : "desc";
+  const sortBy = block.sortBy || "valueRatio";
+  const forceAsc = sortBy === "ticketsTotal" || sortBy === "percentSold" || sortBy === "endsAt";
+  const sortOrder: "asc" | "desc" = forceAsc
+    ? "asc"
+    : block.sortOrder === "asc"
+      ? "asc"
+      : "desc";
   const excludeGames = block.excludeGames ?? false;
   const limit =
     typeof block.limit === "number" && block.limit > 0
@@ -57,7 +63,7 @@ export async function CompetitionListBlock({
     limit,
     category,
     closing,
-    sortBy: block.sortBy || "valueRatio",
+    sortBy,
     sortOrder,
     excludeGames,
   });
