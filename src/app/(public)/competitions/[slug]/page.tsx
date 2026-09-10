@@ -516,7 +516,7 @@ export default async function Page({
       <div className="mt-1.5">
         <div className="mb-1.5 grid grid-cols-1 rounded-lg border border-rr-border divide-y divide-rr-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Ticket sales</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Estimated ticket value</span>
             <span className="text-sm font-medium text-rr-primary">
               £
               {salesRevenue.toLocaleString("en-GB", {
