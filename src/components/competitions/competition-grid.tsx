@@ -18,6 +18,7 @@ export type CompetitionResultsHeadingParams = {
   freeOnly?: string;
   excludeInstant?: string;
   excludeFree?: string;
+  excludeSoldOut?: string;
   excludeGames?: string;
   section?: string;
   spend?: string;
@@ -145,6 +146,7 @@ export async function resolveCompetitionOperatorLabel(
       freeOnly: params.freeOnly === "true",
       excludeInstant: params.excludeInstant === "true",
       excludeFree: params.excludeFree === "true",
+      excludeSoldOut: params.excludeSoldOut === "true",
       excludeGames: !includesGamesCategory,
       spend: spendNum,
       limit: 1,

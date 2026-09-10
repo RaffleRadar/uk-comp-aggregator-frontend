@@ -44,6 +44,7 @@ const FILTER_ROBOT_KEYS = [
   "freeOnly",
   "excludeInstant",
   "excludeFree",
+  "excludeSoldOut",
   "section",
   "spend",
 ] as const;
@@ -72,6 +73,7 @@ type CompetitionsPageSearchParams = {
   freeOnly?: string;
   excludeInstant?: string;
   excludeFree?: string;
+  excludeSoldOut?: string;
   section?: string;
   spend?: string;
 };
@@ -130,10 +132,13 @@ export default async function CompetitionsPage({
   };
   const defaultClosing = defaultClosingBySection[trimmedSection];
   const shouldApplyDefaultClosing = !searchTerm && Boolean(defaultClosing);
+  const needsExcludeSoldOutDefault =
+    sortBy === "percentSold" && params.excludeSoldOut == null;
   const needsRedirect =
     !params.sortBy ||
     !params.sortOrder ||
-    (shouldApplyDefaultClosing && !params.closing);
+    (shouldApplyDefaultClosing && !params.closing) ||
+    needsExcludeSoldOutDefault;
 
   if (needsRedirect) {
     const nextParams = new URLSearchParams();
@@ -147,6 +152,7 @@ export default async function CompetitionsPage({
     if (params.excludeInstant)
       nextParams.set("excludeInstant", params.excludeInstant);
     if (params.excludeFree) nextParams.set("excludeFree", params.excludeFree);
+    if (params.excludeSoldOut) nextParams.set("excludeSoldOut", params.excludeSoldOut);
     if (trimmedSection) nextParams.set("section", trimmedSection);
     if (spendParam) nextParams.set("spend", spendParam);
     if (params.closing) nextParams.set("closing", params.closing);
@@ -169,6 +175,7 @@ export default async function CompetitionsPage({
     freeOnly: params.freeOnly,
     excludeInstant: params.excludeInstant,
     excludeFree: params.excludeFree,
+    excludeSoldOut: params.excludeSoldOut,
     section: params.section,
     spend: params.spend,
   });
@@ -186,6 +193,8 @@ export default async function CompetitionsPage({
     resetOperatorParams.set("excludeInstant", params.excludeInstant);
   if (params.excludeFree)
     resetOperatorParams.set("excludeFree", params.excludeFree);
+  if (params.excludeSoldOut)
+    resetOperatorParams.set("excludeSoldOut", params.excludeSoldOut);
   if (params.section) resetOperatorParams.set("section", params.section);
   if (params.spend) resetOperatorParams.set("spend", params.spend);
   const resetOperatorHref = resetOperatorParams.toString()
@@ -269,6 +278,7 @@ export default async function CompetitionsPage({
             freeOnly: params.freeOnly === "true",
             excludeInstant: params.excludeInstant === "true",
             excludeFree: params.excludeFree === "true",
+            excludeSoldOut: params.excludeSoldOut === "true",
             excludeGames: !includesGamesCategory,
             spend: spendNum,
             limit: 500,

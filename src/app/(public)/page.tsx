@@ -165,6 +165,7 @@ export default async function Page({
         sortOrder: "desc",
         excludeInstant: true,
         excludeFree: true,
+        excludeSoldOut: true,
         excludeGames: true,
         limit: 4,
       }),
@@ -251,7 +252,7 @@ export default async function Page({
         titleStart={siteContent?.section5TitleStart?.trim() || "Selling"}
         titleAccent={siteContent?.section5TitleAccent?.trim() || "fast"}
         subtitle={siteContent?.section5Subtitle?.trim() || "These competitions are almost gone — very few tickets left, so act fast"}
-        viewAllHref="/competitions?section=selling-fast&sortBy=percentSold&sortOrder=desc&excludeInstant=true&excludeFree=true"
+        viewAllHref="/competitions?section=selling-fast&sortBy=percentSold&sortOrder=desc&excludeInstant=true&excludeFree=true&excludeSoldOut=true"
         competitions={bestValue}
       />
       <CompetitionSection

@@ -90,6 +90,7 @@ export type GetCompetitionsParams = {
   freeOnly?: boolean;
   excludeInstant?: boolean;
   excludeFree?: boolean;
+  excludeSoldOut?: boolean;
   excludeGames?: boolean;
   spend?: number;
 };
@@ -379,6 +380,7 @@ export async function getCompetitions(
   if (params?.freeOnly) query.set("freeOnly", "true");
   if (params?.excludeInstant) query.set("excludeInstant", "true");
   if (params?.excludeFree) query.set("excludeFree", "true");
+  if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");
   if (params?.excludeGames) query.set("excludeGames", "true");
   if (params?.spend) query.set("spend", String(params.spend));
 
@@ -427,6 +429,7 @@ type GetTopOpportunitiesParams = {
   limit?: number;
   excludeInstant?: boolean;
   excludeFree?: boolean;
+  excludeSoldOut?: boolean;
   excludeGames?: boolean;
   category?: string;
   closing?: string;
@@ -439,6 +442,7 @@ type GetMostUndersoldParams = {
   limit?: number;
   excludeInstant?: boolean;
   excludeFree?: boolean;
+  excludeSoldOut?: boolean;
   excludeGames?: boolean;
   category?: string;
   closing?: string;
@@ -454,6 +458,7 @@ export async function getTopOpportunities(
   if (params?.limit) query.set("limit", String(params.limit));
   if (params?.excludeInstant) query.set("excludeInstant", "true");
   if (params?.excludeFree) query.set("excludeFree", "true");
+  if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");
   if (params?.excludeGames) query.set("excludeGames", "true");
   if (params?.category) query.set("category", params.category);
   if (params?.closing) query.set("closing", params.closing);
@@ -480,6 +485,7 @@ export async function getMostUndersold(
   if (params?.limit) query.set("limit", String(params.limit));
   if (params?.excludeInstant) query.set("excludeInstant", "true");
   if (params?.excludeFree) query.set("excludeFree", "true");
+  if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");
   if (params?.excludeGames) query.set("excludeGames", "true");
   if (params?.category) query.set("category", params.category);
   if (params?.closing) query.set("closing", params.closing);
