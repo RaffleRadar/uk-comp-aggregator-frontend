@@ -177,6 +177,9 @@ export const SITE_CONTENT = `*[_type == "siteContent"][0]{
   heroHeadingMobile,
   heroHeadingDesktop,
   heroSubheading,
+  heroEyebrowMobile,
+  heroSubheadingMobile,
+  quickActionsTitle,
   section1TitleStart,
   section1TitleAccent,
   section1Subtitle,
@@ -215,6 +218,9 @@ type SiteContentData = {
   heroHeadingMobile?: string | null;
   heroHeadingDesktop?: string | null;
   heroSubheading?: string | null;
+  heroEyebrowMobile?: string | null;
+  heroSubheadingMobile?: string | null;
+  quickActionsTitle?: string | null;
   section1TitleStart?: string | null;
   section1TitleAccent?: string | null;
   section1Subtitle?: string | null;

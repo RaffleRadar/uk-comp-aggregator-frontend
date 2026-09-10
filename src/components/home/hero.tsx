@@ -47,6 +47,8 @@ type HeroCopy = {
   heroHeadingMobile?: string;
   heroHeadingDesktop?: string;
   heroSubheading?: string;
+  heroEyebrowMobile?: string;
+  heroSubheadingMobile?: string;
 };
 
 export function Hero({ stats, copy }: { stats: HeroStats; copy?: HeroCopy }) {
@@ -57,6 +59,8 @@ export function Hero({ stats, copy }: { stats: HeroStats; copy?: HeroCopy }) {
   const mobileHeading = getTrimmedValue(copy?.heroHeadingMobile);
   const desktopHeading = getTrimmedValue(copy?.heroHeadingDesktop);
   const subheading = getTrimmedValue(copy?.heroSubheading);
+  const mobileEyebrow = getTrimmedValue(copy?.heroEyebrowMobile);
+  const mobileSubheading = getTrimmedValue(copy?.heroSubheadingMobile);
   const mobileHeadingParts = mobileHeading ? splitLastWord(mobileHeading) : null;
   const desktopHeadingParts = desktopHeading ? splitLastWord(desktopHeading) : null;
 
@@ -96,6 +100,13 @@ export function Hero({ stats, copy }: { stats: HeroStats; copy?: HeroCopy }) {
 
         <p className="hidden mt-3 mx-auto max-w-[650px] text-sm lg:text-base text-rr-muted lg:block">
           {subheading ?? "Track undersold competitions, spot real value and enter at the right time."}
+        </p>
+
+        <p className="lg:hidden mt-2 text-sm font-medium text-rr-green">
+          {mobileEyebrow ?? "Compare trusted UK competitions"}
+        </p>
+        <p className="lg:hidden mt-1 text-[13px] leading-5 text-rr-muted">
+          {mobileSubheading ?? "Compare odds, ticket pools, sold % and what your budget buys."}
         </p>
 
         <div className="mt-2 grid grid-cols-2 gap-2 text-center lg:hidden">

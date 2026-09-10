@@ -7,6 +7,7 @@ import {
 } from "@/components/competitions/competition-grid";
 import { CompetitionSection } from "@/components/home/competition-section";
 import { Hero, type HeroStats } from "@/components/home/hero";
+import { QuickActions } from "@/components/home/quick-actions";
 import { FilterBar } from "@/components/layout/filter-bar";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/structured-data";
 import {
@@ -223,6 +224,8 @@ export default async function Page({
     heroHeadingMobile: siteContent?.heroHeadingMobile ?? undefined,
     heroHeadingDesktop: siteContent?.heroHeadingDesktop ?? undefined,
     heroSubheading: siteContent?.heroSubheading ?? undefined,
+    heroEyebrowMobile: siteContent?.heroEyebrowMobile ?? undefined,
+    heroSubheadingMobile: siteContent?.heroSubheadingMobile ?? undefined,
   };
 
   return (
@@ -233,6 +236,9 @@ export default async function Page({
         <FilterBar />
       </Suspense>
       <Hero stats={stats} copy={heroCopy} />
+      <QuickActions
+        title={siteContent?.quickActionsTitle?.trim() || "What are you looking for?"}
+      />
       <CompetitionSection
         titleStart={siteContent?.section1TitleStart?.trim() || "Top"}
         titleAccent={siteContent?.section1TitleAccent?.trim() || "Opportunities"}
