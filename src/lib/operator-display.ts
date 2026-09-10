@@ -59,7 +59,7 @@ export function getOperatorFairness(
       label: "Good value",
       tileLabel: "Good Value",
       vrLabel: `VR ${value.toFixed(1)}`,
-      description: "Fair, player-friendly pricing overall.",
+      description: "Good pricing value across sampled draws.",
       value,
     };
   }
