@@ -176,9 +176,15 @@ export function CompetitionResultsHeading({
   const sortOrder = (params.sortOrder as "asc" | "desc" | undefined) ?? "desc";
   const section = params.section?.trim() || "";
   const searchTerm = params.search?.trim() || undefined;
+  const categoryLabel = getCategoryTitleLabel(params.category);
+  const sectionTitle = sectionBaseTitles[section];
+  const categoryLeadsTitle =
+    !searchTerm && sectionTitle === undefined && categoryLabel !== null;
   const baseTitle = searchTerm
     ? `Search results for "${searchTerm}"`
-    : (sectionBaseTitles[section] ?? "All Competitions");
+    : categoryLeadsTitle
+      ? categoryLabel
+      : (sectionTitle ?? "All Competitions");
   const closingKey = params.closing?.trim() || "";
   const closingLabel =
     section === "ending-today" ? null : (closingLabelMap[closingKey] ?? null);
@@ -190,7 +196,7 @@ export function CompetitionResultsHeading({
       })()
     : null;
   const filterLabels = [
-    getCategoryTitleLabel(params.category),
+    categoryLeadsTitle ? null : categoryLabel,
     operatorLabel ?? null,
     closingLabel,
     params.minPrizeValue
