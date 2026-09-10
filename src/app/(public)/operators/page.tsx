@@ -88,11 +88,11 @@ export default async function OperatorsPage() {
     operators = operatorsResult;
     operatorsIntro =
       siteContent?.operatorsIntro?.trim() ||
-      "See who is offering better value, how many live competitions they have, and where each operator sits on fairness.";
+      "See who is offering better value, how many live competitions they have, and where each operator sits on value rating.";
   } catch {
     operators = [];
     operatorsIntro =
-      "See who is offering better value, how many live competitions they have, and where each operator sits on fairness.";
+      "See who is offering better value, how many live competitions they have, and where each operator sits on value rating.";
   }
 
   const sortedOperators = [...operators]

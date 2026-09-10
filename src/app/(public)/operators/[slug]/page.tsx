@@ -161,7 +161,7 @@ export async function generateMetadata({
     title: `${operator.name} — Operators — RaffleRadar`,
     description:
       profile?.shortDescription ??
-      `Live competitions, fairness and value metrics for ${operator.name}.`,
+      `Live competitions, value rating and value metrics for ${operator.name}.`,
     alternates: { canonical: `/operators/${slug}` },
   };
 }
@@ -326,9 +326,9 @@ export default async function OperatorPage({
                       : "mt-4 max-w-[760px] text-sm leading-6 text-rr-secondary md:text-base"
                   }
                 >
-                  Fairness is based on the operator&apos;s median value ratio across
-                  sampled competitions. Lower VR generally means more player-friendly
-                  pricing.
+                  Value Rating is based on the operator&apos;s median Value Ratio (VR) across
+                  sampled competitions. Lower VR generally means more prize value relative to
+                  the maximum potential ticket revenue.
                 </p>
               </div>
 
@@ -356,10 +356,10 @@ export default async function OperatorPage({
 
               <div className="rounded-xl border border-rr-border bg-rr-surface p-4">
                 <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
-                  Fairness
+                  Value Rating
                 </p>
                 <p className="mt-2 text-xl font-medium text-rr-primary">
-                  {fairness.label}
+                  {fairness.tileLabel}
                 </p>
               </div>
 

@@ -9,6 +9,7 @@ type NumericValue = number | string | null | undefined;
 type OperatorFairness = {
   badgeVariant: "green" | "amber" | "red" | "neutral";
   label: string;
+  tileLabel: string;
   vrLabel: string;
   description: string;
   value: number | null;
@@ -34,6 +35,7 @@ export function getOperatorFairness(
     return {
       badgeVariant: "neutral",
       label: "Not enough data",
+      tileLabel: "—",
       vrLabel: "VR —",
       description: "More data needed for a fair rating.",
       value: null,
@@ -43,7 +45,8 @@ export function getOperatorFairness(
   if (value <= BEST_VR) {
     return {
       badgeVariant: "green",
-      label: "Best value",
+      label: "Excellent value",
+      tileLabel: "Excellent Value",
       vrLabel: `VR ${value.toFixed(1)}`,
       description: "Top-value pricing.",
       value,
@@ -54,6 +57,7 @@ export function getOperatorFairness(
     return {
       badgeVariant: "green",
       label: "Good value",
+      tileLabel: "Good Value",
       vrLabel: `VR ${value.toFixed(1)}`,
       description: "Fair, player-friendly pricing overall.",
       value,
@@ -63,7 +67,8 @@ export function getOperatorFairness(
   if (value <= FAIR_VR) {
     return {
       badgeVariant: "amber",
-      label: "Fair",
+      label: "Average",
+      tileLabel: "Average",
       vrLabel: `VR ${value.toFixed(1)}`,
       description: "Reasonable, but the markup is noticeable.",
       value,
@@ -72,7 +77,8 @@ export function getOperatorFairness(
 
   return {
     badgeVariant: "red",
-    label: "Poor value",
+    label: "Below Average",
+    tileLabel: "Below Average",
     vrLabel: `VR ${value.toFixed(1)}`,
     description: "Pricing is steep relative to prize value.",
     value,

@@ -499,7 +499,7 @@ export default async function Page({
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Sales vs prize value</p>
           <p className="text-xs font-semibold uppercase tracking-wide text-rr-primary">
-            {hasEnded ? "Final sales: " : "Sales so far: "}£
+            {hasEnded ? "Final sales: " : "Estimated Ticket Value: "}£
             {salesRevenue.toLocaleString("en-GB", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -952,11 +952,12 @@ export default async function Page({
                   {!hasEnded ? (
                     <div className="hidden flex-1 px-4 py-5 md:block">
                       <p className="text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
-                        These odds improve as fewer tickets are sold.
+                        FEWER TICKETS SOLD ={" "}
+                        <span className="text-rr-green">HIGHER CHANCE</span>
                       </p>
                       <p className="mt-5 text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
-                        More tickets sold ={" "}
-                        <span className="text-rr-green">lower odds</span>
+                        MORE TICKETS SOLD ={" "}
+                        <span className="text-rr-primary">LOWER CHANCE</span>
                       </p>
                     </div>
                   ) : null}
