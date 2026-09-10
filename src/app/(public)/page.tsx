@@ -146,6 +146,7 @@ export default async function Page({
       getTopOpportunities({
         limit: 8,
         excludeGames: true,
+        excludeTickets: true,
       }),
       getCompetitions({
         minPrizeValue: 5000,
@@ -153,11 +154,13 @@ export default async function Page({
         sortBy: "prizeValue",
         sortOrder: "desc",
         excludeGames: true,
+        excludeTickets: true,
         limit: 8,
       }),
       getMostUndersold({
         limit: 8,
         excludeGames: true,
+        excludeTickets: true,
       }),
       getRecentlyEnded(4),
       getCompetitions({
@@ -167,6 +170,7 @@ export default async function Page({
         excludeFree: true,
         excludeSoldOut: true,
         excludeGames: true,
+        excludeTickets: true,
         limit: 4,
       }),
       getCompetitions({
@@ -176,6 +180,7 @@ export default async function Page({
         excludeInstant: true,
         excludeFree: true,
         excludeGames: true,
+        excludeTickets: true,
         excludeSoldOut: true,
         limit: 4,
       }),
@@ -232,35 +237,35 @@ export default async function Page({
         titleStart={siteContent?.section1TitleStart?.trim() || "Top"}
         titleAccent={siteContent?.section1TitleAccent?.trim() || "Opportunities"}
         subtitle={siteContent?.section1Subtitle?.trim() || "Best chances to win right now"}
-        viewAllHref="/competitions?section=top-opportunities&sortBy=opportunityScore&sortOrder=desc"
+        viewAllHref="/competitions?section=top-opportunities&sortBy=opportunityScore&sortOrder=desc&excludeTickets=true"
         competitions={topOpportunities}
       />
       <CompetitionSection
         titleStart={siteContent?.section2TitleStart?.trim() || "Most undersold"}
         titleAccent={siteContent?.section2TitleAccent?.trim() || "ending soon"}
         subtitle={siteContent?.section2Subtitle?.trim() || "Low-sold competitions closing today"}
-        viewAllHref="/competitions?section=most-undersold&sortBy=undersoldCascade&sortOrder=asc"
+        viewAllHref="/competitions?section=most-undersold&sortBy=undersoldCascade&sortOrder=asc&excludeTickets=true"
         competitions={undersold}
       />
       <CompetitionSection
         titleStart={siteContent?.section4TitleStart?.trim() || "Top Prizes"}
         titleAccent={siteContent?.section4TitleAccent?.trim() || "right now"}
         subtitle={siteContent?.section4Subtitle?.trim() || "The biggest draws right now — cars, homes and bikes worth winning"}
-        viewAllHref="/competitions?section=top-prizes&minPrizeValue=5000&category=cars,houses,bikes&sortBy=prizeValue&sortOrder=desc"
+        viewAllHref="/competitions?section=top-prizes&minPrizeValue=5000&category=cars,houses,bikes&sortBy=prizeValue&sortOrder=desc&excludeTickets=true"
         competitions={topPrizes}
       />
       <CompetitionSection
         titleStart={siteContent?.section5TitleStart?.trim() || "Selling"}
         titleAccent={siteContent?.section5TitleAccent?.trim() || "fast"}
         subtitle={siteContent?.section5Subtitle?.trim() || "These competitions are almost gone — very few tickets left, so act fast"}
-        viewAllHref="/competitions?section=selling-fast&sortBy=percentSold&sortOrder=desc&excludeInstant=true&excludeFree=true&excludeSoldOut=true"
+        viewAllHref="/competitions?section=selling-fast&sortBy=percentSold&sortOrder=desc&excludeInstant=true&excludeFree=true&excludeSoldOut=true&excludeTickets=true"
         competitions={bestValue}
       />
       <CompetitionSection
         titleStart={siteContent?.section6TitleStart?.trim() || "Ending"}
         titleAccent={siteContent?.section6TitleAccent?.trim() || "today"}
         subtitle={siteContent?.section6Subtitle?.trim() || "Last chance — these draws close tonight"}
-        viewAllHref="/competitions?section=ending-today&sortBy=endsAt&sortOrder=asc&closing=today&excludeInstant=true&excludeFree=true&excludeSoldOut=true"
+        viewAllHref="/competitions?section=ending-today&sortBy=endsAt&sortOrder=asc&closing=today&excludeInstant=true&excludeFree=true&excludeSoldOut=true&excludeTickets=true"
         competitions={endingToday}
         accentTone="red"
       />

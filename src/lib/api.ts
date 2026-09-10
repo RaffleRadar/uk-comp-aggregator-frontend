@@ -92,6 +92,7 @@ export type GetCompetitionsParams = {
   excludeFree?: boolean;
   excludeSoldOut?: boolean;
   excludeGames?: boolean;
+  excludeTickets?: boolean;
   spend?: number;
 };
 
@@ -382,6 +383,7 @@ export async function getCompetitions(
   if (params?.excludeFree) query.set("excludeFree", "true");
   if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");
   if (params?.excludeGames) query.set("excludeGames", "true");
+  if (params?.excludeTickets) query.set("excludeTickets", "true");
   if (params?.spend) query.set("spend", String(params.spend));
 
   const path =
@@ -431,6 +433,7 @@ type GetTopOpportunitiesParams = {
   excludeFree?: boolean;
   excludeSoldOut?: boolean;
   excludeGames?: boolean;
+  excludeTickets?: boolean;
   category?: string;
   closing?: string;
   freeOnly?: boolean;
@@ -444,6 +447,7 @@ type GetMostUndersoldParams = {
   excludeFree?: boolean;
   excludeSoldOut?: boolean;
   excludeGames?: boolean;
+  excludeTickets?: boolean;
   category?: string;
   closing?: string;
   freeOnly?: boolean;
@@ -460,6 +464,7 @@ export async function getTopOpportunities(
   if (params?.excludeFree) query.set("excludeFree", "true");
   if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");
   if (params?.excludeGames) query.set("excludeGames", "true");
+  if (params?.excludeTickets) query.set("excludeTickets", "true");
   if (params?.category) query.set("category", params.category);
   if (params?.closing) query.set("closing", params.closing);
   if (params?.freeOnly) query.set("freeOnly", "true");
@@ -487,6 +492,7 @@ export async function getMostUndersold(
   if (params?.excludeFree) query.set("excludeFree", "true");
   if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");
   if (params?.excludeGames) query.set("excludeGames", "true");
+  if (params?.excludeTickets) query.set("excludeTickets", "true");
   if (params?.category) query.set("category", params.category);
   if (params?.closing) query.set("closing", params.closing);
   if (params?.freeOnly) query.set("freeOnly", "true");
