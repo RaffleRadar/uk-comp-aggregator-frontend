@@ -102,9 +102,11 @@ export function Hero({ stats, copy }: { stats: HeroStats; copy?: HeroCopy }) {
           {subheading ?? "Track undersold competitions, spot real value and enter at the right time."}
         </p>
 
-        <p className="lg:hidden mt-2 text-sm font-medium text-rr-green">
-          {mobileEyebrow ?? "Compare trusted UK competitions"}
-        </p>
+        {mobileEyebrow ? (
+          <p className="lg:hidden mt-2 text-sm font-medium text-rr-green">
+            {mobileEyebrow}
+          </p>
+        ) : null}
         <p className="lg:hidden mt-1 text-[13px] leading-5 text-rr-muted">
           {mobileSubheading ?? "Compare odds, ticket pools, sold % and what your budget buys."}
         </p>
