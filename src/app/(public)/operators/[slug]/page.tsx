@@ -250,6 +250,10 @@ export default async function OperatorPage({
     profile = null;
   }
 
+  const instantWinsAvailable =
+    operator.instantWinsAvailable ||
+    (profile?.drawMethod ?? []).includes("instant");
+
   const sanityLogoUrl = profile?.logo
     ? urlFor(profile.logo).width(192).height(192).fit("max").auto("format").url()
     : null;
@@ -409,7 +413,7 @@ export default async function OperatorPage({
                   Instant wins
                 </p>
                 <p className="mt-2 text-xl font-medium text-rr-primary">
-                  {operator.instantWinsAvailable ? "Available" : "Not available"}
+                  {instantWinsAvailable ? "Available" : "Not available"}
                 </p>
               </div>
             </div>
