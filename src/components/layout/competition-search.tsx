@@ -25,28 +25,44 @@ function formatTicketPrice(value: number | string | null | undefined) {
   return priceFormatter.format(amount);
 }
 
-type CompetitionSearchInputProps = {
-  initialQuery: string;
+type CompetitionSearchProps = {
+  size?: "header" | "hero";
+  initialQuery?: string;
 };
 
-export function CompetitionSearch() {
+type CompetitionSearchInputProps = {
+  initialQuery: string;
+  size: "header" | "hero";
+};
+
+export function CompetitionSearch({
+  size = "header",
+  initialQuery: initialQueryProp,
+}: CompetitionSearchProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const initialQuery =
-    pathname === "/competitions"
-      ? (searchParams.get("search")?.trim() ?? "")
-      : "";
+
+  let initialQuery = initialQueryProp ?? "";
+  if (!initialQueryProp) {
+    if (pathname === "/search") {
+      initialQuery = searchParams.get("q")?.trim() ?? "";
+    } else if (pathname === "/competitions") {
+      initialQuery = searchParams.get("search")?.trim() ?? "";
+    }
+  }
 
   return (
     <CompetitionSearchInput
       key={`${pathname}::${initialQuery}`}
       initialQuery={initialQuery}
+      size={size}
     />
   );
 }
 
 function CompetitionSearchInput({
   initialQuery,
+  size,
 }: CompetitionSearchInputProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -57,6 +73,11 @@ function CompetitionSearchInput({
   const skipNextFetchRef = useRef(initialQuery.trim().length >= 2);
 
   const [query, setQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    if (size !== "hero") return;
+    inputRef.current?.focus();
+  }, [size]);
   const [results, setResults] = useState<CompetitionSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -188,15 +209,32 @@ function CompetitionSearchInput({
         setResults([]);
         setActiveIndex(-1);
         pushEvent("search", { query: trimmedQuery });
-        router.push(`/competitions?search=${encodeURIComponent(trimmedQuery)}`);
+        if (pathname === "/search") {
+          router.push(`/search?q=${encodeURIComponent(trimmedQuery)}`);
+        } else {
+          router.push(`/competitions?search=${encodeURIComponent(trimmedQuery)}`);
+        }
       }
     }
   }
 
+  const wrapperClasses =
+    size === "hero"
+      ? "flex h-12 w-full min-w-0 items-center gap-3 rounded-xl border border-rr-border bg-rr-surface px-4 text-base"
+      : "flex h-9 w-full min-w-0 items-center gap-2 rounded-md bg-rr-elevated px-3";
+
+  const inputClasses =
+    size === "hero"
+      ? "min-w-0 flex-1 bg-transparent text-base text-rr-primary placeholder:text-rr-muted outline-none focus-visible:ring-0 ring-transparent"
+      : "min-w-0 flex-1 bg-transparent text-sm text-rr-primary placeholder:text-rr-muted outline-none";
+
+  const iconClass = size === "hero" ? "text-rr-muted" : "text-rr-muted";
+  const iconSize = size === "hero" ? 20 : 16;
+
   return (
     <div ref={containerRef} className="relative w-full min-w-0">
-      <div className="flex h-9 w-full min-w-0 items-center gap-2 rounded-md bg-rr-elevated px-3">
-        <IconSearch size={16} className="text-rr-muted" />
+      <div className={wrapperClasses}>
+        <IconSearch size={iconSize} className={iconClass} />
         <input
           ref={inputRef}
           type="text"
@@ -214,7 +252,7 @@ function CompetitionSearchInput({
               ? `competition-search-option-${results[activeIndex].id}`
               : undefined
           }
-          className="min-w-0 flex-1 bg-transparent text-sm text-rr-primary placeholder:text-rr-muted outline-none"
+          className={inputClasses}
           onChange={(event) => {
             const nextQuery = event.target.value;
             const nextTrimmedQuery = nextQuery.trim();
@@ -243,7 +281,7 @@ function CompetitionSearchInput({
             className="shrink-0 rounded-sm p-0.5 text-rr-muted transition-colors hover:text-rr-primary"
             onClick={handleClear}
           >
-            <IconX size={14} />
+            <IconX size={size === "hero" ? 18 : 14} />
           </button>
         ) : null}
       </div>

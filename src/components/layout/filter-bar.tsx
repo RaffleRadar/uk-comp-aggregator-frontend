@@ -516,6 +516,7 @@ export function FilterBar({
   useEffect(() => {
     if (!isListingPage) return;
     if (spend != null) return;
+    if (searchParams.has("sortBy") || searchParams.has("section")) return;
 
     const cookieAmount = readSpendCookie();
     if (cookieAmount == null) return;
