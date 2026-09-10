@@ -176,6 +176,7 @@ export default async function Page({
         excludeInstant: true,
         excludeFree: true,
         excludeGames: true,
+        excludeSoldOut: true,
         limit: 4,
       }),
       getStats(),
@@ -259,7 +260,7 @@ export default async function Page({
         titleStart={siteContent?.section6TitleStart?.trim() || "Ending"}
         titleAccent={siteContent?.section6TitleAccent?.trim() || "today"}
         subtitle={siteContent?.section6Subtitle?.trim() || "Last chance — these draws close tonight"}
-        viewAllHref="/competitions?section=ending-today&sortBy=endsAt&sortOrder=asc&closing=today&excludeInstant=true&excludeFree=true"
+        viewAllHref="/competitions?section=ending-today&sortBy=endsAt&sortOrder=asc&closing=today&excludeInstant=true&excludeFree=true&excludeSoldOut=true"
         competitions={endingToday}
         accentTone="red"
       />
