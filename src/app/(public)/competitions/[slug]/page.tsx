@@ -927,9 +927,9 @@ export default async function Page({
                           projection.basis === "sold-out"
                             ? "ALREADY SOLD OUT."
                             : projection.basis === "recurring"
-                              ? `BASED ON ${projection.sampleSize} PAST DRAWS.`
+                              ? `BASED ON THIS OPERATOR'S RECENT DRAWS (${projection.sampleSize}).`
                               : projection.basis === "operator"
-                                ? `BASED ON ${projection.sampleSize} OPERATOR DRAWS.`
+                                ? `BASED ON THIS OPERATOR'S DRAWS (${projection.sampleSize}).`
                                 : "BASED ON CURRENT PACE."
                         } ESTIMATED SHARE OF TICKETS SOLD BY THE DRAW. NOT A GUARANTEE.`}
                       />
