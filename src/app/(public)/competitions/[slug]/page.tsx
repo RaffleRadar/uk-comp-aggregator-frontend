@@ -906,7 +906,7 @@ export default async function Page({
                   </p>
                 </div>
               </div>
-              <div className={`grid gap-1.5 ${!hasEnded && projection ? "grid-cols-3" : "grid-cols-2"}`}>
+              <div className={`grid grid-cols-2 gap-1.5 ${!hasEnded && projection ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
                 <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Total tickets</p>
                   <p className="text-xl font-semibold text-rr-primary tabular-nums">
