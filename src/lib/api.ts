@@ -534,6 +534,39 @@ export async function getCompetitionHistory(id: string) {
   });
 }
 
+export type SelloutProjection = {
+  projectedPercent: number;
+  confidence: "high" | "medium" | "low";
+  basis: "sold-out" | "recurring" | "operator" | "pace";
+  sampleSize: number;
+};
+
+export async function getCompetitionProjection(
+  id: string,
+): Promise<SelloutProjection | null> {
+  try {
+    const res = await fetch(`${BASE_URL}/competitions/${id}/projection`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: 300 },
+    });
+
+    if (!res.ok) return null;
+
+    const text = await res.text();
+
+    if (!text.trim()) return null;
+
+    const parsed = JSON.parse(text) as SelloutProjection;
+
+    if (typeof parsed?.projectedPercent !== "number") return null;
+
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 export async function getSimilarCompetitions(id: string, limit = 8) {
   return apiFetch<unknown>(`/competitions/${id}/similar?limit=${limit}`, {
     revalidate: COMPETITION_TTL,

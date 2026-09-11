@@ -26,6 +26,7 @@ import { ReportIssue } from "@/components/competitions/report-issue";
 import {
   getCompetition,
   getCompetitionHistory,
+  getCompetitionProjection,
   getCompetitions,
   getComments,
   getSimilarCompetitions,
@@ -205,6 +206,7 @@ async function fetchCompetitionData(slug: string) {
       })
       .catch(() => []);
     const similarPromise = getSimilarCompetitions(slug, 8).catch(() => []);
+    const projectionPromise = getCompetitionProjection(slug);
     const moreFromOperatorPromise = competitionPromise.then((value) => {
       if (!value || typeof value !== "object") return [];
       const comp = value as Competition;
@@ -223,12 +225,14 @@ async function fetchCompetitionData(slug: string) {
       moreFromOperatorData,
       similarData,
       comments,
+      projection,
     ] = await Promise.all([
       competitionPromise,
       historyPromise,
       moreFromOperatorPromise,
       similarPromise,
       commentsPromise,
+      projectionPromise,
     ]);
     if (!competition || typeof competition !== "object") {
       notFound();
@@ -347,6 +351,7 @@ async function fetchCompetitionData(slug: string) {
       finalVerifiedAt,
       finalSoldValue,
       finalPercentValue,
+      projection,
     };
   } catch (error) {
     if (!isCompetitionNotFoundError(error)) {
@@ -409,6 +414,7 @@ export default async function Page({
     finalVerifiedAt,
     finalSoldValue,
     finalPercentValue,
+    projection,
   } = data;
   const prizeValueNum = prizeValue ? Number(prizeValue) : null;
   const cashAltNum = cashAlternative ? Number(cashAlternative) : null;
@@ -874,45 +880,70 @@ export default async function Page({
                 <PlaceholderIcon category={category} />
               )}
             </div>
-            <div className="order-4 grid grid-cols-2 gap-1.5 mb-2 md:order-none">
-              <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Ticket price</p>
-                <p className="text-xl font-semibold text-rr-green">
-                  {priceValue === 0
-                    ? "FREE"
-                    : priceValue
-                      ? `£${priceValue.toFixed(2)}`
+            <div className="order-4 mb-2 md:order-none">
+              <div className="grid grid-cols-2 gap-1.5 mb-1.5">
+                <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Ticket price</p>
+                  <p className="text-xl font-semibold text-rr-green">
+                    {priceValue === 0
+                      ? "FREE"
+                      : priceValue
+                        ? `£${priceValue.toFixed(2)}`
+                        : "—"}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Prize value</p>
+                  <p className="flex items-center gap-1 text-xl font-semibold text-rr-primary">
+                    <span>
+                      {prizeValueNum
+                        ? `£${prizeValueNum.toLocaleString("en-GB")}`
+                        : "—"}
+                    </span>
+                    {prizeValueNum && prizeValueEstimated === true && (
+                      <InfoTooltip text="Estimated value — we don't have a confirmed price for this prize, so this is an approximate upper limit." />
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className={`grid grid-cols-2 gap-1.5 ${!hasEnded && projection ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+                <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Total tickets</p>
+                  <p className="text-xl font-semibold text-rr-primary tabular-nums">
+                    {totalTicketsValue !== null
+                      ? totalTicketsValue.toLocaleString("en-GB")
                       : "—"}
-                </p>
-              </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Prize value</p>
-                <p className="flex items-center gap-1 text-xl font-semibold text-rr-primary">
-                  <span>
-                    {prizeValueNum
-                      ? `£${prizeValueNum.toLocaleString("en-GB")}`
+                  </p>
+                </div>
+                {!hasEnded && projection && (
+                  <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">
+                      Est at close
+                    </p>
+                    <p className="flex items-center gap-1 text-xl font-semibold text-rr-primary tabular-nums">
+                      <span>{Math.round(projection.projectedPercent)}%</span>
+                      <InfoTooltip
+                        text={`${
+                          projection.basis === "sold-out"
+                            ? "ALREADY SOLD OUT."
+                            : projection.basis === "recurring"
+                              ? `BASED ON ${projection.sampleSize} PAST DRAWS.`
+                              : projection.basis === "operator"
+                                ? `BASED ON ${projection.sampleSize} OPERATOR DRAWS.`
+                                : "BASED ON CURRENT PACE."
+                        } ESTIMATED SHARE OF TICKETS SOLD BY THE DRAW. NOT A GUARANTEE.`}
+                      />
+                    </p>
+                  </div>
+                )}
+                <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Max per person</p>
+                  <p className="text-xl font-semibold text-rr-primary">
+                    {maxPerPerson !== null && maxPerPerson !== undefined
+                      ? maxPerPerson.toLocaleString("en-GB")
                       : "—"}
-                  </span>
-                  {prizeValueNum && prizeValueEstimated === true && (
-                    <InfoTooltip text="Estimated value — we don't have a confirmed price for this prize, so this is an approximate upper limit." />
-                  )}
-                </p>
-              </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Total tickets</p>
-                <p className="text-xl font-semibold text-rr-primary tabular-nums">
-                  {totalTicketsValue !== null
-                    ? totalTicketsValue.toLocaleString("en-GB")
-                    : "—"}
-                </p>
-              </div>
-              <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Max per person</p>
-                <p className="text-xl font-semibold text-rr-primary">
-                  {maxPerPerson !== null && maxPerPerson !== undefined
-                    ? maxPerPerson.toLocaleString("en-GB")
-                    : "—"}
-                </p>
+                  </p>
+                </div>
               </div>
             </div>
             <div className="order-6 flex flex-wrap items-center gap-1.5 mt-2 mb-2 md:order-none">
