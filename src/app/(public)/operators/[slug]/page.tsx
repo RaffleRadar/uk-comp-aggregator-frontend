@@ -344,7 +344,7 @@ export default async function OperatorPage({
               ) : null}
             </div>
 
-            <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-5">
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
               <div className="rounded-xl border border-rr-border bg-rr-surface p-4">
                 <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
                   Median VR
@@ -418,7 +418,7 @@ export default async function OperatorPage({
               </div>
 
               {operator.typicalSellThrough !== null ? (
-                <div className="col-span-2 md:col-span-1 rounded-xl border border-rr-border bg-rr-surface p-4">
+                <div className="col-span-2 sm:col-span-1 rounded-xl border border-rr-border bg-rr-surface p-4">
                   <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
                     Typical sell-through
                   </p>
