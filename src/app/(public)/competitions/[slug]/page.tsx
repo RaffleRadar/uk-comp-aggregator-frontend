@@ -522,8 +522,8 @@ export default async function Page({
       <div className="mt-1.5">
         <div className="mb-1.5 grid grid-cols-1 rounded-lg border border-rr-border divide-y divide-rr-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Estimated ticket value</span>
-            <span className="text-sm font-medium text-rr-primary">
+            <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Current value</span>
+            <span className="text-[13px] font-medium text-rr-primary">
               £
               {salesRevenue.toLocaleString("en-GB", {
                 minimumFractionDigits: 2,
@@ -532,16 +532,16 @@ export default async function Page({
             </span>
           </div>
           <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Prize value</span>
-            <span className="text-sm font-medium text-rr-primary">
+            <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Prize value</span>
+            <span className="text-[13px] font-medium text-rr-primary">
               £{prizeValueNum.toLocaleString("en-GB")}
             </span>
           </div>
           <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+            <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
               {salesDifference >= 0 ? "Above prize value" : "Below prize value"}
             </span>
-            <span className="text-sm font-medium text-rr-primary">
+            <span className="text-[13px] font-medium text-rr-primary">
               £{Math.abs(salesDifference).toLocaleString("en-GB")}
             </span>
           </div>
@@ -889,13 +889,13 @@ export default async function Page({
                         variant={variant}
                         className="mb-1.5"
                       />
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex flex-col gap-[3px] md:flex-row md:items-center md:justify-between md:gap-2">
                         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
                           {staysUndersold
                             ? "Projected to stay undersold at this pace"
                             : "Based on previous draws + current sales pace"}
                         </span>
-                        <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                        <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted md:shrink-0">
                           {projectedTickets.toLocaleString("en-GB")} projected
                         </span>
                       </div>
