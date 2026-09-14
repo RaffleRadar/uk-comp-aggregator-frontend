@@ -1,14 +1,25 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
+import {
+  CompetitionGrid,
+  CompetitionResultsHeading,
+} from "@/components/competitions/competition-grid";
 import { SearchForm } from "@/components/search/search-form";
+import { RadarLoader } from "@/components/ui/RadarLoader";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 
 type SearchPageSearchParams = {
   q?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  category?: string;
+  closing?: string;
+  spend?: string;
 };
 
 const TITLE = "Search competitions — RaffleRadar";
 const DESCRIPTION =
-  "Search live UK prize competitions by prize name, brand, model or cash value.";
+  "Search live UK prize competitions by prize name, brand, model or cash value. Filter and sort to find the right draw.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -25,6 +36,47 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
   }),
 };
+
+async function SearchResults({
+  params,
+}: {
+  params: {
+    q: string;
+    sortBy?: string;
+    sortOrder?: string;
+    category?: string;
+    closing?: string;
+    spend?: string;
+  };
+}) {
+  const headingParams = {
+    search: params.q,
+    sortBy: params.sortBy,
+    sortOrder: params.sortOrder,
+    category: params.category,
+    closing: params.closing,
+    spend: params.spend,
+  };
+  return (
+    <>
+      <CompetitionResultsHeading
+        params={headingParams}
+        showBackButton={false}
+      />
+      <CompetitionGrid
+        params={{
+          search: params.q,
+          sortBy: params.sortBy,
+          sortOrder: params.sortOrder,
+          category: params.category,
+          closing: params.closing,
+          spend: params.spend ? Number(params.spend) : undefined,
+          limit: 500,
+        }}
+      />
+    </>
+  );
+}
 
 export default async function SearchPage({
   searchParams,
@@ -45,6 +97,23 @@ export default async function SearchPage({
           <SearchForm initialQuery={q || undefined} />
         </div>
       </div>
+
+      {q ? (
+        <div className="container pb-6 md:pb-10">
+          <Suspense fallback={<RadarLoader className="mt-10" />}>
+            <SearchResults
+              params={{
+                q,
+                sortBy: params.sortBy,
+                sortOrder: params.sortOrder,
+                category: params.category,
+                closing: params.closing,
+                spend: params.spend,
+              }}
+            />
+          </Suspense>
+        </div>
+      ) : null}
     </main>
   );
 }

@@ -70,7 +70,7 @@ function CompetitionSearchInput({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const requestIdRef = useRef(0);
-  const skipNextFetchRef = useRef(false);
+  const skipNextFetchRef = useRef(initialQuery.trim().length >= 2);
 
   const [query, setQuery] = useState(initialQuery);
 
