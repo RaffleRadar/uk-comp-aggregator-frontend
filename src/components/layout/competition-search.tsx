@@ -120,6 +120,8 @@ function CompetitionSearchInput({
     requestIdRef.current += 1;
     const currentRequestId = requestIdRef.current;
     setLoading(true);
+    setResults([]);
+    setActiveIndex(-1);
 
     const timer = window.setTimeout(async () => {
       try {
