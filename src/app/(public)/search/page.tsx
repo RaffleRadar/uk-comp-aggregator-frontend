@@ -5,6 +5,7 @@ import {
   CompetitionResultsHeading,
 } from "@/components/competitions/competition-grid";
 import { SearchForm } from "@/components/search/search-form";
+import { SaveSearchButton } from "@/components/competitions/save-search-button";
 import { RadarLoader } from "@/components/ui/RadarLoader";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 
@@ -100,6 +101,9 @@ export default async function SearchPage({
 
       {q ? (
         <div className="container pb-6 md:pb-10">
+          <div className="mb-4">
+            <SaveSearchButton />
+          </div>
           <Suspense fallback={<RadarLoader className="mt-10" />}>
             <SearchResults
               params={{

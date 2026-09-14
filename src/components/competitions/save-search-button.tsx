@@ -68,6 +68,11 @@ function parseSavedSearchParams(searchParams: URLSearchParams) {
     payload[key] = value;
   }
 
+  if (!payload["search"]) {
+    const q = searchParams.get("q")?.trim();
+    if (q) payload["search"] = q;
+  }
+
   for (const key of numberParams) {
     const value = searchParams.get(key)?.trim();
 
