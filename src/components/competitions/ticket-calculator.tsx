@@ -226,38 +226,69 @@ export function TicketCalculator({
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
             Quick select a spend amount
           </p>
-          <div className="flex items-center gap-1">
-            {SPEND_PRESETS.map((amount) => (
-              <button
-                key={amount}
-                type="button"
-                onClick={() => pickPreset(amount)}
-                className={cn(
-                  "inline-flex h-8 items-center justify-center rounded-full border px-2.5 text-[13px] font-medium transition cursor-pointer",
-                  activeSpend === amount
-                    ? "bg-rr-green border-rr-green text-rr-on-accent"
-                    : "bg-rr-surface border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
-                )}
-              >
-                {formatSpendAmount(amount)}
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setIsCustomOpen((v) => !v)}
-              className={cn(
-                "inline-flex h-8 items-center justify-center rounded-full border px-2.5 text-[13px] font-medium transition cursor-pointer",
-                activeSpend == null && isCustomOpen
-                  ? "bg-rr-green border-rr-green text-rr-on-accent"
-                  : "bg-rr-surface border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
-              )}
-            >
-              Custom
-            </button>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex min-w-0 items-center gap-[6px] overflow-x-auto pb-0.5 overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-[6px]">
+              <div className="flex shrink-0 items-center gap-[6px] sm:gap-[6px]">
+                {SPEND_PRESETS.map((amount) => (
+                  <button
+                    key={amount}
+                    type="button"
+                    onClick={() => pickPreset(amount)}
+                    className={cn(
+                      "inline-flex h-7 shrink-0 items-center justify-center rounded-full border px-2 text-[12px] font-medium transition cursor-pointer sm:h-8 sm:px-2.5 sm:text-[13px]",
+                      activeSpend === amount
+                        ? "bg-rr-green border-rr-green text-rr-on-accent"
+                        : "bg-rr-surface border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
+                    )}
+                  >
+                    {formatSpendAmount(amount)}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setIsCustomOpen((v) => !v)}
+                  className={cn(
+                    "inline-flex h-7 shrink-0 items-center justify-center rounded-full border px-2 text-[12px] font-medium transition cursor-pointer sm:h-8 sm:px-2.5 sm:text-[13px]",
+                    activeSpend == null && isCustomOpen
+                      ? "bg-rr-green border-rr-green text-rr-on-accent"
+                      : "bg-rr-surface border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
+                  )}
+                >
+                  Custom
+                </button>
+              </div>
+              {isCustomOpen ? (
+                <div className="flex shrink-0 items-center gap-[6px] sm:gap-1.5">
+                  <div className="flex h-8 items-center rounded-md border border-rr-border bg-rr-surface px-1.5 sm:h-9 sm:px-2">
+                    <span className="text-xs text-rr-muted mr-1 sm:text-sm sm:mr-1 shrink-0">£</span>
+                    <input
+                      type="number"
+                      min={0}
+                      step="1"
+                      value={customValue}
+                      onChange={(e) => setCustomValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleCustomApply();
+                      }}
+                      className="h-6 w-16 rounded bg-transparent px-1 text-xs font-medium text-rr-primary outline-none sm:h-7 sm:w-20 sm:px-1 sm:text-sm"
+                      inputMode="decimal"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCustomApply}
+                    className="inline-flex h-8 shrink-0 items-center justify-center rounded-full border border-rr-green-border bg-rr-green-bg px-2.5 text-xs font-medium text-rr-green transition cursor-pointer hover:bg-rr-green/20 sm:h-9 sm:px-3 sm:text-sm"
+                  >
+                    Apply
+                  </button>
+                </div>
+              ) : null}
+            </div>
             {isCustomOpen ? (
-              <div className="flex items-center gap-1.5">
-                <div className="flex h-9 items-center rounded-md border border-rr-border bg-rr-surface px-2">
-                  <span className="text-sm text-rr-muted mr-1">£</span>
+              <div className="flex w-full items-center gap-[6px] sm:hidden">
+                <div className="flex h-8 flex-1 min-w-0 items-center rounded-md border border-rr-border bg-rr-surface px-1.5">
+                  <span className="text-xs text-rr-muted mr-1 shrink-0">£</span>
                   <input
                     type="number"
                     min={0}
@@ -267,7 +298,7 @@ export function TicketCalculator({
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleCustomApply();
                     }}
-                    className="h-7 w-20 rounded bg-transparent px-1 text-sm font-medium text-rr-primary outline-none"
+                    className="h-6 w-full min-w-0 rounded bg-transparent px-1 text-xs font-medium text-rr-primary outline-none"
                     inputMode="decimal"
                     placeholder="0.00"
                   />
@@ -275,7 +306,7 @@ export function TicketCalculator({
                 <button
                   type="button"
                   onClick={handleCustomApply}
-                  className="inline-flex h-9 items-center justify-center rounded-full border border-rr-green-border bg-rr-green-bg px-3 text-sm font-medium text-rr-green transition cursor-pointer hover:bg-rr-green/20"
+                  className="inline-flex h-8 shrink-0 items-center justify-center rounded-full border border-rr-green-border bg-rr-green-bg px-2.5 text-xs font-medium text-rr-green transition cursor-pointer hover:bg-rr-green/20"
                 >
                   Apply
                 </button>
