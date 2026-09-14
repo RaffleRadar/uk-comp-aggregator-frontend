@@ -119,7 +119,6 @@ function CompetitionSearchInput({
 
     requestIdRef.current += 1;
     const currentRequestId = requestIdRef.current;
-    setLoading(true);
 
     const timer = window.setTimeout(async () => {
       try {
@@ -129,7 +128,6 @@ function CompetitionSearchInput({
 
         setResults(nextResults);
         setActiveIndex(-1);
-        if (nextResults.length > 0) setOpen(true);
       } catch {
         if (requestIdRef.current !== currentRequestId) return;
 
