@@ -174,6 +174,8 @@ export type OperatorDetail = {
   ticketPriceAvg: number | null;
   highestPrizeValue: number | null;
   instantWinsAvailable: boolean;
+  typicalSellThrough: number | null;
+  typicalSellThroughSample: number | null;
   baseUrl: string | null;
   competitions: CompetitionDetail[];
 };
@@ -350,6 +352,8 @@ function normalizeOperatorDetail(value: unknown): OperatorDetail | null {
     ticketPriceAvg: toNum(data.ticketPriceAvg),
     highestPrizeValue: toNum(data.highestPrizeValue),
     instantWinsAvailable: data.instantWinsAvailable === true,
+    typicalSellThrough: toNum(data.typicalSellThrough),
+    typicalSellThroughSample: toNum(data.typicalSellThroughSample),
     baseUrl:
       typeof data.baseUrl === "string"
         ? data.baseUrl

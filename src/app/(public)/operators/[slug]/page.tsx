@@ -416,6 +416,17 @@ export default async function OperatorPage({
                   {instantWinsAvailable ? "Available" : "Not available"}
                 </p>
               </div>
+
+              {operator.typicalSellThrough !== null ? (
+                <div className="rounded-xl border border-rr-border bg-rr-surface p-4">
+                  <p className="text-[11px] uppercase tracking-[0.14em] text-rr-muted">
+                    Typical sell-through
+                  </p>
+                  <p className="mt-2 text-xl font-medium text-rr-primary">
+                    {Math.round(operator.typicalSellThrough)}%
+                  </p>
+                </div>
+              ) : null}
             </div>
 
             <div className="mt-6 rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
