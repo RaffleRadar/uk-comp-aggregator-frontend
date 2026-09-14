@@ -5,6 +5,7 @@ import { sanityClient } from "@/sanity/client";
 import { ALL_PAGE_SLUGS, PAGE_BY_SLUG } from "@/sanity/queries";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 type PageParams = {
   slug: string;
