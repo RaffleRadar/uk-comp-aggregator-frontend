@@ -70,7 +70,9 @@ function CompetitionSearchInput({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const requestIdRef = useRef(0);
-  const skipNextFetchRef = useRef(false);
+  const skipNextFetchRef = useRef(
+    size === 'hero' ? false : initialQuery.trim().length >= 2,
+  );
 
   const [query, setQuery] = useState(initialQuery);
 
@@ -131,7 +133,7 @@ function CompetitionSearchInput({
 
         setResults(nextResults);
         setActiveIndex(-1);
-        if (nextResults.length > 0) setOpen(true);
+        if (size === 'hero' && nextResults.length > 0) setOpen(true);
       } catch {
         if (requestIdRef.current !== currentRequestId) return;
 
