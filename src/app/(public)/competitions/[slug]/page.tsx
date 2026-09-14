@@ -849,6 +849,61 @@ export default async function Page({
                 )}
               </div>
             ) : null}
+            {!hasEnded && projection && totalTicketsValue !== null ? (
+              <div className="order-8 mb-2 rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:order-none md:mb-0">
+                {(() => {
+                  const projectedPercent = Math.round(projection.projectedPercent);
+                  const projectedTickets = Math.round(
+                    (projectedPercent / 100) * totalTicketsValue,
+                  );
+                  const soldNow = soldTickets ?? 0;
+                  const staysUndersold =
+                    projectedTickets - soldNow < totalTicketsValue * 0.03;
+                  const variant =
+                    projectedPercent >= 75
+                      ? "red"
+                      : projectedPercent >= 50
+                        ? "amber"
+                        : "green";
+                  const valueColor =
+                    variant === "red"
+                      ? "text-red-500"
+                      : variant === "amber"
+                        ? "text-amber-500"
+                        : "text-rr-green";
+                  return (
+                    <>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">
+                        Estimated at close
+                      </p>
+                      <p className="mb-1.5 flex items-baseline gap-2">
+                        <span className={`text-3xl font-semibold ${valueColor}`}>
+                          {projectedPercent}%
+                        </span>
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                          projected
+                        </span>
+                      </p>
+                      <ProgressBar
+                        value={projectedPercent}
+                        variant={variant}
+                        className="mb-1.5"
+                      />
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                          {staysUndersold
+                            ? "Projected to stay undersold at this pace"
+                            : "Based on previous draws + current sales pace"}
+                        </span>
+                        <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                          {projectedTickets.toLocaleString("en-GB")} projected
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            ) : null}
             {!instantPrizes &&
             totalTicketsValue !== null &&
             soldTickets !== null ? (
@@ -906,7 +961,7 @@ export default async function Page({
                   </p>
                 </div>
               </div>
-              <div className={`grid grid-cols-2 gap-1.5 ${!hasEnded && projection ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+              <div className="grid grid-cols-2 gap-1.5 md:grid-cols-2">
                 <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Total tickets</p>
                   <p className="text-xl font-semibold text-rr-primary tabular-nums">
@@ -915,27 +970,6 @@ export default async function Page({
                       : "—"}
                   </p>
                 </div>
-                {!hasEnded && projection && (
-                  <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">
-                      Est at close
-                    </p>
-                    <p className="flex items-center gap-1 text-xl font-semibold text-rr-primary tabular-nums">
-                      <span>{Math.round(projection.projectedPercent)}%</span>
-                      <InfoTooltip
-                        text={`${
-                          projection.basis === "sold-out"
-                            ? "ALREADY SOLD OUT."
-                            : projection.basis === "recurring"
-                              ? `BASED ON THIS OPERATOR'S RECENT DRAWS (${projection.sampleSize}).`
-                              : projection.basis === "operator"
-                                ? `BASED ON THIS OPERATOR'S DRAWS (${projection.sampleSize}).`
-                                : "BASED ON CURRENT PACE."
-                        } ESTIMATED SHARE OF TICKETS SOLD BY THE DRAW. NOT A GUARANTEE.`}
-                      />
-                    </p>
-                  </div>
-                )}
                 <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Max per person</p>
                   <p className="text-xl font-semibold text-rr-primary">
