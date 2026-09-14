@@ -226,14 +226,14 @@ export function TicketCalculator({
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
             Quick select a spend amount
           </p>
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex items-center gap-1">
             {SPEND_PRESETS.map((amount) => (
               <button
                 key={amount}
                 type="button"
                 onClick={() => pickPreset(amount)}
                 className={cn(
-                  "inline-flex h-9 items-center justify-center rounded-full border px-3 text-sm font-medium transition cursor-pointer",
+                  "inline-flex h-8 items-center justify-center rounded-full border px-2.5 text-[13px] font-medium transition cursor-pointer",
                   activeSpend === amount
                     ? "bg-rr-green border-rr-green text-rr-on-accent"
                     : "bg-rr-surface border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
@@ -246,7 +246,7 @@ export function TicketCalculator({
               type="button"
               onClick={() => setIsCustomOpen((v) => !v)}
               className={cn(
-                "inline-flex h-9 items-center justify-center rounded-full border px-3 text-sm font-medium transition cursor-pointer",
+                "inline-flex h-8 items-center justify-center rounded-full border px-2.5 text-[13px] font-medium transition cursor-pointer",
                 activeSpend == null && isCustomOpen
                   ? "bg-rr-green border-rr-green text-rr-on-accent"
                   : "bg-rr-surface border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
