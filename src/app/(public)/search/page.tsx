@@ -96,8 +96,10 @@ export default async function SearchPage({
         <div className="mt-6">
           <SearchForm initialQuery={q || undefined} />
         </div>
+      </div>
 
-        {q ? (
+      {q ? (
+        <div className="container pb-6 md:pb-10">
           <Suspense fallback={<RadarLoader className="mt-10" />}>
             <SearchResults
               params={{
@@ -110,8 +112,8 @@ export default async function SearchPage({
               }}
             />
           </Suspense>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </main>
   );
 }
