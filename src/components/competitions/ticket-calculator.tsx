@@ -258,7 +258,7 @@ export function TicketCalculator({
                 </button>
               </div>
               {isCustomOpen ? (
-                <div className="flex shrink-0 items-center gap-[6px] sm:gap-1.5">
+                <div className="flex shrink-0 items-center gap-[6px] sm:gap-1.5 sm:flex sm:hidden">
                   <div className="flex h-8 items-center rounded-md border border-rr-border bg-rr-surface px-1.5 sm:h-9 sm:px-2">
                     <span className="text-xs text-rr-muted mr-1 sm:text-sm sm:mr-1 shrink-0">£</span>
                     <input
