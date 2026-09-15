@@ -988,7 +988,7 @@ export default async function Page({
                 operatorUrl={operator?.baseUrl ?? null}
                 hasEnded={hasEnded}
               />
-              <SaveActions />
+              <SaveActions competitionId={compId} />
             </div>
             {!instantPrizes && ticketsSoldForOdds !== null ? (
               <div className="order-10 mt-2 mb-2 rounded-lg border border-rr-border bg-rr-elevated md:order-none">

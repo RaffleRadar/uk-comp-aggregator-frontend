@@ -1,16 +1,16 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { SaveHeart } from "@/components/competitions/save-heart";
 import { CommentLink } from "@/components/competitions/comment-link";
 
-export function SaveActions() {
-  const pathname = usePathname();
-  const competitionId = pathname.match(/^\/competitions\/([^/]+)/)?.[1] ?? null;
+type SaveActionsProps = {
+  competitionId: string;
+};
 
+export function SaveActions({ competitionId }: SaveActionsProps) {
   return (
     <>
-      {competitionId ? <SaveHeart competitionId={competitionId} /> : null}
+      <SaveHeart competitionId={competitionId} />
       <CommentLink />
     </>
   );
