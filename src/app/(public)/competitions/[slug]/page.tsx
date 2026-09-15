@@ -881,7 +881,7 @@ export default async function Page({
                           {projectedPercent}%
                         </span>
                         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
-                          projected
+                          projected ({projectedTickets.toLocaleString("en-GB")})
                         </span>
                       </p>
                       <ProgressBar
@@ -889,16 +889,11 @@ export default async function Page({
                         variant={variant}
                         className="mb-1.5"
                       />
-                      <div className="flex flex-col gap-[3px] md:flex-row md:items-center md:justify-between md:gap-2">
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
-                          {staysUndersold
-                            ? "Projected to stay undersold at this pace"
-                            : "Based on previous draws + current sales pace"}
-                        </span>
-                        <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted md:shrink-0">
-                          {projectedTickets.toLocaleString("en-GB")} projected
-                        </span>
-                      </div>
+                      <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                        {staysUndersold
+                          ? "Projected to stay undersold at this pace"
+                          : "Based on previous draws + current sales pace"}
+                      </span>
                     </>
                   );
                 })()}
