@@ -62,6 +62,7 @@ export function Navbar() {
   const isReviewsActive = pathname === "/reviews" || pathname.startsWith("/reviews/");
   const isBlogActive = pathname === "/blog" || pathname.startsWith("/blog/");
   const isContactActive = pathname === "/contact";
+  const isSearchPage = pathname === "/search";
 
   useEffect(() => {
     const media = window.matchMedia("(min-width: 768px)");
@@ -267,11 +268,13 @@ export function Navbar() {
           </div>
         </nav>
 
-        <div className="w-full min-w-0 max-w-full px-4 pb-3 sm:hidden">
-          <Suspense fallback={null}>
-            <CompetitionSearch />
-          </Suspense>
-        </div>
+        {isSearchPage ? null : (
+          <div className="w-full min-w-0 max-w-full px-4 pb-3 sm:hidden">
+            <Suspense fallback={null}>
+              <CompetitionSearch />
+            </Suspense>
+          </div>
+        )}
       </div>
 
       {menuOpen ? (
