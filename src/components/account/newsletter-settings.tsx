@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNewsletter } from "@/contexts/newsletter-context";
 import { AuthClientError } from "@/lib/auth-client";
+import { protectedFetch } from "@/lib/protected-fetch";
 
 const cardClass = "rounded-2xl border border-rr-border bg-rr-surface p-6";
 const titleClass = "mb-1 text-base font-medium text-rr-primary";
@@ -16,10 +17,7 @@ function getErrorMessage(error: unknown, fallback: string) {
 }
 
 async function newsletterRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api/newsletter${path}`, {
-    ...init,
-    credentials: "same-origin",
-  });
+  const response = await protectedFetch(`/api/newsletter${path}`, init);
 
   if (!response.ok) {
     const raw = await response.text();

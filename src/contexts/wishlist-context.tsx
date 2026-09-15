@@ -12,6 +12,7 @@ import {
 } from "react";
 import { SignInModal } from "@/components/auth/sign-in-modal";
 import { useAuth } from "@/contexts/auth-context";
+import { protectedFetch } from "@/lib/protected-fetch";
 
 type WishlistContextValue = {
   isLoading: boolean;
@@ -40,9 +41,8 @@ async function wishlistRequest<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const response = await fetch(path, {
+  const response = await protectedFetch(path, {
     ...init,
-    credentials: "same-origin",
     cache: "no-store",
   });
 

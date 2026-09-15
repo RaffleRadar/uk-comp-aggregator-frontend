@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useNewsletter } from "@/contexts/newsletter-context";
+import { protectedFetch } from "@/lib/protected-fetch";
 
 export function NewsletterBanner() {
   const { state, isLoading, error, refetch } = useNewsletter();
@@ -16,9 +17,8 @@ export function NewsletterBanner() {
 
   async function handleSubscribe() {
     try {
-      const response = await fetch("/api/newsletter/me/subscribe", {
+      const response = await protectedFetch("/api/newsletter/me/subscribe", {
         method: "POST",
-        credentials: "same-origin",
       });
 
       if (!response.ok) {

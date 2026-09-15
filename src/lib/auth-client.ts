@@ -42,14 +42,37 @@ let refreshPromise: Promise<boolean> | null = null;
 
 const SESSION_HINT_COOKIE_NAME = "rr_session";
 
-export function hasSessionHint() {
+function readSessionHint() {
   if (typeof document === "undefined") {
-    return false;
+    return null;
   }
 
-  return document.cookie
+  const entry = document.cookie
     .split(";")
-    .some((entry) => entry.trim().startsWith(`${SESSION_HINT_COOKIE_NAME}=`));
+    .map((item) => item.trim())
+    .find((item) => item.startsWith(`${SESSION_HINT_COOKIE_NAME}=`));
+
+  if (!entry) {
+    return null;
+  }
+
+  return entry.slice(SESSION_HINT_COOKIE_NAME.length + 1);
+}
+
+export function hasSessionHint() {
+  return readSessionHint() !== null;
+}
+
+export function getAccessTokenExpiry() {
+  const value = readSessionHint();
+
+  if (!value) {
+    return null;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function buildBody(body: unknown) {

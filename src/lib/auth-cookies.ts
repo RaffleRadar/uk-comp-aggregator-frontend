@@ -36,7 +36,9 @@ export async function setAuthCookies({
     maxAge: REFRESH_COOKIE_MAX_AGE,
   });
 
-  cookieStore.set(SESSION_HINT_COOKIE_NAME, "1", {
+  const accessExpiresAt = Date.now() + ACCESS_COOKIE_MAX_AGE * 1000;
+
+  cookieStore.set(SESSION_HINT_COOKIE_NAME, String(accessExpiresAt), {
     httpOnly: false,
     secure: IS_PRODUCTION,
     sameSite: "lax",

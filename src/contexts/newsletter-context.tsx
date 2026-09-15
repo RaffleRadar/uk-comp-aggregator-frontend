@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { AuthClientError } from "@/lib/auth-client";
+import { protectedFetch } from "@/lib/protected-fetch";
 
 type NewsletterState = "subscribed" | "pending" | "not_subscribed";
 
@@ -47,10 +48,7 @@ async function newsletterRequest<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const response = await fetch(`/api/newsletter${path}`, {
-    ...init,
-    credentials: "same-origin",
-  });
+  const response = await protectedFetch(`/api/newsletter${path}`, init);
 
   if (!response.ok) {
     const raw = await response.text();

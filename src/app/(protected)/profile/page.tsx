@@ -26,6 +26,7 @@ import { useWishlist } from "@/contexts/wishlist-context";
 import { getCompetition, type CompetitionDetail } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import type { Competition } from "@/types/competition";
+import { protectedFetch } from "@/lib/protected-fetch";
 
 type WishlistItem = {
   id: string;
@@ -111,8 +112,7 @@ function WishlistSection() {
       setLoadError("");
 
       try {
-        const response = await fetch("/api/wishlists", {
-          credentials: "same-origin",
+        const response = await protectedFetch("/api/wishlists", {
           cache: "no-store",
         });
 

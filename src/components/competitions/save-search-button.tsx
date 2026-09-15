@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SignInModal } from "@/components/auth/sign-in-modal";
 import { useAuth } from "@/contexts/auth-context";
+import { protectedFetch } from "@/lib/protected-fetch";
 import { cn } from "@/lib/cn";
 
 type SavedSearchResponse = {
@@ -218,9 +219,8 @@ export function SaveSearchButton() {
 
     let cancelled = false;
 
-    void fetch("/api/saved-searches", {
+    void protectedFetch("/api/saved-searches", {
       method: "GET",
-      credentials: "same-origin",
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -274,9 +274,8 @@ export function SaveSearchButton() {
     setFeedback(null);
 
     try {
-      const response = await fetch("/api/saved-searches", {
+      const response = await protectedFetch("/api/saved-searches", {
         method: "POST",
-        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
