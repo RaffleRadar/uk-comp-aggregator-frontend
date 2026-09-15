@@ -100,8 +100,8 @@ export default async function SearchPage({
       </div>
 
       {q ? (
-        <div className="container pb-6 md:pb-10">
-          <div className="mb-4">
+        <div>
+          <div className="container mb-4">
             <SaveSearchButton />
           </div>
           <Suspense fallback={<RadarLoader className="mt-10" />}>

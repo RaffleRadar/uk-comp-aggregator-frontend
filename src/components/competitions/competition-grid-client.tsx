@@ -69,7 +69,7 @@ export function CompetitionGridClient({
   }
 
   return (
-    <section className="py-8 md:py-10">
+    <section className="pb-4 pt-8 md:pb-6 md:pt-10">
       <div className="container">{content}</div>
     </section>
   );

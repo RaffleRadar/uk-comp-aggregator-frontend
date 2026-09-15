@@ -154,7 +154,7 @@ export function CompetitionCard({
         <span className="absolute left-1.5 top-1.5 flex max-w-[calc(100%-48px)] flex-wrap items-start gap-1">
           <Badge
             variant="operator"
-            className="overflow-visible"
+            className="whitespace-normal break-words text-left leading-[1.2]"
           >
             {competition.operator?.name ?? "Unknown"}
           </Badge>

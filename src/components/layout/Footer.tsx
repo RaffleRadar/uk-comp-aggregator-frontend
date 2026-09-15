@@ -61,8 +61,8 @@ export async function Footer() {
     "Track every UK prize competition in one place — real odds, real value, no noise.";
 
   return (
-    <footer className="mt-20 border-t border-rr-border bg-rr-bg">
-      <div className="container py-14 md:py-16">
+    <footer className="mt-10 border-t border-rr-border bg-rr-bg md:mt-20">
+      <div className="container py-8 md:py-16">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
           <div className="max-w-[320px]">
             <Link
@@ -182,7 +182,7 @@ export async function Footer() {
           ) : null}
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-rr-border pt-6 md:flex-row md:items-start md:justify-between">
+        <div className="mt-8 flex flex-col gap-4 pt-2 md:mt-12 md:border-t md:border-rr-border md:pt-6 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-3">
             <p className="text-sm text-rr-muted">{footerCopyright}</p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
