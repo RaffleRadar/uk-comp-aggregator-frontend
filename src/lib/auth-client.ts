@@ -40,6 +40,18 @@ export class AuthClientError extends Error {
 
 let refreshPromise: Promise<boolean> | null = null;
 
+const SESSION_HINT_COOKIE_NAME = "rr_session";
+
+export function hasSessionHint() {
+  if (typeof document === "undefined") {
+    return false;
+  }
+
+  return document.cookie
+    .split(";")
+    .some((entry) => entry.trim().startsWith(`${SESSION_HINT_COOKIE_NAME}=`));
+}
+
 function buildBody(body: unknown) {
   return body === undefined ? undefined : JSON.stringify(body);
 }
@@ -92,7 +104,8 @@ async function request(
     response.status === 401 &&
     retryOnUnauthorized &&
     !hasRetried &&
-    path !== "/refresh"
+    path !== "/refresh" &&
+    hasSessionHint()
   ) {
     const refreshed = await ensureRefreshed();
 
@@ -119,6 +132,10 @@ async function readJson<T>(response: Response): Promise<T> {
 }
 
 export function ensureRefreshed() {
+  if (!hasSessionHint()) {
+    return Promise.resolve(false);
+  }
+
   if (refreshPromise) {
     return refreshPromise;
   }

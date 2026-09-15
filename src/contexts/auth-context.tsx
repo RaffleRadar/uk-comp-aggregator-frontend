@@ -14,6 +14,7 @@ import {
   authFetchJson,
   authRequest,
   authRequestJson,
+  hasSessionHint,
   type AuthUser,
   type LoginInput,
   type RegisterInput,
@@ -75,6 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const refreshMe = useCallback(async () => {
+    if (!hasSessionHint()) {
+      dispatch({ type: "unauthenticated", error: null });
+      return;
+    }
+
     try {
       const user = await authFetchJson<AuthUser>("/me");
       dispatch({ type: "authenticated", user });
@@ -142,6 +148,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     async function bootstrap() {
+      if (!hasSessionHint()) {
+        dispatch({ type: "unauthenticated", error: null });
+        return;
+      }
+
       try {
         const user = await authFetchJson<AuthUser>("/me");
         if (!cancelled) {

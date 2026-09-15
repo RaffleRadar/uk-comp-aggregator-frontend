@@ -8,6 +8,7 @@ type AuthTokenPair = {
 export const ACCESS_COOKIE_NAME = "rr_access";
 export const REFRESH_COOKIE_NAME = "rr_refresh";
 export const ANON_COOKIE_NAME = "rr_anon";
+export const SESSION_HINT_COOKIE_NAME = "rr_session";
 
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const ACCESS_COOKIE_MAX_AGE = 60 * 15;
@@ -34,6 +35,14 @@ export async function setAuthCookies({
     path: "/api/auth",
     maxAge: REFRESH_COOKIE_MAX_AGE,
   });
+
+  cookieStore.set(SESSION_HINT_COOKIE_NAME, "1", {
+    httpOnly: false,
+    secure: IS_PRODUCTION,
+    sameSite: "lax",
+    path: "/",
+    maxAge: REFRESH_COOKIE_MAX_AGE,
+  });
 }
 
 export async function clearAuthCookies() {
@@ -52,6 +61,14 @@ export async function clearAuthCookies() {
     secure: IS_PRODUCTION,
     sameSite: "lax",
     path: "/api/auth",
+    maxAge: 0,
+  });
+
+  cookieStore.set(SESSION_HINT_COOKIE_NAME, "", {
+    httpOnly: false,
+    secure: IS_PRODUCTION,
+    sameSite: "lax",
+    path: "/",
     maxAge: 0,
   });
 }
