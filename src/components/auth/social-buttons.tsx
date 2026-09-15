@@ -1,6 +1,8 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { rememberOauthTarget } from "@/lib/auth-redirect";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "";
 
@@ -11,6 +13,7 @@ function getProviderUrl(provider: Provider) {
 }
 
 export function SocialButtons() {
+  const searchParams = useSearchParams();
   const showFacebook = true;
 
   function handleClick(provider: Provider) {
@@ -18,6 +21,7 @@ export function SocialButtons() {
       return;
     }
 
+    rememberOauthTarget(searchParams.get("next"));
     window.location.href = getProviderUrl(provider);
   }
 

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { useAuth } from "@/contexts/auth-context";
 import { authRequest } from "@/lib/auth-client";
+import { takeOauthTarget } from "@/lib/auth-redirect";
 
 const cardClass =
   "rounded-[24px] bg-rr-surface px-5 py-5 shadow-sm sm:px-7 sm:py-6";
@@ -70,7 +71,7 @@ function OAuthCallbackContent() {
           body: { code },
         });
         await refreshMe();
-        router.replace("/");
+        router.replace(takeOauthTarget());
       } catch {
         setStatus("failed");
       }

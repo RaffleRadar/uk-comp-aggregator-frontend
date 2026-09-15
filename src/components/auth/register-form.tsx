@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { SocialButtons } from "@/components/auth/social-buttons";
+import { getSafeRedirectTarget } from "@/lib/auth-redirect";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { AuthClientError } from "@/lib/auth-client";
@@ -75,14 +76,6 @@ function validate(values: FormValues): FormErrors {
   }
 
   return errors;
-}
-
-function getSafeRedirectTarget(value: string | null) {
-  if (value && value.startsWith("/") && !value.startsWith("//")) {
-    return value;
-  }
-
-  return "/";
 }
 
 export function RegisterForm() {
