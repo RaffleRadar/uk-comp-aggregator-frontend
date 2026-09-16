@@ -921,7 +921,10 @@ export function FilterBar({
             ) : null}
 
             {showSpend ? (
-              <div ref={spendWrapRef} className="col-span-2 relative min-w-0 lg:col-span-1">
+              <div
+                ref={spendWrapRef}
+                className="col-span-2 relative min-w-0 lg:col-span-1"
+              >
                 <div className="lg:hidden">
                   <button
                     type="button"
@@ -1018,7 +1021,10 @@ export function FilterBar({
                   >
                     <span className="flex items-center justify-between gap-1.5">
                       <span className="truncate">{spendLabel}</span>
-                      <IconChevronDown size={14} className="text-rr-muted shrink-0" />
+                      <IconChevronDown
+                        size={14}
+                        className="text-rr-muted shrink-0"
+                      />
                     </span>
                   </button>
 
@@ -1073,7 +1079,12 @@ export function FilterBar({
         </div>
 
         {showOtherSubcategories || showVehicleSubcategories ? (
-          <div className="mt-4 flex flex-wrap gap-2 lg:mt-2 lg:gap-[6px]">
+          <div
+            className={cn(
+              "mt-4 grid gap-1 lg:mt-2 lg:flex lg:flex-wrap lg:gap-[6px]",
+              showVehicleSubcategories ? "grid-cols-5" : "grid-cols-4",
+            )}
+          >
             {(showVehicleSubcategories
               ? vehicleSubcategoryOptions
               : otherSubcategoryOptions
@@ -1089,7 +1100,7 @@ export function FilterBar({
                   key={opt.value}
                   type="button"
                   className={cn(
-                    "inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition cursor-pointer md:px-2.5 md:py-1",
+                    "inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-1 py-1.5 text-[11px] font-medium transition cursor-pointer md:py-1 lg:w-auto lg:px-2.5 lg:text-xs",
                     isActive
                       ? "bg-rr-elevated text-rr-primary shadow-sm"
                       : "bg-rr-surface text-rr-muted hover:bg-rr-elevated hover:text-rr-primary",
