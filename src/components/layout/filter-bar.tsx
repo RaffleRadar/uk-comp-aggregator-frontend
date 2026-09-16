@@ -539,7 +539,7 @@ export function FilterBar({
       <div className="container py-3">
         <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:gap-3">
           {showCategory ? (
-            <div className="order-2 flex flex-wrap gap-1 2xl:order-1 2xl:flex-1 2xl:min-w-0 2xl:flex-nowrap 2xl:gap-1 2xl:overflow-x-auto 2xl:overscroll-x-contain 2xl:pb-0.5 2xl:pr-1 2xl:[scrollbar-width:none] 2xl:[&::-webkit-scrollbar]:hidden">
+            <div className="order-2 grid grid-cols-5 gap-1 2xl:order-1 2xl:flex 2xl:flex-1 2xl:min-w-0 2xl:flex-nowrap 2xl:gap-1 2xl:overflow-x-auto 2xl:overscroll-x-contain 2xl:pb-0.5 2xl:pr-1 2xl:[scrollbar-width:none] 2xl:[&::-webkit-scrollbar]:hidden">
               {categoryOpts.map((opt) => {
                 const isActive = opt.value === currentMainCategory;
 
@@ -548,7 +548,7 @@ export function FilterBar({
                     key={opt.value}
                     type="button"
                     className={cn(
-                      "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2 py-0.5 text-[12px] leading-[18px] font-medium transition cursor-pointer lg:px-2 lg:py-[2px] lg:text-[11px] lg:leading-[18px]",
+                      "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full px-1 py-1 text-[11px] leading-[18px] font-medium transition cursor-pointer lg:py-[2px] lg:text-[11px] lg:leading-[18px] 2xl:w-auto 2xl:px-2",
                       isActive
                         ? "bg-rr-green text-rr-on-accent border border-transparent"
                         : "bg-transparent border border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
