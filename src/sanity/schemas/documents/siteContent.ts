@@ -10,6 +10,7 @@ export const siteContent = defineType(
       { name: "hero", title: "Homepage hero", default: true },
       { name: "sections", title: "Homepage sections" },
       { name: "intros", title: "Page intros" },
+      { name: "emails", title: "Emails" },
     ],
     fields: [
       defineField({
@@ -228,6 +229,26 @@ export const siteContent = defineType(
         rows: 2,
         group: "intros",
         validation: (rule) => rule.max(200),
+      }),
+      defineField({
+        name: "newsletterIntro",
+        title: "Weekly newsletter opening paragraph",
+        description:
+          "Shown under the heading in the weekly newsletter email. Leave empty to use the default wording.",
+        type: "text",
+        rows: 3,
+        group: "emails",
+        validation: (rule) => rule.max(300),
+      }),
+      defineField({
+        name: "alertsIntro",
+        title: "Saved search alert opening paragraph",
+        description:
+          "Shown under the heading in the saved search alert email. Leave empty to use the default wording.",
+        type: "text",
+        rows: 3,
+        group: "emails",
+        validation: (rule) => rule.max(300),
       }),
     ],
   },
