@@ -831,7 +831,15 @@ export default async function Page({
                     </p>
                     {percentValue !== null ? (
                       <p className="mb-1.5 flex items-baseline gap-2">
-                        <span className="text-3xl font-semibold text-rr-green">
+                        <span
+                          className={`text-3xl font-semibold ${
+                            percentValue >= 75
+                              ? "text-red-500"
+                              : percentValue >= 50
+                                ? "text-amber-500"
+                                : "text-rr-green"
+                          }`}
+                        >
                           {percentValue.toFixed(0)}%
                         </span>
                         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
@@ -861,15 +869,26 @@ export default async function Page({
             {!hasEnded && projection && totalTicketsValue !== null ? (
               <div className="order-8 mb-2 rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:order-none md:mb-0">
                 {(() => {
-                  const projectedPercent = Math.round(
-                    projection.projectedPercent,
-                  );
-                  const projectedTickets = Math.round(
-                    (projectedPercent / 100) * totalTicketsValue,
+                  const rawPercent = Math.round(projection.projectedPercent);
+                  const rawTickets = Math.round(
+                    (rawPercent / 100) * totalTicketsValue,
                   );
                   const soldNow = soldTickets ?? 0;
-                  const staysUndersold =
+                  const behindActual = rawTickets < soldNow;
+                  const projectedTickets = behindActual ? soldNow : rawTickets;
+                  const projectedPercent = behindActual
+                    ? Math.round((soldNow / totalTicketsValue) * 100)
+                    : rawPercent;
+                  const growthStalled =
                     projectedTickets - soldNow < totalTicketsValue * 0.03;
+                  const nearSoldOut = projectedPercent >= 90;
+                  const caption = nearSoldOut
+                    ? "Projected to finish near sold out"
+                    : behindActual
+                      ? "Sales are already ahead of the projected pace"
+                      : growthStalled
+                        ? "Projected to stay undersold at this pace"
+                        : "Based on previous draws + current sales pace";
                   const variant =
                     projectedPercent >= 75
                       ? "red"
@@ -903,9 +922,7 @@ export default async function Page({
                         className="mb-1.5"
                       />
                       <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
-                        {staysUndersold
-                          ? "Projected to stay undersold at this pace"
-                          : "Based on previous draws + current sales pace"}
+                        {caption}
                       </span>
                     </>
                   );
