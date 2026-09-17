@@ -178,16 +178,27 @@ export function CompetitionResultsHeading({
   const searchTerm = params.search?.trim() || undefined;
   const categoryLabel = getCategoryTitleLabel(params.category);
   const sectionTitle = sectionBaseTitles[section];
+  const sectionDefaultSort = sectionDefaultSorts[section];
+  const sortMatchesSectionDefault =
+    sectionDefaultSort !== undefined &&
+    sectionDefaultSort.sortBy === sortBy &&
+    sectionDefaultSort.sortOrder === sortOrder;
+  const sectionActive = sectionTitle !== undefined && sortMatchesSectionDefault;
+  const effectiveSectionTitle = sectionActive ? sectionTitle : undefined;
   const categoryLeadsTitle =
-    !searchTerm && sectionTitle === undefined && categoryLabel !== null;
+    !searchTerm &&
+    effectiveSectionTitle === undefined &&
+    categoryLabel !== null;
   const baseTitle = searchTerm
     ? `Search results for "${searchTerm}"`
     : categoryLeadsTitle
       ? categoryLabel
-      : (sectionTitle ?? "All Competitions");
+      : (effectiveSectionTitle ?? "All Competitions");
   const closingKey = params.closing?.trim() || "";
   const closingLabel =
-    section === "ending-today" ? null : (closingLabelMap[closingKey] ?? null);
+    sectionActive && section === "ending-today"
+      ? null
+      : (closingLabelMap[closingKey] ?? null);
   const spendParam = params.spend?.trim() || undefined;
   const spend = spendParam
     ? (() => {
@@ -209,11 +220,6 @@ export function CompetitionResultsHeading({
       : null,
     params.freeOnly === "true" ? "Free" : null,
   ].filter((value): value is string => Boolean(value));
-  const sectionDefaultSort = sectionDefaultSorts[section];
-  const sortMatchesSectionDefault =
-    sectionDefaultSort !== undefined &&
-    sectionDefaultSort.sortBy === sortBy &&
-    sectionDefaultSort.sortOrder === sortOrder;
   const sortPresentation = getCompetitionSortPresentation({
     sortBy,
     sortOrder,
@@ -228,7 +234,7 @@ export function CompetitionResultsHeading({
       ? null
       : (sortPresentation?.headingSuffix ?? null);
   const titleToneClass =
-    section === "ending-today"
+    sectionActive && section === "ending-today"
       ? "text-[#991b1b] dark:text-[#fca5a5]"
       : "text-rr-green";
 
