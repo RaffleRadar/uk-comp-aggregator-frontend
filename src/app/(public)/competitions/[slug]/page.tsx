@@ -38,6 +38,8 @@ import { getUrgencyMessage } from "@/lib/urgency-message";
 import { parseSpend } from "@/lib/spend-mode";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { sanityClient } from "@/sanity/client";
+import { ShareBar } from "@/components/ui/ShareBar";
+import { CANONICAL_ORIGIN } from "@/lib/site";
 import {
   OPERATOR_PROFILE_BY_ID,
   OPERATOR_PROFILE_BY_NAME,
@@ -128,7 +130,6 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-
 
   try {
     const competition = await getCompetition(slug);
@@ -503,7 +504,9 @@ export default async function Page({
     <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
       <div className="flex items-start justify-between gap-1.5">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Sales vs prize value</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">
+            Sales vs prize value
+          </p>
           <p className="text-xs font-semibold uppercase tracking-wide text-rr-primary">
             {hasEnded ? "Final sales: " : "Estimated Ticket Value: "}£
             {salesRevenue.toLocaleString("en-GB", {
@@ -522,7 +525,9 @@ export default async function Page({
       <div className="mt-1.5">
         <div className="mb-1.5 grid grid-cols-1 rounded-lg border border-rr-border divide-y divide-rr-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
-            <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Current value</span>
+            <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+              Current value
+            </span>
             <span className="text-[13px] font-medium text-rr-primary">
               £
               {salesRevenue.toLocaleString("en-GB", {
@@ -532,7 +537,9 @@ export default async function Page({
             </span>
           </div>
           <div className="flex items-center justify-between gap-1.5 px-4 py-1.5">
-            <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Prize value</span>
+            <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+              Prize value
+            </span>
             <span className="text-[13px] font-medium text-rr-primary">
               £{prizeValueNum.toLocaleString("en-GB")}
             </span>
@@ -574,47 +581,41 @@ export default async function Page({
   const hasFinalResult =
     hasEnded && (finalSoldValue !== null || finalPercentValue !== null);
   const similarSection = similar.length > 0 && (
-          <div className="mt-5">
-            <div className="mb-2 flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="text-lg font-semibold text-rr-primary">
-                Similar prizes
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-              {similar.map((competition) => (
-                <CompetitionCard
-                  key={competition.id}
-                  competition={competition}
-                />
-              ))}
-            </div>
-          </div>
-        );
+    <div className="mt-5">
+      <div className="mb-2 flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
+        <h2 className="text-lg font-semibold text-rr-primary">
+          Similar prizes
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+        {similar.map((competition) => (
+          <CompetitionCard key={competition.id} competition={competition} />
+        ))}
+      </div>
+    </div>
+  );
   const operatorSection = moreFromOperator.length > 0 && (
-          <div className="mt-5">
-            <div className="mb-2 flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="text-lg font-semibold text-rr-primary">
-                More from {operator?.name ?? "Operator"}
-              </h2>
-              {operatorSlug ? (
-                <ViewAllLink
-                  href={`/operators/${operatorSlug}`}
-                  className="shrink-0 text-sm font-medium text-rr-green no-underline transition-opacity hover:opacity-80"
-                >
-                  View All →
-                </ViewAllLink>
-              ) : null}
-            </div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-              {moreFromOperator.map((competition) => (
-                <CompetitionCard
-                  key={competition.id}
-                  competition={competition}
-                />
-              ))}
-            </div>
-          </div>
-        );
+    <div className="mt-5">
+      <div className="mb-2 flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
+        <h2 className="text-lg font-semibold text-rr-primary">
+          More from {operator?.name ?? "Operator"}
+        </h2>
+        {operatorSlug ? (
+          <ViewAllLink
+            href={`/operators/${operatorSlug}`}
+            className="shrink-0 text-sm font-medium text-rr-green no-underline transition-opacity hover:opacity-80"
+          >
+            View All →
+          </ViewAllLink>
+        ) : null}
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+        {moreFromOperator.map((competition) => (
+          <CompetitionCard key={competition.id} competition={competition} />
+        ))}
+      </div>
+    </div>
+  );
   const endedOperatorCta =
     hasEnded && operatorSlug ? (
       <div className="mb-1.5 rounded-lg border border-rr-border bg-rr-elevated p-4">
@@ -793,7 +794,9 @@ export default async function Page({
               <div className="order-7 mb-2 rounded-lg border border-rr-border bg-rr-elevated md:order-none md:mb-0">
                 <div className="grid grid-cols-2 divide-x divide-rr-border">
                   <div className="px-4 py-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Tickets sold</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">
+                      Tickets sold
+                    </p>
                     <p className="flex items-baseline gap-2">
                       <span className="whitespace-nowrap text-[clamp(1.05rem,5.2vw,1.875rem)] font-semibold tabular-nums text-rr-primary">
                         {soldTickets.toLocaleString("en-GB")}
@@ -802,7 +805,9 @@ export default async function Page({
                   </div>
                   {remainingTickets !== null ? (
                     <div className="px-4 py-2">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1 whitespace-nowrap">Remaining</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1 whitespace-nowrap">
+                        Remaining
+                      </p>
                       <p className="flex items-baseline gap-2">
                         <span className="whitespace-nowrap text-[clamp(1.05rem,5.2vw,1.875rem)] font-semibold tabular-nums text-rr-primary">
                           {remainingTickets.toLocaleString("en-GB")}
@@ -821,13 +826,17 @@ export default async function Page({
                   </p>
                 ) : (
                   <>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">Overall progress</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-2">
+                      Overall progress
+                    </p>
                     {percentValue !== null ? (
                       <p className="mb-1.5 flex items-baseline gap-2">
                         <span className="text-3xl font-semibold text-rr-green">
                           {percentValue.toFixed(0)}%
                         </span>
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">sold</span>
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                          sold
+                        </span>
                       </p>
                     ) : null}
                     {percentValue !== null ? (
@@ -852,7 +861,9 @@ export default async function Page({
             {!hasEnded && projection && totalTicketsValue !== null ? (
               <div className="order-8 mb-2 rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:order-none md:mb-0">
                 {(() => {
-                  const projectedPercent = Math.round(projection.projectedPercent);
+                  const projectedPercent = Math.round(
+                    projection.projectedPercent,
+                  );
                   const projectedTickets = Math.round(
                     (projectedPercent / 100) * totalTicketsValue,
                   );
@@ -877,7 +888,9 @@ export default async function Page({
                         Estimated at close
                       </p>
                       <p className="mb-1.5 flex items-baseline gap-2">
-                        <span className={`text-3xl font-semibold ${valueColor}`}>
+                        <span
+                          className={`text-3xl font-semibold ${valueColor}`}
+                        >
                           {projectedPercent}%
                         </span>
                         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
@@ -930,10 +943,12 @@ export default async function Page({
                 <PlaceholderIcon category={category} />
               )}
             </div>
-            <div className="order-4 mb-2 md:order-none">
+            <div className="order-4 mb-1.5 md:order-none">
               <div className="grid grid-cols-2 gap-1.5 mb-1.5">
                 <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Ticket price</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">
+                    Ticket price
+                  </p>
                   <p className="text-xl font-semibold text-rr-green">
                     {priceValue === 0
                       ? "FREE"
@@ -943,7 +958,9 @@ export default async function Page({
                   </p>
                 </div>
                 <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Prize value</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">
+                    Prize value
+                  </p>
                   <p className="flex items-center gap-1 text-xl font-semibold text-rr-primary">
                     <span>
                       {prizeValueNum
@@ -958,7 +975,9 @@ export default async function Page({
               </div>
               <div className="grid grid-cols-2 gap-1.5 md:grid-cols-2">
                 <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Total tickets</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">
+                    Total tickets
+                  </p>
                   <p className="text-xl font-semibold text-rr-primary tabular-nums">
                     {totalTicketsValue !== null
                       ? totalTicketsValue.toLocaleString("en-GB")
@@ -966,7 +985,9 @@ export default async function Page({
                   </p>
                 </div>
                 <div className="rounded-lg border border-rr-border bg-rr-elevated px-4 py-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">Max per person</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1">
+                    Max per person
+                  </p>
                   <p className="text-xl font-semibold text-rr-primary">
                     {maxPerPerson !== null && maxPerPerson !== undefined
                       ? maxPerPerson.toLocaleString("en-GB")
@@ -975,18 +996,26 @@ export default async function Page({
                 </div>
               </div>
             </div>
-            <div className="order-6 flex flex-wrap items-center gap-1.5 mt-2 mb-2 md:order-none">
-              <EnterButton
-                competitionId={compId}
-                sourceUrl={sourceUrl}
-                operatorName={operator?.name ?? "Operator"}
-                operatorUrl={operator?.baseUrl ?? null}
-                hasEnded={hasEnded}
-              />
-              <SaveActions competitionId={compId} />
+            <div className="order-6 mb-1.5 md:order-none">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <EnterButton
+                  competitionId={compId}
+                  sourceUrl={sourceUrl}
+                  operatorName={operator?.name ?? "Operator"}
+                  operatorUrl={operator?.baseUrl ?? null}
+                  hasEnded={hasEnded}
+                />
+                <SaveActions competitionId={compId} />
+              </div>
+              <div className="mt-1.5 rounded-lg border border-rr-border bg-rr-elevated px-3 py-1.5">
+                <ShareBar
+                  url={`${CANONICAL_ORIGIN}/competitions/${data.compSlug ?? slug}`}
+                  title={prize}
+                />
+              </div>
             </div>
             {!instantPrizes && ticketsSoldForOdds !== null ? (
-              <div className="order-10 mt-2 mb-2 rounded-lg border border-rr-border bg-rr-elevated md:order-none">
+              <div className="order-10 mb-1.5 rounded-lg border border-rr-border bg-rr-elevated md:order-none">
                 <div className="flex flex-row items-center divide-x divide-rr-border md:items-stretch">
                   <div className="flex flex-1 flex-col items-center px-4 py-3 text-center md:w-[46%] md:flex-none md:shrink-0 md:items-start md:py-5 md:text-left">
                     <p className="flex items-center justify-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted md:mb-1 md:justify-start">
@@ -1058,20 +1087,26 @@ export default async function Page({
                 )}
               </div>
               <div className="flex items-center justify-between gap-2 px-4 py-2.5">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Winners</span>
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                  Winners
+                </span>
                 <span className="text-sm font-medium text-rr-primary">
                   {numWinners ?? 1}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2 px-4 py-2.5">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Instant Prize</span>
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                  Instant Prize
+                </span>
                 <span className="text-sm font-medium text-rr-primary">
                   {instantPrizes ? "Yes" : "No"}
                 </span>
               </div>
               {makeModel && (
                 <div className="flex items-center justify-between gap-2 px-4 py-2.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">Make / Model</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted">
+                    Make / Model
+                  </span>
                   <span className="text-sm font-medium text-rr-primary">
                     {makeModel}
                   </span>
@@ -1080,7 +1115,9 @@ export default async function Page({
             </div>
             <div className="order-12 mb-2 md:order-none md:mb-0 md:flex md:min-h-[220px] md:flex-1 md:flex-col">
               <div className="flex h-[260px] flex-col rounded-lg border border-rr-border bg-rr-elevated px-4 py-2 md:h-auto md:flex-1">
-                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1.5">Ticket sales history</h2>
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted mb-1.5">
+                  Ticket sales history
+                </h2>
                 {history.length >= 3 ? (
                   <TicketSalesChart
                     history={history}
