@@ -179,10 +179,12 @@ export function CompetitionResultsHeading({
   const categoryLabel = getCategoryTitleLabel(params.category);
   const sectionTitle = sectionBaseTitles[section];
   const sectionDefaultSort = sectionDefaultSorts[section];
+  const explicitSortBy = params.sortBy?.trim() || undefined;
   const sortMatchesSectionDefault =
     sectionDefaultSort !== undefined &&
-    sectionDefaultSort.sortBy === sortBy &&
-    sectionDefaultSort.sortOrder === sortOrder;
+    (explicitSortBy === undefined ||
+      (sectionDefaultSort.sortBy === sortBy &&
+        sectionDefaultSort.sortOrder === sortOrder));
   const sectionActive = sectionTitle !== undefined && sortMatchesSectionDefault;
   const effectiveSectionTitle = sectionActive ? sectionTitle : undefined;
   const categoryLeadsTitle =
