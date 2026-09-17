@@ -49,7 +49,11 @@ const FILTER_ROBOT_KEYS = [
   "spend",
 ] as const;
 
-export async function generateMetadata({ searchParams }: { searchParams: Promise<CompetitionsPageSearchParams> }): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<CompetitionsPageSearchParams>;
+}): Promise<Metadata> {
   const params = await searchParams;
   const hasFilter = FILTER_ROBOT_KEYS.some((key) => {
     const value = params[key];
@@ -118,7 +122,9 @@ export default async function CompetitionsPage({
   const closing = params.closing ?? "";
   const searchTerm = params.search?.trim() || undefined;
   const defaultSortBy =
-    spendNum != null && !params.sortBy ? "spendOdds" : params.sortBy ?? "valueRatio";
+    spendNum != null && !params.sortBy
+      ? "spendOdds"
+      : (params.sortBy ?? "valueRatio");
   const sortBy = defaultSortBy;
   const sortOrder =
     (params.sortOrder as "asc" | "desc" | undefined) ??
@@ -152,11 +158,15 @@ export default async function CompetitionsPage({
     if (params.excludeInstant)
       nextParams.set("excludeInstant", params.excludeInstant);
     if (params.excludeFree) nextParams.set("excludeFree", params.excludeFree);
-    if (params.excludeSoldOut) nextParams.set("excludeSoldOut", params.excludeSoldOut);
+    if (params.excludeSoldOut)
+      nextParams.set("excludeSoldOut", params.excludeSoldOut);
+    else if (needsExcludeSoldOutDefault)
+      nextParams.set("excludeSoldOut", "true");
     if (trimmedSection) nextParams.set("section", trimmedSection);
     if (spendParam) nextParams.set("spend", spendParam);
     if (params.closing) nextParams.set("closing", params.closing);
-    else if (shouldApplyDefaultClosing) nextParams.set("closing", defaultClosing);
+    else if (shouldApplyDefaultClosing)
+      nextParams.set("closing", defaultClosing);
 
     nextParams.set("sortBy", sortBy);
     nextParams.set("sortOrder", sortOrder);
