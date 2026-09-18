@@ -12,6 +12,7 @@ import { FilterBar } from "@/components/layout/filter-bar";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/structured-data";
 import {
   getCompetitions,
+  getCompetitionsTotal,
   getMostUndersold,
   getOperators,
   getRecentlyEnded,
@@ -82,6 +83,22 @@ export default async function Page({
 
   if (hasFilters) {
     const operatorLabel = await resolveCompetitionOperatorLabel(params);
+    const resultCount = await getCompetitionsTotal({
+      category: params.category,
+      closing: params.closing,
+      search: params.search,
+      sortBy: params.sortBy,
+      spend: params.spend ? Number(params.spend) : undefined,
+      sortOrder: params.sortOrder,
+      operator: params.operator,
+      minPrizeValue: params.minPrizeValue
+        ? Number(params.minPrizeValue)
+        : undefined,
+      freeOnly: params.freeOnly === "true",
+      excludeInstant: params.excludeInstant === "true",
+      excludeFree: params.excludeFree === "true",
+      excludeGames: !includesGamesCategory,
+    });
 
     return (
       <main>
@@ -93,6 +110,7 @@ export default async function Page({
         <CompetitionResultsHeading
           params={params}
           operatorLabel={operatorLabel}
+          resultCount={resultCount}
         />
         <Suspense fallback={null}>
           <CompetitionGrid
