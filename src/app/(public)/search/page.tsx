@@ -58,6 +58,11 @@ async function SearchResults({
     closing: params.closing,
     spend: params.spend,
   };
+  const includesGamesCategory =
+    params.category
+      ?.split(",")
+      .some((value) => value.trim().toLowerCase() === "games") ?? false;
+
   return (
     <>
       <CompetitionResultsHeading
@@ -72,6 +77,7 @@ async function SearchResults({
           category: params.category,
           closing: params.closing,
           spend: params.spend ? Number(params.spend) : undefined,
+          excludeGames: !includesGamesCategory,
           limit: 500,
         }}
       />
