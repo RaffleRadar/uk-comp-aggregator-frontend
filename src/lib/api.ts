@@ -398,6 +398,51 @@ export async function getCompetitions(
   return normalizeCompetitionsResponse<Competition>(response);
 }
 
+export async function getCompetitionsTotal(
+  params?: GetCompetitionsParams,
+): Promise<number | null> {
+  const query = new URLSearchParams();
+
+  query.set("limit", "1");
+
+  if (params?.sortBy) query.set("sortBy", params.sortBy);
+  if (params?.sortOrder) query.set("sortOrder", params.sortOrder);
+  if (params?.category) query.set("category", params.category);
+  if (params?.closing) query.set("closing", params.closing);
+  if (params?.search) query.set("search", params.search);
+  if (params?.operator) query.set("operator", params.operator);
+  if (params?.minPrizeValue)
+    query.set("minPrizeValue", String(params.minPrizeValue));
+  if (params?.website) query.set("website", params.website);
+  if (params?.freeOnly) query.set("freeOnly", "true");
+  if (params?.excludeInstant) query.set("excludeInstant", "true");
+  if (params?.excludeFree) query.set("excludeFree", "true");
+  if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");
+  if (params?.excludeGames) query.set("excludeGames", "true");
+  if (params?.excludeTickets) query.set("excludeTickets", "true");
+  if (params?.spend) query.set("spend", String(params.spend));
+
+  try {
+    const response = await apiFetch<unknown>(
+      `/competitions?${query.toString()}`,
+      { revalidate: COMPETITION_TTL },
+    );
+
+
+    if (response && typeof response === "object") {
+      const total = (response as { total?: unknown }).total;
+
+      if (typeof total === "number" && Number.isFinite(total)) {
+        return total;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getCompetitionSearch(
   q: string,
   limit = 8,

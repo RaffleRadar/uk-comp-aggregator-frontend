@@ -11,6 +11,7 @@ import { NewsletterSignupBanner } from "@/components/competitions/newsletter-sig
 import { SaveSearchButton } from "@/components/competitions/save-search-button";
 import { SpendModeBanner } from "@/components/competitions/spend-mode-banner";
 import { FilterBar } from "@/components/layout/filter-bar";
+import { getCompetitionsTotal } from "@/lib/api";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { getSiteContent } from "@/sanity/queries";
 
@@ -218,6 +219,24 @@ export default async function CompetitionsPage({
     competitionsIntro = null;
   }
 
+  const resultCount = await getCompetitionsTotal({
+    category: params.category,
+    closing,
+    search: searchTerm,
+    operator: operatorSlug,
+    sortBy,
+    sortOrder,
+    minPrizeValue: params.minPrizeValue
+      ? Number(params.minPrizeValue)
+      : undefined,
+    freeOnly: params.freeOnly === "true",
+    excludeInstant: params.excludeInstant === "true",
+    excludeFree: params.excludeFree === "true",
+    excludeSoldOut: params.excludeSoldOut === "true",
+    excludeGames: !includesGamesCategory,
+    spend: spendNum,
+  });
+
   return (
     <main>
       {competitionsIntro ? (
@@ -240,6 +259,7 @@ export default async function CompetitionsPage({
       </Suspense>
 
       <CompetitionResultsHeading
+        resultCount={resultCount}
         params={{
           category: params.category,
           closing,

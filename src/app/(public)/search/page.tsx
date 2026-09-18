@@ -7,6 +7,7 @@ import {
 import { SearchForm } from "@/components/search/search-form";
 import { SaveSearchButton } from "@/components/competitions/save-search-button";
 import { RadarLoader } from "@/components/ui/RadarLoader";
+import { getCompetitionsTotal } from "@/lib/api";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 
 type SearchPageSearchParams = {
@@ -63,11 +64,22 @@ async function SearchResults({
       ?.split(",")
       .some((value) => value.trim().toLowerCase() === "games") ?? false;
 
+  const resultCount = await getCompetitionsTotal({
+    search: params.q,
+    sortBy: params.sortBy,
+    sortOrder: params.sortOrder,
+    category: params.category,
+    closing: params.closing,
+    spend: params.spend ? Number(params.spend) : undefined,
+    excludeGames: !includesGamesCategory,
+  });
+
   return (
     <>
       <CompetitionResultsHeading
         params={headingParams}
         showBackButton={false}
+        resultCount={resultCount}
       />
       <CompetitionGrid
         params={{

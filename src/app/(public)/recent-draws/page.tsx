@@ -27,6 +27,7 @@ export default async function RecentDrawsPage() {
         params={{ section: "recent-draws" }}
         showBackButton
         backHref="/"
+        resultCount={competitions.length}
       />
       <section className="py-8 md:py-10">
         <div className="container">

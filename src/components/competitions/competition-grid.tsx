@@ -165,12 +165,14 @@ export function CompetitionResultsHeading({
   resetOperatorHref,
   showBackButton = false,
   backHref = "/",
+  resultCount,
 }: {
   params: CompetitionResultsHeadingParams;
   operatorLabel?: string | null;
   resetOperatorHref?: string;
   showBackButton?: boolean;
   backHref?: string;
+  resultCount?: number | null;
 }) {
   const sortBy = params.sortBy ?? "valueRatio";
   const sortOrder = (params.sortOrder as "asc" | "desc" | undefined) ?? "desc";
@@ -259,6 +261,11 @@ export function CompetitionResultsHeading({
             </span>
             {filterLabels.length > 0 ? ` - ${filterLabels.join(" - ")}` : ""}
             {sortSuffix ? <span> {sortSuffix}</span> : null}
+            {typeof resultCount === "number" ? (
+              <span className="ml-2 align-middle text-base font-normal text-rr-muted md:text-lg">
+                ({resultCount.toLocaleString("en-GB")})
+              </span>
+            ) : null}
           </h1>
         </div>
 
