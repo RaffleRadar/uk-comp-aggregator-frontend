@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { OperatorCompetitions } from "@/components/operators/operator-competitions";
 import { TrackedOperatorLink } from "@/components/operators/tracked-operator-link";
 import { OperatorProfileSections } from "@/components/operators/operator-profile-sections";
+import { VoluntaryCodeBadge } from "@/components/operators/voluntary-code-badge";
 import { Badge } from "@/components/ui/badge";
 import { OperatorJsonLd } from "@/components/seo/structured-data";
 import {
@@ -310,6 +311,9 @@ export default async function OperatorPage({
                       {profile?.verified ? (
                         <Badge variant="green">Verified</Badge>
                       ) : null}
+                      <VoluntaryCodeBadge
+                        scheme={profile?.voluntaryCodeMembership}
+                      />
                     </div>
                   </div>
                 </div>

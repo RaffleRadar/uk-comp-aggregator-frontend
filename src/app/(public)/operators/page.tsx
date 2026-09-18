@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { GetListedBanner } from "@/components/operators/get-listed-banner";
 import { VrScale } from "@/components/operators/VrScale";
 import { Badge } from "@/components/ui/badge";
+import { VoluntaryCodeBadge } from "@/components/operators/voluntary-code-badge";
 import { getOperators } from "@/lib/api";
 import type { OperatorSummary } from "@/lib/api";
 import { getOperatorFairness, MIN_BADGE_SAMPLE } from "@/lib/operator-display";
@@ -55,6 +56,7 @@ export default async function OperatorsPage() {
     operatorId?: string | null;
     operatorName?: string | null;
     logo?: unknown;
+    voluntaryCodeMembership?: string | null;
   }[] = [];
 
   try {
@@ -65,8 +67,22 @@ export default async function OperatorsPage() {
 
   const logoById = new Map<string, string>();
   const logoByName = new Map<string, string>();
+  const voluntaryCodeById = new Map<string, string>();
+  const voluntaryCodeByName = new Map<string, string>();
 
   for (const profile of profileLogos) {
+    const scheme = profile.voluntaryCodeMembership?.trim();
+
+    if (scheme) {
+      if (profile.operatorId) voluntaryCodeById.set(profile.operatorId, scheme);
+      if (profile.operatorName) {
+        voluntaryCodeByName.set(
+          profile.operatorName.trim().toLowerCase(),
+          scheme,
+        );
+      }
+    }
+
     if (!profile.logo) continue;
     const url = urlFor(profile.logo)
       .width(128)
@@ -245,6 +261,16 @@ export default async function OperatorsPage() {
                               <Badge variant={fairness.badgeVariant}>
                                 {fairness.label}
                               </Badge>
+                              <VoluntaryCodeBadge
+                                size="compact"
+                                linked={false}
+                                scheme={
+                                  voluntaryCodeById.get(operator.id) ??
+                                  voluntaryCodeByName.get(
+                                    operator.name.trim().toLowerCase(),
+                                  )
+                                }
+                              />
                               {valueRank && !isBestValue ? (
                                 <span className="text-xs text-rr-muted">
                                   #{valueRank} of {rankedOperators.length} for value
