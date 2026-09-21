@@ -1118,7 +1118,7 @@ export function FilterBar({
                   key={opt.value}
                   type="button"
                   className={cn(
-                    "inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-1 py-1.5 text-[11px] font-medium transition cursor-pointer md:py-1 lg:w-auto lg:px-2.5 lg:text-xs",
+                    "inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-2 py-2 text-[9px] font-medium leading-none transition cursor-pointer md:py-1 md:text-[11px] lg:w-auto lg:px-2.5 lg:text-xs",
                     isActive
                       ? "bg-rr-elevated text-rr-primary shadow-sm"
                       : "bg-rr-surface text-rr-muted hover:bg-rr-elevated hover:text-rr-primary",
