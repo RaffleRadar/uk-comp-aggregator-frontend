@@ -1032,7 +1032,7 @@ export default async function Page({
               </div>
             </div>
             {!instantPrizes && ticketsSoldForOdds !== null ? (
-              <div className="order-10 mb-1.5 rounded-lg border border-rr-border bg-rr-elevated md:order-none">
+              <div className="order-10 mb-1.5 mt-1.5 rounded-lg border border-rr-border bg-rr-elevated md:order-none md:mt-0">
                 <div className="flex flex-row items-center divide-x divide-rr-border md:items-stretch">
                   <div className="flex flex-1 flex-col items-center px-4 py-3 text-center md:w-[46%] md:flex-none md:shrink-0 md:items-start md:py-5 md:text-left">
                     <p className="flex items-center justify-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted md:mb-1 md:justify-start">
