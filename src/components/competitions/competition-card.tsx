@@ -141,6 +141,8 @@ export function CompetitionCard({
       <div className="relative flex h-[150px] shrink-0 items-center justify-center bg-rr-elevated">
         {imageUrl ? (
           <CompetitionImage
+            loading="lazy"
+            decoding="async"
             src={imageUrl}
             alt={prize}
             fill

@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   IconCash,
@@ -163,6 +170,7 @@ export function FilterBar({
   className,
 }: FilterBarProps) {
   const router = useRouter();
+  const [, startFilterTransition] = useTransition();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isListingPage = pathname === "/competitions";
@@ -282,7 +290,9 @@ export function FilterBar({
         });
       }
 
-      router.push(nextHref);
+      startFilterTransition(() => {
+        router.push(nextHref);
+      });
     },
     [pathname, router, searchParams],
   );
@@ -316,7 +326,9 @@ export function FilterBar({
         });
       }
 
-      router.push(nextHref);
+      startFilterTransition(() => {
+        router.push(nextHref);
+      });
     },
     [pathname, router, searchParams],
   );
@@ -352,7 +364,9 @@ export function FilterBar({
         });
       }
 
-      router.push(nextHref);
+      startFilterTransition(() => {
+        router.push(nextHref);
+      });
     },
     [pathname, router, searchParams],
   );
@@ -417,7 +431,9 @@ export function FilterBar({
         params.set("sortBy", "spendOdds");
         params.set("sortOrder", "asc");
         const qs = params.toString();
-        router.push(`/competitions?${qs}`);
+        startFilterTransition(() => {
+          router.push(`/competitions?${qs}`);
+        });
         pushEvent("filter_applied", {
           filter_type: "spend",
           filter_value: String(amount),
