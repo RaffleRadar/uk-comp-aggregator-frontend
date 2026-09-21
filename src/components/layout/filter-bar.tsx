@@ -16,6 +16,7 @@ import {
   IconClock,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
+import { RadarLoader } from "@/components/ui/RadarLoader";
 import { pushEvent } from "@/lib/analytics";
 import {
   SPEND_OPTIONS,
@@ -170,7 +171,7 @@ export function FilterBar({
   className,
 }: FilterBarProps) {
   const router = useRouter();
-  const [, startFilterTransition] = useTransition();
+  const [isFilterPending, startFilterTransition] = useTransition();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isListingPage = pathname === "/competitions";
@@ -552,6 +553,7 @@ export function FilterBar({
 
   return (
     <div className={cn("border-b border-rr-border bg-rr-surface", className)}>
+      {isFilterPending ? <RadarLoader fullscreen size="lg" /> : null}
       <div className="container py-3">
         <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:gap-3">
           {showCategory ? (
