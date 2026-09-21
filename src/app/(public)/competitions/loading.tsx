@@ -1,3 +1,5 @@
+import { RadarLoader } from "@/components/ui/RadarLoader";
+
 export default function Loading() {
-  return null;
+  return <RadarLoader fullscreen size="lg" />;
 }
