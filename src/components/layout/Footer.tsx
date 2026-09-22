@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import { sanityClient } from "@/sanity/client";
 import { SITE_SETTINGS } from "@/sanity/queries";
+import { FooterNavLink } from "@/components/layout/footer-nav-link";
 
 type FooterLink = {
   label: string;
@@ -65,7 +65,7 @@ export async function Footer() {
       <div className="container py-8 md:py-16">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
           <div className="max-w-[320px]">
-            <Link
+            <FooterNavLink
               href="/"
               className="inline-flex items-end gap-3.5 text-rr-primary no-underline"
               aria-label="RaffleRadar home"
@@ -81,7 +81,7 @@ export async function Footer() {
               <span className="text-lg font-semibold leading-none tracking-[-0.4px] md:text-xl">
                 RAFFLE<span className="text-rr-green">RADAR</span>
               </span>
-            </Link>
+            </FooterNavLink>
             <p className="mt-4 text-sm leading-6 text-rr-muted">
               {footerTagline}
             </p>
@@ -89,7 +89,6 @@ export async function Footer() {
 
           {columns.length ? (
             <div className="w-full lg:w-auto">
-              {/* Desktop / tablet: open columns */}
               <div className="hidden gap-10 sm:grid sm:grid-cols-2 lg:grid-cols-3 lg:gap-14">
                 {columns.map((column, index) => (
                   <div key={`${column.heading ?? "footer"}-${index}`} className="min-w-[150px]">
@@ -112,12 +111,12 @@ export async function Footer() {
                               {link.label}
                             </a>
                           ) : (
-                            <Link
+                            <FooterNavLink
                               href={link.href}
                               className="text-sm text-rr-secondary no-underline transition-colors hover:text-rr-primary"
                             >
                               {link.label}
-                            </Link>
+                            </FooterNavLink>
                           )}
                         </li>
                       ))}
@@ -126,7 +125,6 @@ export async function Footer() {
                 ))}
               </div>
 
-              {/* Mobile: collapsible accordion via native <details>, no JS */}
               <div className="w-full sm:hidden">
                 {columns.map((column, index) => (
                   <details
@@ -165,12 +163,12 @@ export async function Footer() {
                               {link.label}
                             </a>
                           ) : (
-                            <Link
+                            <FooterNavLink
                               href={link.href}
                               className="text-sm text-rr-secondary no-underline transition-colors hover:text-rr-green"
                             >
                               {link.label}
-                            </Link>
+                            </FooterNavLink>
                           )}
                         </li>
                       ))}
@@ -186,12 +184,12 @@ export async function Footer() {
           <div className="flex flex-col gap-3">
             <p className="text-sm text-rr-muted">{footerCopyright}</p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <Link
+              <FooterNavLink
                 href="/contact"
                 className="text-sm text-rr-secondary underline underline-offset-4 transition-colors hover:text-rr-primary"
               >
                 Contact
-              </Link>
+              </FooterNavLink>
             </div>
           </div>
           {footerDisclaimer ? (
