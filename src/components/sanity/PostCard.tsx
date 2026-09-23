@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { RichTitle } from "@/components/sanity/RichTitle";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { titleColorVar } from "@/lib/titleColor";
@@ -58,7 +58,7 @@ export function PostCard({
     : null;
 
   return (
-    <Link href={href} className="group block h-full cursor-pointer no-underline" aria-label={title}>
+    <ScrollTopLink href={href} className="group block h-full cursor-pointer no-underline" aria-label={title}>
       <article className="h-full overflow-hidden rounded-[10px] border border-rr-border bg-rr-elevated transition group-hover:-translate-y-0.5 group-hover:border-rr-green/40">
         <div className="relative w-full overflow-hidden bg-rr-surface" style={{ aspectRatio: "16 / 9" }}>
           {imgSrc ? (
@@ -106,6 +106,6 @@ export function PostCard({
           </div>
         </div>
       </article>
-    </Link>
+    </ScrollTopLink>
   );
 }

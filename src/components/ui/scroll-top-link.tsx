@@ -5,7 +5,7 @@ import type { ComponentProps, MouseEvent } from "react";
 
 const SCROLL_FLAG = "rr-scroll-top-on-nav";
 
-export function FooterNavLink({ onClick, ...props }: ComponentProps<typeof Link>) {
+export function ScrollTopLink({ onClick, ...props }: ComponentProps<typeof Link>) {
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(event);
     if (event.defaultPrevented) return;

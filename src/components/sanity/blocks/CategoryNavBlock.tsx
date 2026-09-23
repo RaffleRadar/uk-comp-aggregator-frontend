@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { sanityClient } from "@/sanity/client";
 
 type CategoryNavBlockData = {
@@ -44,13 +44,13 @@ export async function CategoryNavBlock({
 
         <div className="flex flex-wrap gap-2">
           {pages.map((page) => (
-            <Link
+            <ScrollTopLink
               key={page.slug}
               href={`/${page.slug}`}
               className="inline-flex items-center rounded-full border border-rr-border bg-rr-surface px-3 py-1.5 text-sm text-rr-secondary transition hover:bg-rr-elevated hover:text-rr-primary"
             >
               {page.label}
-            </Link>
+            </ScrollTopLink>
           ))}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { IconArrowRight, IconInfoCircle } from "@tabler/icons-react";
 import { titleColorVar } from "@/lib/titleColor";
 import { Button } from "@/components/ui/button";
@@ -47,12 +47,12 @@ function CtaButton({
   icon: ReactNode;
 }) {
   return (
-    <Link href={href}>
+    <ScrollTopLink href={href}>
       <Button variant={variant} className="h-10 rounded-md px-4 text-sm font-medium">
         {icon}
         {label}
       </Button>
-    </Link>
+    </ScrollTopLink>
   );
 }
 

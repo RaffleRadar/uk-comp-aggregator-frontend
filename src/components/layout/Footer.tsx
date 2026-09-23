@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { sanityClient } from "@/sanity/client";
 import { SITE_SETTINGS } from "@/sanity/queries";
-import { FooterNavLink } from "@/components/layout/footer-nav-link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 
 type FooterLink = {
   label: string;
@@ -65,7 +65,7 @@ export async function Footer() {
       <div className="container py-8 md:py-16">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
           <div className="max-w-[320px]">
-            <FooterNavLink
+            <ScrollTopLink
               href="/"
               className="inline-flex items-end gap-3.5 text-rr-primary no-underline"
               aria-label="RaffleRadar home"
@@ -81,7 +81,7 @@ export async function Footer() {
               <span className="text-lg font-semibold leading-none tracking-[-0.4px] md:text-xl">
                 RAFFLE<span className="text-rr-green">RADAR</span>
               </span>
-            </FooterNavLink>
+            </ScrollTopLink>
             <p className="mt-4 text-sm leading-6 text-rr-muted">
               {footerTagline}
             </p>
@@ -111,12 +111,12 @@ export async function Footer() {
                               {link.label}
                             </a>
                           ) : (
-                            <FooterNavLink
+                            <ScrollTopLink
                               href={link.href}
                               className="text-sm text-rr-secondary no-underline transition-colors hover:text-rr-primary"
                             >
                               {link.label}
-                            </FooterNavLink>
+                            </ScrollTopLink>
                           )}
                         </li>
                       ))}
@@ -163,12 +163,12 @@ export async function Footer() {
                               {link.label}
                             </a>
                           ) : (
-                            <FooterNavLink
+                            <ScrollTopLink
                               href={link.href}
                               className="text-sm text-rr-secondary no-underline transition-colors hover:text-rr-green"
                             >
                               {link.label}
-                            </FooterNavLink>
+                            </ScrollTopLink>
                           )}
                         </li>
                       ))}
@@ -184,12 +184,12 @@ export async function Footer() {
           <div className="flex flex-col gap-3">
             <p className="text-sm text-rr-muted">{footerCopyright}</p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <FooterNavLink
+              <ScrollTopLink
                 href="/contact"
                 className="text-sm text-rr-secondary underline underline-offset-4 transition-colors hover:text-rr-primary"
               >
                 Contact
-              </FooterNavLink>
+              </ScrollTopLink>
             </div>
           </div>
           {footerDisclaimer ? (

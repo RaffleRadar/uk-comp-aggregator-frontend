@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import type { PortableTextComponents } from "@portabletext/react";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { urlFor } from "@/sanity/client";
@@ -95,12 +95,12 @@ export const portableTextComponents: PortableTextComponents = {
       }
 
       return (
-        <Link
+        <ScrollTopLink
           href={internalHref}
           className="text-rr-green underline decoration-rr-green/40 underline-offset-4 transition hover:opacity-80"
         >
           {children}
-        </Link>
+        </ScrollTopLink>
       );
     },
   },

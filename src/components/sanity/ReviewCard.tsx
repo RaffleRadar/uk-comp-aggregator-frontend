@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { IconStarFilled, IconStar } from "@tabler/icons-react";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { urlFor } from "@/sanity/client";
@@ -66,7 +66,7 @@ export function ReviewCard({
     : null;
 
   return (
-    <Link
+    <ScrollTopLink
       href={href}
       className="group block h-full cursor-pointer no-underline"
       aria-label={title}
@@ -105,6 +105,6 @@ export function ReviewCard({
           </div>
         </div>
       </article>
-    </Link>
+    </ScrollTopLink>
   );
 }

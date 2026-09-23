@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { RichTitle } from "@/components/sanity/RichTitle";
 import { SanityImage } from "@/components/ui/SanityImage";
 import { titleColorVar } from "@/lib/titleColor";
@@ -55,7 +55,7 @@ export function FeaturedPostCard({
     : null;
 
   return (
-    <Link href={href} className="group block no-underline" aria-label={title}>
+    <ScrollTopLink href={href} className="group block no-underline" aria-label={title}>
       <article className="overflow-hidden rounded-xl border border-rr-border bg-rr-elevated transition group-hover:border-rr-green/40">
         <div className="grid grid-cols-1 lg:grid-cols-[1.04fr_0.96fr]">
           <div
@@ -107,6 +107,6 @@ export function FeaturedPostCard({
           </div>
         </div>
       </article>
-    </Link>
+    </ScrollTopLink>
   );
 }
