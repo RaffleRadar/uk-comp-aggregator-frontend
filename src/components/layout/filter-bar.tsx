@@ -103,7 +103,7 @@ const otherSubcategoryOptions: FilterOption[] = [
   { value: "music", label: "Music" },
   { value: "experiences", label: "Experiences" },
   { value: "sports", label: "Sports" },
-  { value: "none", label: "Uncategorised" },
+  { value: "none", label: "Misc" },
 ];
 
 const vehicleSubcategoryOptions: FilterOption[] = [
@@ -1097,26 +1097,10 @@ export function FilterBar({
           </div>
         </div>
 
-        {showOtherSubcategories || showVehicleSubcategories ? (
-          <div
-            className={cn(
-              "mt-4 grid gap-1 lg:mt-2 lg:flex lg:flex-wrap lg:gap-[6px]",
-              showVehicleSubcategories ? "grid-cols-5" : "grid-cols-4",
-            )}
-          >
-            {(showVehicleSubcategories
-              ? vehicleSubcategoryOptions
-              : otherSubcategoryOptions
-            ).map((opt, index, list) => {
-              const isActive =
-                opt.value ===
-                (showVehicleSubcategories
-                  ? currentVehicleSubcategory
-                  : currentOtherSubcategory);
-              const isCenteredOrphan =
-                !showVehicleSubcategories &&
-                list.length % 4 === 1 &&
-                index === list.length - 1;
+        {showVehicleSubcategories ? (
+          <div className="mt-4 grid grid-cols-5 gap-1 lg:mt-2 lg:flex lg:flex-wrap lg:gap-[6px]">
+            {vehicleSubcategoryOptions.map((opt) => {
+              const isActive = opt.value === currentVehicleSubcategory;
 
               return (
                 <button
@@ -1124,8 +1108,6 @@ export function FilterBar({
                   type="button"
                   className={cn(
                     "inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-2 py-2 text-[9px] font-medium leading-none transition cursor-pointer md:py-1 md:text-[11px] lg:w-auto lg:px-2.5 lg:text-xs",
-                    isCenteredOrphan &&
-                      "col-span-4 w-[calc((100%_-_0.75rem)/4)] justify-self-center lg:w-auto",
                     isActive
                       ? "bg-rr-elevated text-rr-primary shadow-sm"
                       : "bg-rr-surface text-rr-muted hover:bg-rr-elevated hover:text-rr-primary",
@@ -1142,6 +1124,48 @@ export function FilterBar({
                 </button>
               );
             })}
+          </div>
+        ) : null}
+
+        {showOtherSubcategories ? (
+          <div className="mt-4 flex flex-col gap-1 lg:mt-2 lg:flex-row lg:flex-wrap lg:gap-[6px]">
+            {[
+              otherSubcategoryOptions.slice(
+                0,
+                Math.ceil(otherSubcategoryOptions.length / 2),
+              ),
+              otherSubcategoryOptions.slice(
+                Math.ceil(otherSubcategoryOptions.length / 2),
+              ),
+            ].map((row, rowIndex) => (
+              <div key={rowIndex} className="flex gap-1 lg:contents">
+                {row.map((opt) => {
+                  const isActive = opt.value === currentOtherSubcategory;
+
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      className={cn(
+                        "inline-flex flex-auto items-center justify-center whitespace-nowrap rounded-full px-1.5 py-2 text-[11px] font-medium leading-none transition cursor-pointer md:py-1 lg:flex-none lg:px-2.5 lg:text-xs",
+                        isActive
+                          ? "bg-rr-elevated text-rr-primary shadow-sm"
+                          : "bg-rr-surface text-rr-muted hover:bg-rr-elevated hover:text-rr-primary",
+                      )}
+                      aria-pressed={isActive}
+                      onClick={() =>
+                        updateParam("category", opt.value, {
+                          filterType: "category",
+                          filterValue: opt.value,
+                        })
+                      }
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         ) : null}
       </div>
