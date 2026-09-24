@@ -99,6 +99,7 @@ const otherSubcategoryOptions: FilterOption[] = [
   { value: "home", label: "Home" },
   { value: "holidays", label: "Holidays" },
   { value: "collectibles", label: "Collectibles" },
+  { value: "beauty", label: "Beauty" },
   { value: "music", label: "Music" },
   { value: "experiences", label: "Experiences" },
   { value: "sports", label: "Sports" },
@@ -1106,12 +1107,16 @@ export function FilterBar({
             {(showVehicleSubcategories
               ? vehicleSubcategoryOptions
               : otherSubcategoryOptions
-            ).map((opt) => {
+            ).map((opt, index, list) => {
               const isActive =
                 opt.value ===
                 (showVehicleSubcategories
                   ? currentVehicleSubcategory
                   : currentOtherSubcategory);
+              const isCenteredOrphan =
+                !showVehicleSubcategories &&
+                list.length % 4 === 1 &&
+                index === list.length - 1;
 
               return (
                 <button
@@ -1119,6 +1124,8 @@ export function FilterBar({
                   type="button"
                   className={cn(
                     "inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-2 py-2 text-[9px] font-medium leading-none transition cursor-pointer md:py-1 md:text-[11px] lg:w-auto lg:px-2.5 lg:text-xs",
+                    isCenteredOrphan &&
+                      "col-span-4 w-[calc((100%_-_0.75rem)/4)] justify-self-center lg:w-auto",
                     isActive
                       ? "bg-rr-elevated text-rr-primary shadow-sm"
                       : "bg-rr-surface text-rr-muted hover:bg-rr-elevated hover:text-rr-primary",
