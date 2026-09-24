@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { GetListedBanner } from "@/components/operators/get-listed-banner";
+import { OperatorSearch } from "@/components/operators/operator-search";
+import type { OperatorSearchItem } from "@/components/operators/operator-search";
 import { VrScale } from "@/components/operators/VrScale";
 import { Badge } from "@/components/ui/badge";
 import { VoluntaryCodeBadge } from "@/components/operators/voluntary-code-badge";
@@ -164,6 +166,22 @@ export default async function OperatorsPage() {
       return sample !== null && sample >= MIN_BADGE_SAMPLE;
     })?.operator.id ?? null;
 
+  const resolveLogo = (operator: OperatorSummary) =>
+    logoById.get(operator.id) ??
+    logoByName.get(operator.name.trim().toLowerCase()) ??
+    operator.logoUrl;
+
+  const searchItems: OperatorSearchItem[] = sortedOperators.map(
+    ({ operator, fairness }) => ({
+      id: operator.id,
+      slug: operator.slug,
+      name: operator.name,
+      logoUrl: resolveLogo(operator),
+      liveCount: toSampleSize(operator.activeCompetitionsCount) ?? 0,
+      vrLabel: fairness.vrLabel,
+    }),
+  );
+
   return (
     <main className="bg-rr-bg">
       <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
@@ -203,6 +221,12 @@ export default async function OperatorsPage() {
       <section className="pb-12 pt-6 md:pb-16 md:pt-4">
         <div className="container">
           <div className="mx-auto max-w-[1100px]">
+            {sortedOperators.length ? (
+              <div className="mb-6 w-full md:max-w-[520px]">
+                <OperatorSearch operators={searchItems} />
+              </div>
+            ) : null}
+
             {sortedOperators.length ? (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {sortedOperators.map(({ operator, fairness }) => {
@@ -245,13 +269,7 @@ export default async function OperatorsPage() {
                         <div className="flex items-center gap-3">
                           <OperatorLogo
                             name={operator.name}
-                            logoUrl={
-                              logoById.get(operator.id) ??
-                              logoByName.get(
-                                operator.name.trim().toLowerCase(),
-                              ) ??
-                              operator.logoUrl
-                            }
+                            logoUrl={resolveLogo(operator)}
                           />
                           <div className="min-w-0">
                             <h2 className="truncate text-lg font-medium text-rr-primary">
