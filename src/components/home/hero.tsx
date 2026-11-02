@@ -38,6 +38,7 @@ function splitLastWord(value: string): { start: string; accent: string } {
 
 export type HeroStats = {
   competitionsCount: number;
+  competitionsTrackedCount: number;
   operatorsCount: number;
   lastUpdatedAt: string | null;
 };
@@ -52,7 +53,7 @@ type HeroCopy = {
 };
 
 export function Hero({ stats, copy }: { stats: HeroStats; copy?: HeroCopy }) {
-  const liveDraws = stats.competitionsCount ?? 0;
+  const drawsTracked = stats.competitionsTrackedCount ?? 0;
  
   const updated = formatRelativeTime(stats.lastUpdatedAt);
   const eyebrow = getTrimmedValue(copy?.heroEyebrow);
@@ -114,9 +115,9 @@ export function Hero({ stats, copy }: { stats: HeroStats; copy?: HeroCopy }) {
         <div className="mt-2 grid grid-cols-2 gap-2 text-center lg:hidden">
           <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
             <p className="text-sm font-semibold leading-none text-rr-green">
-              {liveDraws.toLocaleString("en-GB")}
+              {drawsTracked.toLocaleString("en-GB")}
             </p>
-            <p className="mt-1 text-[11px] text-rr-muted">Live draws</p>
+            <p className="mt-1 text-[11px] text-rr-muted">Draws tracked</p>
           </div>
 
           <div className="rounded-xl border border-rr-border bg-rr-surface px-2 py-2">
@@ -130,9 +131,9 @@ export function Hero({ stats, copy }: { stats: HeroStats; copy?: HeroCopy }) {
         <div className="hidden mt-7 flex-wrap items-center justify-center gap-6 lg:flex">
           <div>
             <p className="text-rr-green text-lg font-semibold leading-none">
-              {liveDraws}
+              {drawsTracked.toLocaleString("en-GB")}
             </p>
-            <p className="mt-1 text-sm text-rr-muted">Live draws</p>
+            <p className="mt-1 text-sm text-rr-muted">Draws tracked</p>
           </div>
 
           <div className="h-8 w-px bg-rr-border" />

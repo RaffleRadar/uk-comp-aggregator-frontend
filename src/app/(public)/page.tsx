@@ -146,6 +146,7 @@ export default async function Page({
   let siteContent = null;
   let stats: HeroStats = {
     competitionsCount: 0,
+    competitionsTrackedCount: 0,
     operatorsCount: 0,
     lastUpdatedAt: null,
   };

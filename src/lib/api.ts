@@ -58,6 +58,7 @@ function toNum(value: unknown): number | null {
 export async function getStats() {
   return apiFetch<{
     competitionsCount: number;
+    competitionsTrackedCount: number;
     operatorsCount: number;
     lastUpdatedAt: string | null;
   }>("/stats", { revalidate: 300 });
