@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { WeeklyRadarView } from "@/components/weekly-radar/weekly-radar-view";
 import { formatWeekRange, getWeeklyRadarByWeek } from "@/lib/weekly-radar";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ weekStart: string }>;

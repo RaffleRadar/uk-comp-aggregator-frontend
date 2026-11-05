@@ -22,7 +22,7 @@ export function isWeekStartParam(value: string): boolean {
 export async function getLatestWeeklyRadar(): Promise<WeeklyRadarIssue | null> {
   try {
     return await apiFetch<WeeklyRadarIssue>("/weekly-radar/latest", {
-      revalidate: WEEKLY_RADAR_REVALIDATE_SECONDS,
+      revalidate: false,
     });
   } catch {
     return null;
@@ -35,7 +35,7 @@ export async function getWeeklyRadarByWeek(
   if (!isWeekStartParam(weekStart)) return null;
   try {
     return await apiFetch<WeeklyRadarIssue>(`/weekly-radar/${weekStart}`, {
-      revalidate: WEEKLY_RADAR_REVALIDATE_SECONDS,
+      revalidate: false,
     });
   } catch {
     return null;

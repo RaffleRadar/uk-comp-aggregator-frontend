@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { WeeklyRadarView } from "@/components/weekly-radar/weekly-radar-view";
 import { getLatestWeeklyRadar } from "@/lib/weekly-radar";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "The Weekly Radar",
