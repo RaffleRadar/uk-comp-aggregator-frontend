@@ -99,8 +99,7 @@ const BIG_THREE: BigThreePanel[] = [
     title: "1. Most undersold draws",
     text: "The five draws that closed with the most tickets unsold.",
     badge: (item) => `${formatCount(item.ticketsUnsold)} unsold`,
-    detail: (item) =>
-      `${formatPercent(item.percentSold)} sold · ${formatCount(item.ticketsUnsold)} unsold`,
+    detail: (item) => `${formatPercent(item.percentSold)} sold`,
   },
   {
     key: "spend",
