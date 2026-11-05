@@ -1,0 +1,300 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { cn } from "@/lib/cn";
+import { formatWeekRange, type WeeklyRadarIssue } from "@/lib/weekly-radar";
+
+type Mode = "latest" | "archive";
+
+type WeeklyRadarViewProps = {
+  issue: WeeklyRadarIssue | null;
+  mode: Mode;
+};
+
+const COPY = {
+  latest: {
+    intro:
+      "What sold out, what everyone was entering, and what barely got going. A quick look at the prize competition market, without the number crunching.",
+    bigThree: "The Big Three",
+    insightsEyebrow: "Also on the Radar",
+    insightsTitle: "Five key insights from last week.",
+    scheduleEyebrow: "Looking ahead",
+    scheduleTitle: "What's closing this week?",
+    scheduleText: "A glance at scheduled closing dates, with links to browse the live draws.",
+    scheduleCta: "Explore competitions ending soon",
+  },
+  archive: {
+    intro:
+      "Browse historical weeks to see what sold, what spent, and what moved the market. A quick look at the UK prize competition market for the selected week.",
+    bigThree: "The standout draws from the selected week.",
+    insightsEyebrow: "Insights",
+    insightsTitle: "Five key insights for the selected week.",
+    scheduleEyebrow: "Week breakdown",
+    scheduleTitle: "Closing days in the selected week",
+    scheduleText: "How many draws closed on each day of the selected week.",
+    scheduleCta: "Explore competitions from this week",
+  },
+} as const;
+
+const HEADLINES = [
+  { label: "Draws completed", unit: "draws" },
+  { label: "Completely sold out", unit: "draws" },
+  { label: "Average sold at close", unit: "of tickets" },
+  { label: "New competitions", unit: "listed" },
+];
+
+const BIG_THREE = [
+  {
+    title: "1. Most undersold draws",
+    text: "The five draws that closed with the most tickets unsold.",
+  },
+  {
+    title: "2. Highest ticket spend",
+    text: "The five draws with the most money spent on tickets.",
+  },
+  {
+    title: "3. Fastest sold-out draws",
+    text: "The five draws that sold out in the shortest time.",
+  },
+];
+
+const INSIGHTS = [
+  { title: "Busiest Day", text: "Most tickets sold on:" },
+  { title: "Busiest Hour", text: "Most tickets sold between:" },
+  { title: "Total Undersold", text: "Draws with fewer than 25% sold." },
+  { title: "Biggest Prize", text: "The highest value prize from a completed draw." },
+  { title: "Best Value Draw", text: "The best value score of the week." },
+];
+
+const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const panelClass = "rounded-2xl border border-rr-border bg-rr-surface";
+const eyebrowClass = "text-xs font-semibold uppercase tracking-[0.14em] text-rr-green";
+const placeholderValue = "–";
+
+function ChevronIcon({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {direction === "left" ? <path d="M12.5 15 7.5 10l5-5" /> : <path d="m7.5 15 5-5-5-5" />}
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="h-4 w-4 text-rr-green"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="4.5" width="14" height="12.5" rx="2" />
+      <path d="M3 8.5h14M7 2.5v4M13 2.5v4" />
+    </svg>
+  );
+}
+
+function WeekNavButton({
+  href,
+  direction,
+  children,
+}: {
+  href: string | null;
+  direction: "left" | "right";
+  children: ReactNode;
+}) {
+  const content = (
+    <>
+      {direction === "left" ? <ChevronIcon direction="left" /> : null}
+      <span className="hidden sm:inline">{children}</span>
+      {direction === "right" ? <ChevronIcon direction="right" /> : null}
+    </>
+  );
+  const base =
+    "inline-flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-2 text-sm font-medium no-underline transition-colors sm:px-4 sm:py-1.5";
+
+  if (!href) {
+    return (
+      <span
+        aria-disabled="true"
+        aria-label={typeof children === "string" ? children : undefined}
+        className={cn(base, "cursor-not-allowed border-rr-border text-rr-muted opacity-60")}
+      >
+        {content}
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      aria-label={typeof children === "string" ? children : undefined}
+      className={cn(base, "border-rr-green-border text-rr-primary hover:bg-rr-green-bg")}
+    >
+      {content}
+    </Link>
+  );
+}
+
+function SectionHeading({ eyebrow, title }: { eyebrow: string; title?: string }) {
+  return (
+    <div className="mb-3">
+      <p className={eyebrowClass}>{eyebrow}</p>
+      {title ? <h2 className="mt-1 text-lg font-semibold text-rr-primary">{title}</h2> : null}
+    </div>
+  );
+}
+
+function weekHref(weekStart: string | null): string | null {
+  return weekStart ? `/weekly-radar/${weekStart}` : null;
+}
+
+export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
+  const copy = COPY[mode];
+  const weekLabel = issue ? formatWeekRange(issue.weekStart, issue.weekEnd) : "No issue yet";
+
+  return (
+    <main className="py-6 md:py-10">
+      <div className="container space-y-6 md:space-y-8">
+        <header className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-center">
+          <div>
+            <p className={eyebrowClass}>
+              UK Competition Market –{" "}
+              <span className="whitespace-nowrap">Weekly Round-up</span>
+            </p>
+            <h1 className="mt-2 text-4xl font-bold tracking-[-0.02em] text-rr-primary md:text-5xl">
+              The Weekly <span className="text-rr-green">Radar.</span>
+            </h1>
+          </div>
+          <p className="text-sm leading-6 text-rr-secondary">{copy.intro}</p>
+          <div className="justify-self-start rounded-xl border-2 border-rr-green bg-rr-surface px-4 py-2 text-center md:-rotate-3 md:justify-self-end">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-primary">
+              Your weekly fix
+            </p>
+            <p className="text-3xl font-bold leading-tight text-rr-green">5 min</p>
+            <p className="text-xs text-rr-secondary">All the numbers worth knowing</p>
+          </div>
+        </header>
+
+        <nav
+          aria-label="Weekly Radar weeks"
+          className="flex items-center justify-between gap-2 rounded-full border border-rr-green-border bg-rr-surface px-2 py-2"
+        >
+          <WeekNavButton href={weekHref(issue?.previousWeekStart ?? null)} direction="left">
+            Previous Week
+          </WeekNavButton>
+          <p className="inline-flex min-w-0 items-center gap-2 text-center text-sm font-semibold text-rr-primary">
+            <CalendarIcon />
+            <span>{weekLabel}</span>
+          </p>
+          <WeekNavButton href={weekHref(issue?.nextWeekStart ?? null)} direction="right">
+            Next Week
+          </WeekNavButton>
+        </nav>
+
+        <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {HEADLINES.map((item) => (
+            <div key={item.label} className={cn(panelClass, "px-4 py-3")}>
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-rr-secondary">
+                {item.label}
+              </p>
+              <p className="mt-1 flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-rr-primary">{placeholderValue}</span>
+                <span className="text-sm text-rr-secondary">{item.unit}</span>
+              </p>
+            </div>
+          ))}
+        </section>
+
+        <section aria-label={copy.bigThree}>
+          <SectionHeading eyebrow={copy.bigThree} />
+          <div className="grid gap-3 lg:grid-cols-3">
+            {BIG_THREE.map((panel) => (
+              <div key={panel.title} className={cn(panelClass, "p-4")}>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.06em] text-rr-primary">
+                  {panel.title}
+                </h3>
+                <p className="mt-1 text-xs text-rr-secondary">{panel.text}</p>
+                <ol className="mt-3 space-y-2">
+                  {[1, 2, 3, 4, 5].map((rank) => (
+                    <li key={rank} className="flex items-center gap-3">
+                      <span className="w-4 text-sm font-semibold text-rr-secondary">{rank}.</span>
+                      <span className="h-9 w-14 shrink-0 rounded-md bg-rr-elevated" />
+                      <span className="h-3 flex-1 rounded bg-rr-elevated" />
+                      <span className="rounded-md border border-rr-green-border px-2 py-1 text-xs text-rr-muted">
+                        {placeholderValue}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section aria-label={copy.insightsTitle}>
+          <SectionHeading eyebrow={copy.insightsEyebrow} title={copy.insightsTitle} />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+            {INSIGHTS.map((item, index) => (
+              <div
+                key={item.title}
+                className={cn(
+                  panelClass,
+                  "flex flex-col p-4",
+                  index === INSIGHTS.length - 1 && "col-span-2 md:col-span-1",
+                )}
+              >
+                <h3 className="text-sm font-semibold text-rr-primary">{item.title}</h3>
+                <p className="mt-1 flex-1 text-xs text-rr-secondary">{item.text}</p>
+                <p className="mt-3 rounded-full bg-rr-green-bg px-3 py-1.5 text-center text-sm font-semibold text-rr-green">
+                  {placeholderValue}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section
+          aria-label={copy.scheduleTitle}
+          className={cn(panelClass, "grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center")}
+        >
+          <div>
+            <p className={eyebrowClass}>{copy.scheduleEyebrow}</p>
+            <h2 className="mt-1 text-xl font-bold text-rr-primary">{copy.scheduleTitle}</h2>
+            <p className="mt-1 text-sm text-rr-secondary">{copy.scheduleText}</p>
+          </div>
+          <ul className="grid grid-cols-7 gap-1.5 sm:gap-2">
+            {WEEK_DAYS.map((day) => (
+              <li
+                key={day}
+                className="rounded-lg border border-rr-border px-1.5 py-2 text-center sm:px-3"
+              >
+                <p className="text-xs text-rr-secondary">{day}</p>
+                <p className="text-lg font-bold text-rr-primary">{placeholderValue}</p>
+                <p className="text-[10px] text-rr-muted sm:text-xs">draws</p>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/competitions"
+            className="inline-flex items-center justify-center rounded-xl bg-rr-green px-5 py-3 text-sm font-semibold text-rr-on-accent no-underline transition-opacity hover:opacity-90"
+          >
+            {copy.scheduleCta}
+          </Link>
+        </section>
+      </div>
+    </main>
+  );
+}
