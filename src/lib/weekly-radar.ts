@@ -59,3 +59,47 @@ export function formatWeekRange(weekStart: string, weekEnd: string): string {
   const end = new Date(`${weekEnd}T00:00:00.000Z`);
   return `${dayFormat.format(start)} – ${dayFormat.format(end)} ${yearFormat.format(end)}`;
 }
+
+export type WeeklyRadarHeadline = {
+  drawsCompleted: number;
+  soldOut: number;
+  averageSoldAtClose: number | null;
+  averageSoldSample: number;
+  newCompetitions: number;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function readNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+export function readHeadline(payload: unknown): WeeklyRadarHeadline | null {
+  if (!isRecord(payload) || !isRecord(payload.headline)) return null;
+  const headline = payload.headline;
+  const drawsCompleted = readNumber(headline.drawsCompleted);
+  const soldOut = readNumber(headline.soldOut);
+  const newCompetitions = readNumber(headline.newCompetitions);
+  if (drawsCompleted === null || soldOut === null || newCompetitions === null) {
+    return null;
+  }
+  return {
+    drawsCompleted,
+    soldOut,
+    averageSoldAtClose: readNumber(headline.averageSoldAtClose),
+    averageSoldSample: readNumber(headline.averageSoldSample) ?? 0,
+    newCompetitions,
+  };
+}
+
+const countFormat = new Intl.NumberFormat("en-GB");
+
+export function formatCount(value: number | null | undefined): string {
+  return typeof value === "number" ? countFormat.format(value) : "–";
+}
+
+export function formatPercent(value: number | null | undefined): string {
+  return typeof value === "number" ? `${Math.round(value)}%` : "–";
+}

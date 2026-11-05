@@ -1,7 +1,14 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { formatWeekRange, type WeeklyRadarIssue } from "@/lib/weekly-radar";
+import {
+  formatCount,
+  formatPercent,
+  formatWeekRange,
+  readHeadline,
+  type WeeklyRadarHeadline,
+  type WeeklyRadarIssue,
+} from "@/lib/weekly-radar";
 
 type Mode = "latest" | "archive";
 
@@ -35,11 +42,40 @@ const COPY = {
   },
 } as const;
 
-const HEADLINES = [
-  { label: "Draws completed", unit: "draws" },
-  { label: "Completely sold out", unit: "draws" },
-  { label: "Average sold at close", unit: "of tickets" },
-  { label: "New competitions", unit: "listed" },
+type HeadlineIcon = "target" | "trophy" | "bars" | "star";
+
+type HeadlineTile = {
+  label: string;
+  unit: string;
+  icon: HeadlineIcon;
+  value: (headline: WeeklyRadarHeadline | null) => string;
+};
+
+const HEADLINES: HeadlineTile[] = [
+  {
+    label: "Draws completed",
+    unit: "draws",
+    icon: "target",
+    value: (headline) => formatCount(headline?.drawsCompleted),
+  },
+  {
+    label: "Completely sold out",
+    unit: "draws",
+    icon: "trophy",
+    value: (headline) => formatCount(headline?.soldOut),
+  },
+  {
+    label: "Average sold at close",
+    unit: "of tickets",
+    icon: "bars",
+    value: (headline) => formatPercent(headline?.averageSoldAtClose),
+  },
+  {
+    label: "New competitions",
+    unit: "listed",
+    icon: "star",
+    value: (headline) => formatCount(headline?.newCompetitions),
+  },
 ];
 
 const BIG_THREE = [
@@ -106,6 +142,41 @@ function CalendarIcon() {
   );
 }
 
+function HeadlineIconGlyph({ icon }: { icon: HeadlineIcon }) {
+  return (
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-rr-green-border text-rr-green">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {icon === "target" ? (
+          <>
+            <circle cx="12" cy="12" r="8" />
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 12l6-6M15 6h3v3" />
+          </>
+        ) : null}
+        {icon === "trophy" ? (
+          <>
+            <path d="M8 4h8v5a4 4 0 0 1-8 0V4Z" />
+            <path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8M10 17h4" />
+          </>
+        ) : null}
+        {icon === "bars" ? <path d="M5 19v-5M10 19V9M15 19v-7M20 19V5" /> : null}
+        {icon === "star" ? (
+          <path d="m12 4 2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6L12 4Z" />
+        ) : null}
+      </svg>
+    </span>
+  );
+}
+
 function WeekNavButton({
   href,
   direction,
@@ -164,6 +235,7 @@ function weekHref(weekStart: string | null): string | null {
 export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const copy = COPY[mode];
   const weekLabel = issue ? formatWeekRange(issue.weekStart, issue.weekEnd) : "No issue yet";
+  const headline = readHeadline(issue?.payload);
 
   return (
     <main className="py-6 md:py-10">
@@ -206,14 +278,25 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
 
         <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {HEADLINES.map((item) => (
-            <div key={item.label} className={cn(panelClass, "px-4 py-3")}>
-              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-rr-secondary">
+            <div
+              key={item.label}
+              className={cn(
+                panelClass,
+                "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 px-3 py-3 sm:px-4",
+              )}
+            >
+              <p className="col-span-2 text-[11px] font-semibold uppercase leading-tight tracking-[0.08em] text-rr-secondary sm:col-span-1 sm:col-start-2 sm:row-start-1">
                 {item.label}
               </p>
-              <p className="mt-1 flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-rr-primary">{placeholderValue}</span>
-                <span className="text-sm text-rr-secondary">{item.unit}</span>
-              </p>
+              <div className="sm:row-span-2 sm:row-start-1">
+                <HeadlineIconGlyph icon={item.icon} />
+              </div>
+              <div className="min-w-0 sm:col-start-2">
+                <p className="text-2xl font-bold leading-none text-rr-primary sm:text-3xl">
+                  {item.value(headline)}
+                </p>
+                <p className="mt-1 text-xs text-rr-secondary">{item.unit}</p>
+              </div>
             </div>
           ))}
         </section>
