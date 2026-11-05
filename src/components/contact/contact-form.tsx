@@ -2,6 +2,7 @@
 
 import type { ComponentProps } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -371,6 +372,15 @@ export function ContactForm() {
         {errors.reason ? (
           <p id="contact-reason-error" className={errorTextClass}>
             {errors.reason}
+          </p>
+        ) : null}
+        {values.reason === "Operator enquiry" ? (
+          <p className="text-sm text-rr-secondary">
+            Interested in having your competition website featured on RaffleRadar? Please read our{" "}
+            <Link href="/get-listed" className="font-medium text-rr-green underline underline-offset-2">
+              Get Listed
+            </Link>{" "}
+            page before getting in touch.
           </p>
         ) : null}
       </div>
