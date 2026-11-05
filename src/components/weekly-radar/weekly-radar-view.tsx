@@ -1,13 +1,18 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { CompetitionImage } from "@/components/ui/CompetitionImage";
 import {
   formatCount,
   formatPercent,
+  formatPounds,
+  formatRatio,
   formatWeekRange,
+  readBigThree,
   readHeadline,
   type WeeklyRadarHeadline,
   type WeeklyRadarIssue,
+  type WeeklyRadarListItem,
 } from "@/lib/weekly-radar";
 
 type Mode = "latest" | "archive";
@@ -78,18 +83,38 @@ const HEADLINES: HeadlineTile[] = [
   },
 ];
 
-const BIG_THREE = [
+type BigThreeKey = "undersold" | "spend" | "bestValue";
+
+type BigThreePanel = {
+  key: BigThreeKey;
+  title: string;
+  text: string;
+  badge: (item: WeeklyRadarListItem) => string;
+  detail: (item: WeeklyRadarListItem) => string;
+};
+
+const BIG_THREE: BigThreePanel[] = [
   {
+    key: "undersold",
     title: "1. Most undersold draws",
     text: "The five draws that closed with the most tickets unsold.",
+    badge: (item) => `${formatCount(item.ticketsUnsold)} unsold`,
+    detail: (item) =>
+      `${formatPercent(item.percentSold)} sold · ${formatCount(item.ticketsUnsold)} unsold`,
   },
   {
+    key: "spend",
     title: "2. Highest ticket spend",
-    text: "The five draws with the most money spent on tickets.",
+    text: "The five draws with the most money spent on tickets, estimated.",
+    badge: (item) => formatPounds(item.ticketSpend),
+    detail: (item) => `${formatCount(item.ticketsSold)} tickets sold`,
   },
   {
-    title: "3. Fastest sold-out draws",
-    text: "The five draws that sold out in the shortest time.",
+    key: "bestValue",
+    title: "3. Best value draws",
+    text: "The five draws with the most prize value for every pound of tickets.",
+    badge: (item) => formatRatio(item.valueRatio),
+    detail: (item) => `${formatPounds(item.prizeValue)} prize`,
   },
 ];
 
@@ -232,10 +257,73 @@ function weekHref(weekStart: string | null): string | null {
   return weekStart ? `/weekly-radar/${weekStart}` : null;
 }
 
+function BigThreeRow({
+  rank,
+  item,
+  panel,
+}: {
+  rank: number;
+  item: WeeklyRadarListItem;
+  panel: BigThreePanel;
+}) {
+  const href = item.slug ? `/competitions/${item.slug}` : null;
+  const body = (
+    <>
+      <span className="w-5 shrink-0 text-sm font-semibold text-rr-secondary">{rank}.</span>
+      <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-md bg-rr-elevated">
+        <CompetitionImage
+          src={item.imageUrl}
+          alt=""
+          fill
+          sizes="56px"
+          className="object-cover"
+          unoptimized
+        />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="line-clamp-2 text-sm font-semibold leading-tight text-rr-primary">
+          {item.prize}
+        </span>
+        <span className="mt-0.5 block truncate text-xs text-rr-secondary">{panel.detail(item)}</span>
+      </span>
+      <span className="shrink-0 whitespace-nowrap rounded-md border border-rr-green-border px-1.5 py-1 text-[11px] font-semibold text-rr-green sm:px-2 sm:text-xs">
+        {panel.badge(item)}
+      </span>
+    </>
+  );
+  const rowClass = "flex min-w-0 items-center gap-2.5 rounded-lg px-1 py-1 no-underline sm:gap-3";
+
+  if (!href) {
+    return <li className={cn(rowClass, "min-w-0")}>{body}</li>;
+  }
+
+  return (
+    <li className="min-w-0">
+      <Link href={href} className={cn(rowClass, "transition-colors hover:bg-rr-elevated")}>
+        {body}
+      </Link>
+    </li>
+  );
+}
+
+function BigThreePlaceholderRow({ rank }: { rank: number }) {
+  return (
+    <li className="flex items-center gap-3 px-1 py-1">
+      <span className="w-5 text-sm font-semibold text-rr-secondary">{rank}.</span>
+      <span className="h-10 w-14 shrink-0 rounded-md bg-rr-elevated" />
+      <span className="h-3 flex-1 rounded bg-rr-elevated" />
+      <span className="rounded-md border border-rr-green-border px-2 py-1 text-xs text-rr-muted">
+        {placeholderValue}
+      </span>
+    </li>
+  );
+}
+
 export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const copy = COPY[mode];
   const weekLabel = issue ? formatWeekRange(issue.weekStart, issue.weekEnd) : "No issue yet";
   const headline = readHeadline(issue?.payload);
+  const bigThree = readBigThree(issue?.payload);
 
   return (
     <main className="py-6 md:py-10">
@@ -303,27 +391,27 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
 
         <section aria-label={copy.bigThree}>
           <SectionHeading eyebrow={copy.bigThree} />
-          <div className="grid gap-3 lg:grid-cols-3">
-            {BIG_THREE.map((panel) => (
-              <div key={panel.title} className={cn(panelClass, "p-4")}>
-                <h3 className="text-sm font-semibold uppercase tracking-[0.06em] text-rr-primary">
-                  {panel.title}
-                </h3>
-                <p className="mt-1 text-xs text-rr-secondary">{panel.text}</p>
-                <ol className="mt-3 space-y-2">
-                  {[1, 2, 3, 4, 5].map((rank) => (
-                    <li key={rank} className="flex items-center gap-3">
-                      <span className="w-4 text-sm font-semibold text-rr-secondary">{rank}.</span>
-                      <span className="h-9 w-14 shrink-0 rounded-md bg-rr-elevated" />
-                      <span className="h-3 flex-1 rounded bg-rr-elevated" />
-                      <span className="rounded-md border border-rr-green-border px-2 py-1 text-xs text-rr-muted">
-                        {placeholderValue}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            ))}
+          <div className="grid min-w-0 gap-3 lg:grid-cols-3">
+            {BIG_THREE.map((panel) => {
+              const items = bigThree?.[panel.key] ?? [];
+              return (
+                <div key={panel.key} className={cn(panelClass, "min-w-0 p-4")}>
+                  <h3 className="text-sm font-semibold uppercase tracking-[0.06em] text-rr-primary">
+                    {panel.title}
+                  </h3>
+                  <p className="mt-1 text-xs text-rr-secondary">{panel.text}</p>
+                  <ol className="mt-3 space-y-1.5">
+                    {items.length > 0
+                      ? items.map((item, index) => (
+                          <BigThreeRow key={item.id} rank={index + 1} item={item} panel={panel} />
+                        ))
+                      : [1, 2, 3, 4, 5].map((rank) => (
+                          <BigThreePlaceholderRow key={rank} rank={rank} />
+                        ))}
+                  </ol>
+                </div>
+              );
+            })}
           </div>
         </section>
 
