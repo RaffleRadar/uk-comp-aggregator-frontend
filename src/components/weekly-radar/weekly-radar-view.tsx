@@ -117,16 +117,14 @@ const BIG_THREE: BigThreePanel[] = [
     title: "2. Highest ticket spend",
     text: "The five draws with the most money spent on tickets during the week, estimated.",
     badge: (item) => formatPounds(item.ticketSpend),
-    detail: (item) =>
-      `${formatCount(item.ticketsSold)} tickets this week${item.closed === false ? " · still live" : ""}`,
+    detail: (item) => `${formatCount(item.ticketsSold)} tickets`,
   },
   {
     key: "bestValue",
     title: "3. Best value draws",
     text: "The five draws with the best value ratio at the end of the week, as shown on the site.",
     badge: (item) => formatRatio(item.valueRatio),
-    detail: (item) =>
-      `${formatPounds(item.prizeValue)} prize${item.closed === false ? " · still live" : ""}`,
+    detail: (item) => `${formatPounds(item.prizeValue)} prize`,
   },
 ];
 
@@ -459,7 +457,15 @@ function BigThreeRow({
         <span className="line-clamp-2 text-sm font-semibold leading-tight text-rr-primary">
           {item.prize}
         </span>
-        <span className="mt-0.5 block truncate text-xs text-rr-secondary">{panel.detail(item)}</span>
+        <span className="mt-0.5 block truncate text-xs text-rr-secondary">
+          {panel.key !== "undersold" && item.closed === false ? (
+            <>
+              <span className="font-semibold text-rr-green">Live</span>
+              {" · "}
+            </>
+          ) : null}
+          {panel.detail(item)}
+        </span>
       </span>
       <span className="shrink-0 whitespace-nowrap rounded-md border border-rr-green-border px-1.5 py-1 text-[11px] font-semibold text-rr-green sm:px-2 sm:text-xs">
         {panel.badge(item)}
