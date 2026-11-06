@@ -20,6 +20,7 @@ type CompetitionListBlockData = {
   sortBy?: string;
   sortOrder?: string;
   excludeGames?: boolean;
+  freeOnly?: boolean;
   emptyMessage?: string;
   showFallbackWhenEmpty?: boolean;
   faqs?: Faq[];
@@ -54,6 +55,7 @@ export async function CompetitionListBlock({
       ? "asc"
       : "desc";
   const excludeGames = block.excludeGames ?? false;
+  const freeOnly = block.freeOnly ?? false;
   const limit =
     typeof block.limit === "number" && block.limit > 0
       ? Math.min(Math.trunc(block.limit), 100)
@@ -66,6 +68,7 @@ export async function CompetitionListBlock({
     sortBy,
     sortOrder,
     excludeGames,
+    freeOnly,
   });
 
   const usedFallback =
@@ -80,6 +83,7 @@ export async function CompetitionListBlock({
       sortBy: "endsAt",
       sortOrder: "asc",
       excludeGames,
+      freeOnly,
     });
   }
 
