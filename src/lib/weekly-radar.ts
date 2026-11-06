@@ -324,3 +324,37 @@ const penceFormat = new Intl.NumberFormat("en-GB", {
 export function formatPrice(value: number | null | undefined): string {
   return typeof value === "number" ? penceFormat.format(value) : "–";
 }
+
+export type WeeklyRadarDayCounts = {
+  weekStart: string;
+  weekEnd: string;
+  byDay: number[];
+  total: number;
+};
+
+export type WeeklyRadarClosingDays = {
+  closed: WeeklyRadarDayCounts | null;
+  ahead: WeeklyRadarDayCounts | null;
+};
+
+function readDayCounts(value: unknown): WeeklyRadarDayCounts | null {
+  if (!isRecord(value)) return null;
+  const weekStart = readString(value.weekStart);
+  const weekEnd = readString(value.weekEnd);
+  const byDay = readNumberList(value.byDay, 7);
+  if (!weekStart || !weekEnd || !byDay) return null;
+  return {
+    weekStart,
+    weekEnd,
+    byDay,
+    total: readNumber(value.total) ?? byDay.reduce((sum, item) => sum + item, 0),
+  };
+}
+
+export function readClosingDays(payload: unknown): WeeklyRadarClosingDays | null {
+  if (!isRecord(payload) || !isRecord(payload.closingDays)) return null;
+  return {
+    closed: readDayCounts(payload.closingDays.closed),
+    ahead: readDayCounts(payload.closingDays.ahead),
+  };
+}

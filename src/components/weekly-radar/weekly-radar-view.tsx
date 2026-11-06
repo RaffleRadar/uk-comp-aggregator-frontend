@@ -12,9 +12,11 @@ import {
   formatWeekRange,
   formatWeekday,
   readBigThree,
+  readClosingDays,
   readHeadline,
   readInsights,
   type WeeklyRadarBusiest,
+  type WeeklyRadarDayCounts,
   type WeeklyRadarHeadline,
   type WeeklyRadarInsights,
   type WeeklyRadarIssue,
@@ -40,6 +42,7 @@ const COPY = {
     scheduleTitle: "What's closing this week?",
     scheduleText: "A glance at scheduled closing dates, with links to browse the live draws.",
     scheduleCta: "Explore competitions ending soon",
+    scheduleHref: "/competitions?closing=5days&sortBy=endsAt&sortOrder=asc",
   },
   archive: {
     intro:
@@ -51,6 +54,7 @@ const COPY = {
     scheduleTitle: "Closing days in the selected week",
     scheduleText: "How many draws closed on each day of the selected week.",
     scheduleCta: "Explore competitions from this week",
+    scheduleHref: "/competitions?sortBy=endsAt&sortOrder=asc",
   },
 } as const;
 
@@ -207,6 +211,25 @@ const INSIGHTS: InsightTile[] = [
 ];
 
 const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+function scheduleCounts(
+  mode: Mode,
+  payload: unknown,
+): WeeklyRadarDayCounts | null {
+  const closingDays = readClosingDays(payload);
+  if (!closingDays) return null;
+  return mode === "latest" ? closingDays.ahead : closingDays.closed;
+}
+
+function peakDay(counts: WeeklyRadarDayCounts | null): number | null {
+  if (!counts) return null;
+  let best: number | null = null;
+  counts.byDay.forEach((value, index) => {
+    if (value <= 0) return;
+    if (best === null || value > counts.byDay[best]) best = index;
+  });
+  return best;
+}
 
 const panelClass = "rounded-2xl border border-rr-border bg-rr-surface";
 const eyebrowClass = "text-xs font-semibold uppercase tracking-[0.14em] text-rr-green";
@@ -475,6 +498,9 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const headline = readHeadline(issue?.payload);
   const bigThree = readBigThree(issue?.payload);
   const insights = readInsights(issue?.payload);
+  const schedule = scheduleCounts(mode, issue?.payload);
+  const schedulePeak = peakDay(schedule);
+  const scheduleLabel = schedule ? formatWeekRange(schedule.weekStart, schedule.weekEnd) : null;
 
   return (
     <main className="py-6 md:py-10">
@@ -618,21 +644,43 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
             <p className={eyebrowClass}>{copy.scheduleEyebrow}</p>
             <h2 className="mt-1 text-xl font-bold text-rr-primary">{copy.scheduleTitle}</h2>
             <p className="mt-1 text-sm text-rr-secondary">{copy.scheduleText}</p>
+            {scheduleLabel ? (
+              <p className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-rr-primary">
+                <CalendarIcon />
+                <span>{scheduleLabel}</span>
+                {schedule ? (
+                  <span className="font-normal text-rr-secondary">
+                    · {formatCount(schedule.total)} draws
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
           </div>
           <ul className="grid grid-cols-7 gap-1.5 sm:gap-2">
-            {WEEK_DAYS.map((day) => (
-              <li
-                key={day}
-                className="rounded-lg border border-rr-border px-1.5 py-2 text-center sm:px-3"
-              >
-                <p className="text-xs text-rr-secondary">{day}</p>
-                <p className="text-lg font-bold text-rr-primary">{placeholderValue}</p>
-                <p className="text-[10px] text-rr-muted sm:text-xs">draws</p>
-              </li>
-            ))}
+            {WEEK_DAYS.map((day, index) => {
+              const count = schedule ? schedule.byDay[index] : null;
+              const isPeak = schedulePeak === index;
+              return (
+                <li
+                  key={day}
+                  className={cn(
+                    "rounded-lg border px-1.5 py-2 text-center sm:px-3",
+                    isPeak ? "border-rr-green bg-rr-green-bg" : "border-rr-border",
+                  )}
+                >
+                  <p className={cn("text-xs", isPeak ? "text-rr-green" : "text-rr-secondary")}>
+                    {day}
+                  </p>
+                  <p className={cn("text-lg font-bold", isPeak ? "text-rr-green" : "text-rr-primary")}>
+                    {count === null ? placeholderValue : formatCount(count)}
+                  </p>
+                  <p className="text-[10px] text-rr-muted sm:text-xs">draws</p>
+                </li>
+              );
+            })}
           </ul>
           <Link
-            href="/competitions"
+            href={copy.scheduleHref}
             className="inline-flex items-center justify-center rounded-xl bg-rr-green px-5 py-3 text-sm font-semibold text-rr-on-accent no-underline transition-opacity hover:opacity-90"
           >
             {copy.scheduleCta}
