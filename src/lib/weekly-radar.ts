@@ -119,6 +119,8 @@ export type WeeklyRadarListItem = {
   ticketSpend: number | null;
   prizeValue: number | null;
   valueRatio: number | null;
+  ticketsLeft: number | null;
+  closed: boolean | null;
 };
 
 export type WeeklyRadarBigThree = {
@@ -152,6 +154,8 @@ function readListItem(value: unknown): WeeklyRadarListItem | null {
     ticketSpend: readNumber(value.ticketSpend),
     prizeValue: readNumber(value.prizeValue),
     valueRatio: readNumber(value.valueRatio),
+    ticketsLeft: readNumber(value.ticketsLeft),
+    closed: typeof value.closed === "boolean" ? value.closed : null,
   };
 }
 

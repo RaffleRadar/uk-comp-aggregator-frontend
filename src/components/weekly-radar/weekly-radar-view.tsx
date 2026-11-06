@@ -115,16 +115,18 @@ const BIG_THREE: BigThreePanel[] = [
   {
     key: "spend",
     title: "2. Highest ticket spend",
-    text: "The five draws with the most money spent on tickets, estimated.",
+    text: "The five draws with the most money spent on tickets during the week, estimated.",
     badge: (item) => formatPounds(item.ticketSpend),
-    detail: (item) => `${formatCount(item.ticketsSold)} tickets sold`,
+    detail: (item) =>
+      `${formatCount(item.ticketsSold)} tickets this week${item.closed === false ? " · still live" : ""}`,
   },
   {
     key: "bestValue",
     title: "3. Best value draws",
-    text: "The five draws with the most prize value for every pound of tickets.",
+    text: "The five draws with the best value ratio at the end of the week, as shown on the site.",
     badge: (item) => formatRatio(item.valueRatio),
-    detail: (item) => `${formatPounds(item.prizeValue)} prize`,
+    detail: (item) =>
+      `${formatPounds(item.prizeValue)} prize${item.closed === false ? " · still live" : ""}`,
   },
 ];
 
