@@ -190,8 +190,8 @@ const INSIGHTS: InsightTile[] = [
     title: "Biggest Prize",
     icon: "gift",
     text: () => "The highest published prize value from a completed draw.",
-    value: (insights) => formatPounds(insights?.biggestPrize?.prizeValue),
-    note: (insights) => insights?.biggestPrize?.prize ?? null,
+    value: (insights) => insights?.biggestPrize?.prize ?? placeholderValue,
+    note: (insights) => insights?.biggestPrize?.operatorName ?? null,
   },
   {
     key: "averageTicketPrice",
@@ -589,7 +589,14 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   </div>
                   <div className="mt-auto flex items-end gap-3 pt-3">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate rounded-full bg-rr-green-bg px-3 py-1.5 text-center text-sm font-semibold text-rr-green">
+                      <p
+                        className={cn(
+                          "bg-rr-green-bg px-3 py-1.5 text-center text-sm font-semibold text-rr-green",
+                          item.key === "biggestPrize"
+                            ? "line-clamp-2 rounded-2xl leading-snug"
+                            : "truncate rounded-full",
+                        )}
+                      >
                         {item.value(insights)}
                       </p>
                       {note ? (
