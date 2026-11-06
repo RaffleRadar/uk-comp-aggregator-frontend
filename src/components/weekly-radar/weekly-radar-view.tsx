@@ -329,23 +329,23 @@ function BiggestPrizeThumb({ insights }: { insights: WeeklyRadarInsights | null 
   const prize = insights?.biggestPrize;
   if (!prize) return null;
   const image = (
-    <span className="relative block h-12 w-16 overflow-hidden rounded-md bg-rr-elevated">
+    <span className="relative block h-11 w-14 shrink-0 overflow-hidden rounded-md bg-rr-elevated">
       <CompetitionImage
         src={prize.imageUrl}
         alt=""
         fill
-        sizes="64px"
+        sizes="56px"
         className="object-cover"
         unoptimized
       />
     </span>
   );
-  if (!prize.slug) return image;
+  if (!prize.slug) return <span className="shrink-0 lg:hidden xl:block">{image}</span>;
   return (
     <Link
       href={`/competitions/${prize.slug}`}
       aria-label={prize.prize}
-      className="block shrink-0 no-underline transition-opacity hover:opacity-90"
+      className="block shrink-0 no-underline transition-opacity hover:opacity-90 lg:hidden xl:block"
     >
       {image}
     </Link>
@@ -568,7 +568,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
 
         <section aria-label={copy.insightsTitle}>
           <SectionHeading eyebrow={copy.insightsEyebrow} title={copy.insightsTitle} />
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {INSIGHTS.map((item, index) => {
               const note = item.note?.(insights) ?? null;
               return (
@@ -577,7 +577,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   className={cn(
                     panelClass,
                     "flex min-w-0 flex-col p-4",
-                    index === INSIGHTS.length - 1 && "col-span-2 md:col-span-1",
+                    index === INSIGHTS.length - 1 && "sm:col-span-2 md:col-span-1",
                   )}
                 >
                   <div className="flex items-start gap-3">
@@ -587,22 +587,22 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                       <p className="mt-0.5 text-xs text-rr-secondary">{item.text(insights)}</p>
                     </div>
                   </div>
-                  <div className="mt-auto flex items-end gap-3 pt-3">
-                    <div className="min-w-0 flex-1">
+                  <div className="mt-auto pt-3">
+                    <div className="flex items-center gap-2.5">
                       {item.key === "biggestPrize" ? (
-                        <p className="rounded-xl bg-rr-green-bg px-3 py-2 text-center text-xs font-semibold leading-snug text-rr-green sm:text-[13px]">
-                          <span className="line-clamp-2 break-words">{item.value(insights)}</span>
+                        <p className="min-w-0 flex-1 rounded-xl bg-rr-green-bg px-2 py-1.5 text-center text-[11px] font-semibold leading-tight tracking-tight text-rr-green">
+                          <span className="line-clamp-3 break-words">{item.value(insights)}</span>
                         </p>
                       ) : (
-                        <p className="truncate rounded-full bg-rr-green-bg px-3 py-1.5 text-center text-sm font-semibold text-rr-green">
+                        <p className="min-w-0 flex-1 truncate rounded-full bg-rr-green-bg px-3 py-1.5 text-center text-sm font-semibold text-rr-green">
                           {item.value(insights)}
                         </p>
                       )}
-                      {note ? (
-                        <p className="mt-1.5 truncate text-center text-xs text-rr-secondary">{note}</p>
-                      ) : null}
+                      {item.key === "biggestPrize" ? <BiggestPrizeThumb insights={insights} /> : null}
                     </div>
-                    {item.key === "biggestPrize" ? <BiggestPrizeThumb insights={insights} /> : null}
+                    {note ? (
+                      <p className="mt-1.5 truncate text-center text-xs text-rr-secondary">{note}</p>
+                    ) : null}
                   </div>
                 </div>
               );
