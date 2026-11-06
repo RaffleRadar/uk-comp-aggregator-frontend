@@ -4,15 +4,22 @@ import { cn } from "@/lib/cn";
 import { CompetitionImage } from "@/components/ui/CompetitionImage";
 import {
   formatCount,
+  formatHourRange,
   formatPercent,
   formatPounds,
+  formatPrice,
   formatRatio,
   formatWeekRange,
+  formatWeekday,
   readBigThree,
   readHeadline,
+  readInsights,
+  type WeeklyRadarBusiest,
   type WeeklyRadarHeadline,
+  type WeeklyRadarInsights,
   type WeeklyRadarIssue,
   type WeeklyRadarListItem,
+  type WeeklyRadarPeak,
 } from "@/lib/weekly-radar";
 
 type Mode = "latest" | "archive";
@@ -117,12 +124,86 @@ const BIG_THREE: BigThreePanel[] = [
   },
 ];
 
-const INSIGHTS = [
-  { title: "Busiest Day", text: "Most tickets sold on:" },
-  { title: "Busiest Hour", text: "Most tickets sold between:" },
-  { title: "Total Undersold", text: "Draws with fewer than 25% sold." },
-  { title: "Biggest Prize", text: "The highest value prize from a completed draw." },
-  { title: "Best Value Draw", text: "The best value score of the week." },
+type InsightIcon = "calendar" | "clock" | "bars" | "gift" | "tag";
+
+type BusiestMetric = "spend" | "tickets";
+
+const BUSIEST_METRIC: BusiestMetric = "spend";
+
+const BUSIEST_COPY: Record<BusiestMetric, { day: string; hour: string }> = {
+  spend: { day: "Most money spent on:", hour: "Most money spent between:" },
+  tickets: { day: "Most tickets sold on:", hour: "Most tickets sold between:" },
+};
+
+function busiestPeak(busiest: WeeklyRadarBusiest | null | undefined): WeeklyRadarPeak | null {
+  return busiest?.[BUSIEST_METRIC] ?? null;
+}
+
+function busiestNote(peak: WeeklyRadarPeak | null): string | null {
+  if (!peak) return null;
+  return BUSIEST_METRIC === "spend"
+    ? `${formatPounds(peak.value)} est.`
+    : `${formatCount(peak.value)} tickets`;
+}
+
+type InsightTile = {
+  key: string;
+  title: string;
+  icon: InsightIcon;
+  text: (insights: WeeklyRadarInsights | null) => string;
+  value: (insights: WeeklyRadarInsights | null) => string;
+  note?: (insights: WeeklyRadarInsights | null) => string | null;
+};
+
+const INSIGHTS: InsightTile[] = [
+  {
+    key: "busiestDay",
+    title: "Busiest Day",
+    icon: "calendar",
+    text: () => BUSIEST_COPY[BUSIEST_METRIC].day,
+    value: (insights) => formatWeekday(busiestPeak(insights?.busiestDay)?.at),
+    note: (insights) => busiestNote(busiestPeak(insights?.busiestDay)),
+  },
+  {
+    key: "busiestHour",
+    title: "Busiest Hour",
+    icon: "clock",
+    text: () => BUSIEST_COPY[BUSIEST_METRIC].hour,
+    value: (insights) => formatHourRange(busiestPeak(insights?.busiestHour)?.at),
+    note: (insights) => busiestNote(busiestPeak(insights?.busiestHour)),
+  },
+  {
+    key: "heavilyUndersold",
+    title: "Heavily Undersold",
+    icon: "bars",
+    text: (insights) =>
+      `Draws that closed with fewer than ${insights?.heavilyUndersold?.thresholdPercent ?? 25}% of tickets sold.`,
+    value: (insights) =>
+      insights?.heavilyUndersold ? `${formatCount(insights.heavilyUndersold.count)} draws` : placeholderValue,
+    note: (insights) =>
+      insights?.heavilyUndersold && insights.heavilyUndersold.sample > 0
+        ? `of ${formatCount(insights.heavilyUndersold.sample)} draws`
+        : null,
+  },
+  {
+    key: "biggestPrize",
+    title: "Biggest Prize",
+    icon: "gift",
+    text: () => "The highest published prize value from a completed draw.",
+    value: (insights) => formatPounds(insights?.biggestPrize?.prizeValue),
+    note: (insights) => insights?.biggestPrize?.prize ?? null,
+  },
+  {
+    key: "averageTicketPrice",
+    title: "Average Ticket Price",
+    icon: "tag",
+    text: () => "Across draws that closed this week, free draws excluded.",
+    value: (insights) => formatPrice(insights?.averageTicketPrice?.average),
+    note: (insights) =>
+      insights?.averageTicketPrice
+        ? `median ${formatPrice(insights.averageTicketPrice.median)}`
+        : null,
+  },
 ];
 
 const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -198,6 +279,76 @@ function HeadlineIconGlyph({ icon }: { icon: HeadlineIcon }) {
         ) : null}
       </svg>
     </span>
+  );
+}
+
+function InsightIconGlyph({ icon }: { icon: InsightIcon }) {
+  return (
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-rr-green-border text-rr-green">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-[18px] w-[18px]"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {icon === "calendar" ? (
+          <>
+            <rect x="4" y="5.5" width="16" height="14" rx="2" />
+            <path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" />
+          </>
+        ) : null}
+        {icon === "clock" ? (
+          <>
+            <circle cx="12" cy="12" r="8" />
+            <path d="M12 8v4.5l3 1.5" />
+          </>
+        ) : null}
+        {icon === "bars" ? <path d="M5 19v-5M10 19V9M15 19v-7M20 19V5" /> : null}
+        {icon === "gift" ? (
+          <>
+            <rect x="4" y="10" width="16" height="10" rx="1.5" />
+            <path d="M3.5 7.5h17V10h-17zM12 7.5V20M12 7.5c-1.5-3.5-5-3.5-5-1.5s3 1.5 5 1.5c2 0 5 0 5-1.5s-3.5-2-5 1.5" />
+          </>
+        ) : null}
+        {icon === "tag" ? (
+          <>
+            <path d="M4 12.5V5a1 1 0 0 1 1-1h7.5l7.5 7.5-8.5 8.5L4 12.5Z" />
+            <circle cx="8.5" cy="8.5" r="1.2" />
+          </>
+        ) : null}
+      </svg>
+    </span>
+  );
+}
+
+function BiggestPrizeThumb({ insights }: { insights: WeeklyRadarInsights | null }) {
+  const prize = insights?.biggestPrize;
+  if (!prize) return null;
+  const image = (
+    <span className="relative block h-12 w-16 overflow-hidden rounded-md bg-rr-elevated">
+      <CompetitionImage
+        src={prize.imageUrl}
+        alt=""
+        fill
+        sizes="64px"
+        className="object-cover"
+        unoptimized
+      />
+    </span>
+  );
+  if (!prize.slug) return image;
+  return (
+    <Link
+      href={`/competitions/${prize.slug}`}
+      aria-label={prize.prize}
+      className="block shrink-0 no-underline transition-opacity hover:opacity-90"
+    >
+      {image}
+    </Link>
   );
 }
 
@@ -323,6 +474,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const weekLabel = issue ? formatWeekRange(issue.weekStart, issue.weekEnd) : "No issue yet";
   const headline = readHeadline(issue?.payload);
   const bigThree = readBigThree(issue?.payload);
+  const insights = readInsights(issue?.payload);
 
   return (
     <main className="py-6 md:py-10">
@@ -417,22 +569,38 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
         <section aria-label={copy.insightsTitle}>
           <SectionHeading eyebrow={copy.insightsEyebrow} title={copy.insightsTitle} />
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-            {INSIGHTS.map((item, index) => (
-              <div
-                key={item.title}
-                className={cn(
-                  panelClass,
-                  "flex flex-col p-4",
-                  index === INSIGHTS.length - 1 && "col-span-2 md:col-span-1",
-                )}
-              >
-                <h3 className="text-sm font-semibold text-rr-primary">{item.title}</h3>
-                <p className="mt-1 flex-1 text-xs text-rr-secondary">{item.text}</p>
-                <p className="mt-3 rounded-full bg-rr-green-bg px-3 py-1.5 text-center text-sm font-semibold text-rr-green">
-                  {placeholderValue}
-                </p>
-              </div>
-            ))}
+            {INSIGHTS.map((item, index) => {
+              const note = item.note?.(insights) ?? null;
+              return (
+                <div
+                  key={item.key}
+                  className={cn(
+                    panelClass,
+                    "flex min-w-0 flex-col p-4",
+                    index === INSIGHTS.length - 1 && "col-span-2 md:col-span-1",
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <InsightIconGlyph icon={item.icon} />
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm font-semibold text-rr-primary">{item.title}</h3>
+                      <p className="mt-0.5 text-xs text-rr-secondary">{item.text(insights)}</p>
+                    </div>
+                  </div>
+                  <div className="mt-auto flex items-end gap-3 pt-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate rounded-full bg-rr-green-bg px-3 py-1.5 text-center text-sm font-semibold text-rr-green">
+                        {item.value(insights)}
+                      </p>
+                      {note ? (
+                        <p className="mt-1.5 truncate text-center text-xs text-rr-secondary">{note}</p>
+                      ) : null}
+                    </div>
+                    {item.key === "biggestPrize" ? <BiggestPrizeThumb insights={insights} /> : null}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 

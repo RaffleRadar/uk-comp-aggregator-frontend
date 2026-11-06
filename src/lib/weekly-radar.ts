@@ -184,3 +184,143 @@ export function formatPounds(value: number | null | undefined): string {
 export function formatRatio(value: number | null | undefined): string {
   return typeof value === "number" ? `${value.toFixed(2)}×` : "–";
 }
+
+export type WeeklyRadarPeak = {
+  at: number;
+  value: number;
+  values: number[];
+};
+
+export type WeeklyRadarBusiest = {
+  tickets: WeeklyRadarPeak | null;
+  spend: WeeklyRadarPeak | null;
+};
+
+export type WeeklyRadarHeavilyUndersold = {
+  thresholdPercent: number;
+  count: number;
+  sample: number;
+};
+
+export type WeeklyRadarBiggestPrize = {
+  id: string;
+  slug: string | null;
+  prize: string;
+  operatorName: string;
+  imageUrl: string | null;
+  prizeValue: number;
+};
+
+export type WeeklyRadarAverageTicketPrice = {
+  average: number;
+  median: number | null;
+  sample: number;
+};
+
+export type WeeklyRadarInsights = {
+  busiestDay: WeeklyRadarBusiest | null;
+  busiestHour: WeeklyRadarBusiest | null;
+  heavilyUndersold: WeeklyRadarHeavilyUndersold | null;
+  biggestPrize: WeeklyRadarBiggestPrize | null;
+  averageTicketPrice: WeeklyRadarAverageTicketPrice | null;
+};
+
+function readNumberList(value: unknown, size: number): number[] | null {
+  if (!Array.isArray(value) || value.length !== size) return null;
+  const numbers = value.map(readNumber);
+  return numbers.every((item): item is number => item !== null) ? numbers : null;
+}
+
+function readPeak(value: unknown, size: number, min: number, max: number): WeeklyRadarPeak | null {
+  if (!isRecord(value)) return null;
+  const at = readNumber(value.at);
+  const peak = readNumber(value.value);
+  const values = readNumberList(value.values, size);
+  if (at === null || at < min || at > max || peak === null || !values) return null;
+  return { at, value: peak, values };
+}
+
+function readBusiest(value: unknown, size: number, min: number, max: number): WeeklyRadarBusiest | null {
+  if (!isRecord(value)) return null;
+  return {
+    tickets: readPeak(value.tickets, size, min, max),
+    spend: readPeak(value.spend, size, min, max),
+  };
+}
+
+function readHeavilyUndersold(value: unknown): WeeklyRadarHeavilyUndersold | null {
+  if (!isRecord(value)) return null;
+  const thresholdPercent = readNumber(value.thresholdPercent);
+  const count = readNumber(value.count);
+  const sample = readNumber(value.sample);
+  if (thresholdPercent === null || count === null || sample === null) return null;
+  return { thresholdPercent, count, sample };
+}
+
+function readBiggestPrize(value: unknown): WeeklyRadarBiggestPrize | null {
+  if (!isRecord(value)) return null;
+  const id = readString(value.id);
+  const prize = readString(value.prize);
+  const operatorName = readString(value.operatorName);
+  const prizeValue = readNumber(value.prizeValue);
+  if (!id || !prize || !operatorName || prizeValue === null) return null;
+  return {
+    id,
+    slug: readString(value.slug),
+    prize,
+    operatorName,
+    imageUrl: readString(value.imageUrl),
+    prizeValue,
+  };
+}
+
+function readAverageTicketPrice(value: unknown): WeeklyRadarAverageTicketPrice | null {
+  if (!isRecord(value)) return null;
+  const average = readNumber(value.average);
+  const sample = readNumber(value.sample);
+  if (average === null || sample === null) return null;
+  return { average, median: readNumber(value.median), sample };
+}
+
+export function readInsights(payload: unknown): WeeklyRadarInsights | null {
+  if (!isRecord(payload) || !isRecord(payload.insights)) return null;
+  const insights = payload.insights;
+  return {
+    busiestDay: readBusiest(insights.busiestDay, 7, 1, 7),
+    busiestHour: readBusiest(insights.busiestHour, 24, 0, 23),
+    heavilyUndersold: readHeavilyUndersold(insights.heavilyUndersold),
+    biggestPrize: readBiggestPrize(insights.biggestPrize),
+    averageTicketPrice: readAverageTicketPrice(insights.averageTicketPrice),
+  };
+}
+
+const WEEKDAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+export function formatWeekday(isoWeekday: number | null | undefined): string {
+  return typeof isoWeekday === "number" && isoWeekday >= 1 && isoWeekday <= 7
+    ? WEEKDAY_NAMES[isoWeekday - 1]
+    : "–";
+}
+
+function formatClock(hour: number): string {
+  const normalised = ((hour % 24) + 24) % 24;
+  const suffix = normalised < 12 ? "am" : "pm";
+  const twelveHour = normalised % 12 === 0 ? 12 : normalised % 12;
+  return `${twelveHour}:00${suffix}`;
+}
+
+export function formatHourRange(hour: number | null | undefined): string {
+  if (typeof hour !== "number" || hour < 0 || hour > 23) return "–";
+  return `${formatClock(hour)} – ${formatClock(hour + 1)}`;
+}
+
+const penceFormat = new Intl.NumberFormat("en-GB", {
+  style: "currency",
+  currency: "GBP",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export function formatPrice(value: number | null | undefined): string {
+  return typeof value === "number" ? penceFormat.format(value) : "–";
+}
