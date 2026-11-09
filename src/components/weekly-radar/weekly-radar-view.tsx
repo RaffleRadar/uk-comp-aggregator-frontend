@@ -869,7 +869,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   className={cn(
                     panelClass,
                     liftClass,
-                    "group/tile flex min-w-0 items-center gap-3 bg-gradient-to-br from-rr-green-bg to-rr-surface px-3 py-2.5 lg:flex-col lg:items-stretch lg:gap-0 lg:bg-none lg:py-2",
+                    "group/tile flex min-w-0 items-center gap-3 px-3 py-2.5 lg:flex-col lg:items-stretch lg:gap-0 lg:py-2",
                     index === INSIGHTS.length - 1 && "sm:col-span-2 lg:col-span-1",
                   )}
                 >
@@ -984,7 +984,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
               {copy.scheduleCta}
             </ScheduleCta>
           </div>
-          <ScheduleCta href={copy.scheduleHref} className="flex w-full lg:hidden">
+          <ScheduleCta href={copy.scheduleHref} className="flex w-full whitespace-nowrap px-3 text-sm sm:text-base lg:hidden">
             {copy.scheduleCta}
           </ScheduleCta>
         </section>
