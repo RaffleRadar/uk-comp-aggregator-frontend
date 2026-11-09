@@ -17,7 +17,7 @@ export function WeeklyRadarBanner() {
             <span className="text-base font-bold text-rr-primary sm:text-lg">Weekly Radar</span>
           </span>
           <span aria-hidden="true" className="hidden h-7 w-0.5 rounded-full bg-rr-green sm:block" />
-          <span className="text-sm text-rr-secondary sm:text-[15px] sm:text-rr-primary">
+          <span className="whitespace-nowrap text-xs text-rr-secondary min-[400px]:text-[13px] sm:text-[15px] sm:text-rr-primary">
             Last week&apos;s competition trends &amp; stats
           </span>
         </span>
