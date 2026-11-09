@@ -274,10 +274,15 @@ function ChevronIcon({ direction }: { direction: "left" | "right" }) {
     <svg
       aria-hidden="true"
       viewBox="0 0 20 20"
-      className="h-4 w-4 shrink-0 text-rr-green xl:h-5 xl:w-5"
+      className={cn(
+        "h-4 w-4 shrink-0 text-rr-green transition-transform duration-200 ease-out xl:h-6 xl:w-6",
+        direction === "left"
+          ? "motion-safe:group-hover:-translate-x-1"
+          : "motion-safe:group-hover:translate-x-1",
+      )}
       fill="none"
       stroke="currentColor"
-      strokeWidth="2.6"
+      strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -447,8 +452,8 @@ function WeekNavButton({
     </>
   );
   const base = cn(
-    "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-2 py-2.5 text-[13px] font-semibold no-underline transition-colors",
-    "lg:gap-2 lg:rounded-full lg:px-4 lg:py-1.5 lg:text-sm lg:font-bold xl:gap-2.5 xl:px-9 xl:text-base",
+    "group inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-2 py-2.5 text-[13px] font-semibold no-underline transition-[background-color,box-shadow,transform] duration-200 ease-out",
+    "lg:gap-2 lg:rounded-full lg:px-4 lg:py-1 lg:text-sm lg:font-bold xl:gap-2.5 xl:px-9 xl:text-base",
     direction === "left" ? "lg:order-1 lg:justify-self-end" : "lg:order-5 lg:justify-self-start",
   );
 
@@ -468,7 +473,10 @@ function WeekNavButton({
     <Link
       href={href}
       aria-label={typeof children === "string" ? children : undefined}
-      className={cn(base, "border-rr-green-border text-rr-primary hover:bg-rr-green-bg lg:border-rr-green")}
+      className={cn(
+        base,
+        "border-rr-green-border text-rr-primary hover:bg-rr-green-bg hover:shadow-[0_0_18px_-6px_var(--accent)] active:scale-[0.97] focus-visible:shadow-[0_0_18px_-6px_var(--accent)] lg:border-rr-green",
+      )}
     >
       {content}
     </Link>
@@ -544,11 +552,11 @@ function ScheduleCta({
 
 function BigThreeIcon({ panel }: { panel: BigThreeKey }) {
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rr-green-bg text-rr-green lg:h-12 lg:w-12 lg:bg-rr-green lg:text-rr-on-accent">
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rr-green-bg text-rr-green lg:h-[3.25rem] lg:w-[3.25rem] lg:bg-rr-green lg:text-rr-on-accent">
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
-        className="h-6 w-6 lg:h-8 lg:w-8"
+        className="h-6 w-6 lg:h-9 lg:w-9"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
@@ -678,7 +686,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
             aria-hidden="true"
             className="pointer-events-none absolute -right-4 -top-6 hidden h-[calc(100%+3rem)] w-1/2 bg-[radial-gradient(circle,var(--accent-border)_1.2px,transparent_1.6px)] bg-[length:14px_14px] [mask-image:linear-gradient(to_left,black_35%,transparent)] lg:block"
           />
-          <div className="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-5 lg:gap-y-5">
+          <div className="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-5 lg:gap-y-3">
             <div className="grid gap-3 lg:col-start-1 lg:row-start-1 lg:flex lg:items-center lg:gap-4">
               <div className="lg:shrink-0">
                 <p
@@ -731,7 +739,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
 
             <nav
               aria-label="Weekly Radar weeks"
-              className="rounded-2xl border border-rr-green-border bg-rr-surface p-3 lg:col-start-1 lg:row-start-2 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] lg:items-center lg:gap-x-4 lg:rounded-full lg:border-2 lg:border-rr-green lg:bg-rr-bg lg:px-3 lg:py-2 xl:gap-x-8"
+              className="rounded-2xl border border-rr-green-border bg-rr-surface p-3 lg:col-start-1 lg:row-start-2 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] lg:items-center lg:gap-x-4 lg:rounded-full lg:border-2 lg:border-rr-green lg:bg-rr-bg lg:px-3 lg:py-1.5 xl:gap-x-8"
             >
               <div className="text-center lg:order-3 lg:min-w-0">
                 <p className="inline-flex items-center gap-2 text-base font-semibold text-rr-primary lg:gap-2 lg:whitespace-nowrap lg:text-base lg:font-bold xl:gap-2.5 xl:text-xl">
@@ -833,16 +841,18 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   key={item.key}
                   className={cn(
                     panelClass,
-                    "flex min-w-0 items-center gap-3 bg-gradient-to-br from-rr-green-bg to-rr-surface px-3 py-2.5 lg:flex-col lg:items-stretch lg:gap-0 lg:bg-none lg:bg-rr-surface lg:py-2.5",
+                    "flex min-w-0 items-center gap-3 bg-gradient-to-br from-rr-green-bg to-rr-surface px-3 py-2.5 lg:flex-col lg:items-stretch lg:gap-0 lg:bg-none lg:bg-rr-surface lg:py-2",
                     index === INSIGHTS.length - 1 && "sm:col-span-2 lg:col-span-1",
                   )}
                 >
-                  <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none lg:items-start lg:gap-2.5">
+                  <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none lg:items-center lg:gap-2">
                     <InsightIconGlyph icon={item.icon} />
                     <span aria-hidden="true" className="h-12 w-0.5 shrink-0 rounded-full bg-rr-border lg:hidden" />
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-[15px] font-bold leading-tight text-rr-primary">{item.title}</h3>
-                      <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-rr-secondary">
+                      <h3 className="text-[15px] font-bold leading-tight text-rr-primary lg:truncate lg:text-[13.5px] lg:tracking-tight xl:text-sm" title={item.title}>
+                        {item.title}
+                      </h3>
+                      <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-rr-secondary lg:min-h-[2.75em]">
                         {item.text(insights)}
                       </p>
                       <p className="mt-1 truncate text-lg font-extrabold leading-tight text-rr-green lg:hidden">
@@ -854,7 +864,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                     </div>
                   </div>
                   {isPrize ? <BiggestPrizeThumb insights={insights} className="lg:hidden" /> : null}
-                  <div className="hidden lg:mt-auto lg:block lg:pt-2">
+                  <div className="hidden lg:mt-2 lg:block">
                     <div className="flex items-center gap-2">
                       <p
                         className="min-w-0 flex-1 truncate rounded-full bg-rr-green px-3 py-1 text-center text-sm font-extrabold text-rr-on-accent"
