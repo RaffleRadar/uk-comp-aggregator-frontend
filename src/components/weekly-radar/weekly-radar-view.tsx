@@ -799,7 +799,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
               <HeadlineIconGlyph icon={item.icon} />
               <span aria-hidden="true" className={cn(dividerClass, "hidden h-12 bg-rr-border sm:block")} />
               <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-rr-primary lg:text-xs xl:whitespace-nowrap">
+                <p className="text-[10px] font-bold uppercase leading-tight tracking-[0.02em] text-rr-primary sm:text-[11px] sm:tracking-[0.04em] lg:text-xs xl:whitespace-nowrap">
                   {item.label}
                 </p>
                 <p className="mt-0.5 flex flex-col xl:flex-row xl:items-baseline xl:gap-2">
