@@ -203,9 +203,8 @@ const INSIGHTS: InsightTile[] = [
     title: "Biggest Prize",
     icon: "gift",
     text: () => "The highest published prize value from a completed draw.",
-    value: (insights) =>
-      insights?.biggestPrize ? formatPounds(insights.biggestPrize.prizeValue) : placeholderValue,
-    note: (insights) => insights?.biggestPrize?.prize ?? null,
+    value: (insights) => insights?.biggestPrize?.prize ?? placeholderValue,
+    note: (insights) => insights?.biggestPrize?.operatorName ?? null,
   },
   {
     key: "averageTicketPrice",
@@ -609,7 +608,7 @@ function BigThreeRow({
           alt=""
           fill
           sizes="72px"
-          className="object-cover"
+          className="object-cover transition-transform duration-300 ease-out motion-safe:group-hover/row:scale-110"
           unoptimized
         />
       </span>
@@ -627,7 +626,7 @@ function BigThreeRow({
           {panel.detail(item)}
         </span>
       </span>
-      <span className="flex min-w-[3.75rem] shrink-0 flex-col items-center justify-center rounded-lg border border-rr-green px-1.5 py-1 text-center">
+      <span className="flex min-w-[3.75rem] shrink-0 flex-col items-center justify-center rounded-lg border border-rr-green px-1.5 py-1 text-center transition-[background-color,box-shadow] duration-200 group-hover/row:bg-rr-green-bg group-hover/row:shadow-[0_0_14px_-4px_var(--accent)]">
         <span className="whitespace-nowrap text-xs font-bold leading-tight text-rr-primary">
           {panel.badge(item)}
         </span>
@@ -645,7 +644,13 @@ function BigThreeRow({
 
   return (
     <li className="min-w-0">
-      <Link href={href} className={cn(rowClass, "rounded-lg transition-colors hover:bg-rr-elevated")}>
+      <Link
+        href={href}
+        className={cn(
+          rowClass,
+          "group/row rounded-lg transition-[background-color,transform] duration-200 ease-out hover:bg-rr-elevated motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0",
+        )}
+      >
         {body}
       </Link>
     </li>
@@ -855,7 +860,12 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                       <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-rr-secondary lg:min-h-[2.75em]">
                         {item.text(insights)}
                       </p>
-                      <p className="mt-1 truncate text-lg font-extrabold leading-tight text-rr-green lg:hidden">
+                      <p
+                        className={cn(
+                          "mt-1 text-lg font-extrabold leading-tight text-rr-green lg:hidden",
+                          isPrize ? "line-clamp-2 text-base" : "truncate",
+                        )}
+                      >
                         {item.value(insights)}
                       </p>
                       {note ? (
@@ -867,10 +877,15 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   <div className="hidden lg:mt-2 lg:block">
                     <div className="flex items-center gap-2">
                       <p
-                        className="min-w-0 flex-1 truncate rounded-full bg-rr-green px-3 py-1 text-center text-sm font-extrabold text-rr-on-accent"
+                        className={cn(
+                          "min-w-0 flex-1 bg-rr-green px-3 py-1 text-center font-extrabold text-rr-on-accent",
+                          isPrize
+                            ? "rounded-xl text-[11px] leading-tight"
+                            : "truncate rounded-full text-sm",
+                        )}
                         title={item.value(insights)}
                       >
-                        {item.value(insights)}
+                        {isPrize ? <span className="line-clamp-2">{item.value(insights)}</span> : item.value(insights)}
                       </p>
                       {isPrize ? <BiggestPrizeThumb insights={insights} /> : null}
                     </div>
