@@ -1,10 +1,10 @@
-import Link from "next/link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { IconChartBar, IconChevronRight } from "@tabler/icons-react";
 
 export function WeeklyRadarBanner() {
   return (
     <section className="container pb-2 lg:pb-4">
-      <Link
+      <ScrollTopLink
         href="/weekly-radar"
         className="group flex items-center gap-3 rounded-2xl border border-rr-green bg-rr-surface px-3 py-2.5 no-underline shadow-[0_0_20px_-10px_var(--accent)] transition hover:bg-rr-elevated hover:shadow-[0_0_24px_-6px_var(--accent)] sm:gap-4 sm:px-5 sm:py-3"
       >
@@ -22,7 +22,7 @@ export function WeeklyRadarBanner() {
           </span>
         </span>
         <IconChevronRight className="h-5 w-5 shrink-0 text-rr-primary transition-transform group-hover:translate-x-0.5" stroke={2.4} />
-      </Link>
+      </ScrollTopLink>
     </section>
   );
 }

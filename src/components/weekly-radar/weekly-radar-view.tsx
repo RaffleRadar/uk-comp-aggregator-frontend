@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { CompetitionImage } from "@/components/ui/CompetitionImage";
@@ -488,14 +488,14 @@ function BiggestPrizeThumb({
   );
   if (!prize.slug) return <span className={cn("shrink-0", className)}>{image}</span>;
   return (
-    <Link
+    <ScrollTopLink
       href={`/competitions/${prize.slug}`}
       aria-label={`${prize.prize}, ${prize.operatorName}`}
       title={`${prize.prize} · ${prize.operatorName}`}
       className={cn("block shrink-0 no-underline transition-opacity hover:opacity-90", className)}
     >
       {image}
-    </Link>
+    </ScrollTopLink>
   );
 }
 
@@ -534,7 +534,7 @@ function WeekNavButton({
   }
 
   return (
-    <Link
+    <ScrollTopLink
       href={href}
       aria-label={children}
       className={cn(
@@ -543,7 +543,7 @@ function WeekNavButton({
       )}
     >
       {content}
-    </Link>
+    </ScrollTopLink>
   );
 }
 
@@ -582,7 +582,7 @@ function ScheduleCta({
   children: ReactNode;
 }) {
   return (
-    <Link
+    <ScrollTopLink
       href={href}
       className={cn(
         "group/cta items-center justify-center gap-2 rounded-2xl bg-rr-green px-5 py-3.5 text-center text-base font-extrabold leading-tight text-rr-on-accent no-underline transition-[transform,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.98]",
@@ -595,7 +595,7 @@ function ScheduleCta({
         {children}
         <ArrowUpRightIcon className="ml-1.5 inline-block h-5 w-5 align-[-4px] transition-transform duration-200 ease-out motion-safe:group-hover/cta:-translate-y-0.5 motion-safe:group-hover/cta:translate-x-0.5" />
       </span>
-    </Link>
+    </ScrollTopLink>
   );
 }
 
@@ -668,7 +668,7 @@ function BigThreeRow({
 
   return (
     <li className="min-w-0">
-      <Link
+      <ScrollTopLink
         href={href}
         className={cn(
           bigThreeRowClass,
@@ -676,7 +676,7 @@ function BigThreeRow({
         )}
       >
         {body}
-      </Link>
+      </ScrollTopLink>
     </li>
   );
 }
