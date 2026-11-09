@@ -208,14 +208,10 @@ const INSIGHTS: InsightTile[] = [
   },
   {
     key: "averageTicketPrice",
-    title: "Average Ticket Price",
+    title: "Typical Ticket Price",
     icon: "tag",
     text: () => "Across draws that closed this week, free draws excluded.",
-    value: (insights) => formatPrice(insights?.averageTicketPrice?.average),
-    note: (insights) =>
-      insights?.averageTicketPrice
-        ? `median ${formatPrice(insights.averageTicketPrice.median)}`
-        : null,
+    value: (insights) => formatPrice(insights?.averageTicketPrice?.median),
   },
 ];
 
@@ -315,7 +311,7 @@ function HeadlineIconGlyph({ icon }: { icon: HeadlineIcon }) {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      className="h-10 w-10 shrink-0 text-rr-green sm:h-11 sm:w-11 xl:h-[3.25rem] xl:w-[3.25rem]"
+      className="h-10 w-10 shrink-0 text-rr-green transition-transform duration-300 ease-out sm:h-11 sm:w-11 xl:h-[3.25rem] xl:w-[3.25rem] motion-safe:group-hover/tile:scale-110"
       fill="none"
       stroke="currentColor"
       strokeWidth="2.4"
@@ -357,7 +353,7 @@ function InsightIconGlyph({ icon }: { icon: InsightIcon }) {
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
-        className="h-7 w-7 lg:h-10 lg:w-10"
+        className="h-7 w-7 transition-transform duration-300 ease-out lg:h-10 lg:w-10 motion-safe:group-hover/tile:scale-110"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.1"
@@ -526,7 +522,7 @@ function ScheduleCta({
     <Link
       href={href}
       className={cn(
-        "items-center justify-center gap-2 rounded-2xl bg-rr-green px-5 py-3.5 text-center text-base font-extrabold leading-tight text-rr-on-accent no-underline shadow-[0_0_24px_-8px_var(--accent)] transition-opacity hover:opacity-90",
+        "group/cta items-center justify-center gap-2 rounded-2xl bg-rr-green px-5 py-3.5 text-center text-base font-extrabold leading-tight text-rr-on-accent no-underline shadow-[0_0_24px_-8px_var(--accent)] transition-[transform,box-shadow] duration-200 ease-out hover:shadow-[0_0_34px_-4px_var(--accent)] focus-visible:shadow-[0_0_34px_-4px_var(--accent)] motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.98]",
         className,
       )}
     >
@@ -535,7 +531,7 @@ function ScheduleCta({
         <svg
         aria-hidden="true"
         viewBox="0 0 20 20"
-        className="ml-1.5 inline-block h-5 w-5 align-[-4px]"
+        className="ml-1.5 inline-block h-5 w-5 align-[-4px] transition-transform duration-200 ease-out motion-safe:group-hover/cta:-translate-y-0.5 motion-safe:group-hover/cta:translate-x-0.5"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.4"
@@ -730,7 +726,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
               </div>
             </div>
 
-            <div className="hidden rotate-[4deg] rounded-2xl border-[3px] border-rr-green bg-gradient-to-br from-rr-green-bg to-rr-bg px-4 py-2.5 text-center shadow-[0_0_28px_-6px_var(--accent)] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:block">
+            <div className="hidden rotate-[4deg] rounded-2xl border-[3px] transition-transform duration-300 ease-out motion-safe:hover:rotate-[1deg] motion-safe:hover:scale-[1.04] border-rr-green bg-gradient-to-br from-rr-green-bg to-rr-bg px-4 py-2.5 text-center shadow-[0_0_28px_-6px_var(--accent)] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:block">
               <p className="text-xs font-extrabold uppercase tracking-[0.06em] text-rr-primary xl:text-sm">
                 Your weekly fix
               </p>
@@ -772,7 +768,10 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
           {HEADLINES.map((item) => (
             <div
               key={item.label}
-              className={cn(panelClass, "flex min-w-0 items-center gap-2.5 px-3 py-2 sm:px-3.5 xl:gap-3 xl:py-2")}
+              className={cn(
+                panelClass,
+                "group/tile flex min-w-0 items-center gap-2.5 px-3 py-2 transition-[border-color,transform] duration-200 ease-out hover:border-rr-green-border sm:px-3.5 xl:gap-3 xl:py-2 motion-safe:hover:-translate-y-0.5",
+              )}
             >
               <HeadlineIconGlyph icon={item.icon} />
               <span aria-hidden="true" className="hidden h-12 w-0.5 shrink-0 rounded-full bg-rr-border sm:block" />
@@ -846,7 +845,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   key={item.key}
                   className={cn(
                     panelClass,
-                    "flex min-w-0 items-center gap-3 bg-gradient-to-br from-rr-green-bg to-rr-surface px-3 py-2.5 lg:flex-col lg:items-stretch lg:gap-0 lg:bg-none lg:bg-rr-surface lg:py-2",
+                    "group/tile flex min-w-0 items-center gap-3 bg-gradient-to-br from-rr-green-bg to-rr-surface px-3 py-2.5 transition-[border-color,transform] duration-200 ease-out hover:border-rr-green-border lg:flex-col lg:items-stretch lg:gap-0 lg:bg-none lg:bg-rr-surface lg:py-2 motion-safe:hover:-translate-y-0.5",
                     index === INSIGHTS.length - 1 && "sm:col-span-2 lg:col-span-1",
                   )}
                 >
@@ -928,7 +927,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   <li
                     key={day}
                     className={cn(
-                      "rounded-xl border px-3 py-1.5 text-center lg:min-w-[4.25rem] lg:px-2 lg:py-1.5 xl:min-w-[4rem]",
+                      "rounded-xl border px-3 py-1.5 text-center transition-[border-color,transform] duration-200 ease-out hover:border-rr-green-border lg:min-w-[4.25rem] lg:px-2 lg:py-1.5 xl:min-w-[4rem] motion-safe:hover:-translate-y-1",
                       index === WEEK_DAYS.length - 1 && "col-span-2 lg:col-span-1",
                       isPeak ? "border-2 border-rr-green bg-rr-green-bg" : "border-rr-border",
                     )}
