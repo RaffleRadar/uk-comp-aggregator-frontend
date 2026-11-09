@@ -807,7 +807,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   >
                     {item.value(headline)}
                   </span>
-                  <span className="mt-1 whitespace-nowrap text-xs text-rr-secondary xl:mt-0 xl:text-[15px] xl:text-rr-primary">
+                  <span className="mt-1 whitespace-nowrap text-xs text-rr-secondary xl:mt-0 xl:text-[15px]">
                     {item.unit}
                   </span>
                 </p>
@@ -838,7 +838,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                         <span className="hidden lg:inline">{panelIndex + 1}. </span>
                         {panel.title}
                       </h3>
-                      <p className="mt-0.5 text-xs leading-snug text-rr-secondary lg:text-[13px] lg:text-rr-primary">
+                      <p className="mt-0.5 text-xs leading-snug text-rr-secondary lg:text-[13px]">
                         {panel.text}
                       </p>
                     </div>
@@ -938,7 +938,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
             >
               <p
                 className={cn(
-                  "mt-1 text-sm leading-snug text-rr-secondary lg:text-[13px] lg:text-rr-primary",
+                  "mt-1 text-sm leading-snug text-rr-secondary lg:text-[13px]",
                   mode === "archive" && "xl:whitespace-nowrap xl:text-[11.5px]",
                 )}
               >
@@ -949,7 +949,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
               {WEEK_DAYS.map((day, index) => {
                 const count = schedule ? schedule.byDay[index] : null;
                 const isPeak = schedulePeak === index;
-                const labelClass = isPeak ? "text-rr-green" : "text-rr-secondary lg:text-rr-primary";
+                const labelClass = isPeak ? "text-rr-green" : "text-rr-secondary";
                 return (
                   <li
                     key={day}
