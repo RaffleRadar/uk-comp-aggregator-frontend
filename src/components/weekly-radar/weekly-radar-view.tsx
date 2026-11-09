@@ -108,6 +108,7 @@ type BigThreePanel = {
   key: BigThreeKey;
   title: string;
   text: string;
+  shortText: string;
   badge: (item: WeeklyRadarListItem) => string;
   badgeNote?: string;
   detail: (item: WeeklyRadarListItem) => string;
@@ -118,6 +119,7 @@ const BIG_THREE: BigThreePanel[] = [
     key: "undersold",
     title: "Most undersold draws",
     text: "The five draws that closed with the most tickets unsold.",
+    shortText: "Closed with the most tickets unsold.",
     badge: (item) => formatCount(item.ticketsUnsold),
     badgeNote: "unsold",
     detail: (item) =>
@@ -127,6 +129,7 @@ const BIG_THREE: BigThreePanel[] = [
     key: "spend",
     title: "Highest ticket spend",
     text: "The five draws with the most money spent on tickets during the week, estimated.",
+    shortText: "Most money spent on tickets, estimated.",
     badge: (item) => formatPounds(item.ticketSpend),
     detail: (item) => `${formatCount(item.ticketsSold)} tickets sold`,
   },
@@ -134,6 +137,7 @@ const BIG_THREE: BigThreePanel[] = [
     key: "bestValue",
     title: "Best value draws",
     text: "The five draws with the best value ratio at the end of the week, as shown on the site.",
+    shortText: "Best value ratio at the end of the week.",
     badge: (item) => formatRatio(item.valueRatio),
     detail: (item) => `${formatPounds(item.prizeValue)} prize`,
   },
@@ -839,7 +843,8 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                         {panel.title}
                       </h3>
                       <p className="mt-0.5 text-xs leading-snug text-rr-secondary lg:text-[13px]">
-                        {panel.text}
+                        <span className="lg:hidden">{panel.shortText}</span>
+                        <span className="hidden lg:inline">{panel.text}</span>
                       </p>
                     </div>
                   </div>
