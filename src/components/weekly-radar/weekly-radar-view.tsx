@@ -496,7 +496,7 @@ function SectionHeading({
   titleClassName?: string;
 }) {
   return (
-    <div className="mb-2 flex items-stretch gap-2.5 lg:mb-3">
+    <div className="mb-1.5 flex items-stretch gap-2.5 lg:mb-2">
       <span aria-hidden="true" className="w-1 shrink-0 rounded-full bg-rr-green lg:w-1.5" />
       <div className="min-w-0">
         <p className={cn(eyebrowClass, "font-bold tracking-[0.08em] lg:text-base lg:tracking-[0.02em]")}>
@@ -688,8 +688,8 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const schedulePeak = peakDay(schedule);
 
   return (
-    <main className={cn("py-5 md:py-7", RADAR_THEME)}>
-      <div className="container space-y-4 lg:space-y-5">
+    <main className={cn("-mb-6 pb-3 pt-4 md:-mb-14 md:pb-4 md:pt-5", RADAR_THEME)}>
+      <div className="container space-y-3 lg:space-y-3.5">
         <header className="relative">
           <div
             aria-hidden="true"
