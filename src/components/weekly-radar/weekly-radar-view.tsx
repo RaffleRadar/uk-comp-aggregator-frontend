@@ -877,10 +877,10 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                     <div className="flex items-center gap-2">
                       <p
                         className={cn(
-                          "min-w-0 flex-1 bg-rr-green px-3 py-1 text-center font-extrabold text-rr-on-accent",
+                          "min-w-0 flex-1 border border-rr-green bg-[linear-gradient(180deg,var(--accent)_0%,var(--accent-border)_100%)] px-3 py-1 text-center font-bold text-rr-primary [text-shadow:0_1px_2px_rgba(0,0,0,0.55)] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]",
                           isPrize
                             ? "rounded-xl text-[11px] leading-tight"
-                            : "truncate rounded-full text-sm",
+                            : "truncate rounded-full text-base",
                         )}
                         title={item.value(insights)}
                       >
@@ -914,7 +914,12 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
               <h2 className="text-2xl font-extrabold leading-tight tracking-[-0.01em] text-rr-primary lg:text-[1.6rem] xl:text-[1.4rem]">
                 {copy.scheduleTitle}
               </h2>
-              <p className="mt-1 text-sm leading-snug text-rr-secondary lg:text-[15px] lg:text-rr-primary">
+              <p
+                className={cn(
+                  "mt-1 text-sm leading-snug text-rr-secondary lg:text-[13px] lg:text-rr-primary",
+                  mode === "archive" && "xl:whitespace-nowrap xl:text-[11.5px]",
+                )}
+              >
                 {copy.scheduleText}
               </p>
               </div>
@@ -927,7 +932,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   <li
                     key={day}
                     className={cn(
-                      "rounded-xl border px-3 py-1.5 text-center transition-[border-color,transform] duration-200 ease-out hover:border-rr-green-border lg:min-w-[4.25rem] lg:px-2 lg:py-1.5 xl:min-w-[4rem] motion-safe:hover:-translate-y-1",
+                      "rounded-xl border px-3 py-1.5 text-center transition-[border-color,transform] duration-200 ease-out hover:border-rr-green-border lg:min-w-[4.25rem] lg:px-2 lg:py-1.5 xl:min-w-[3.75rem] motion-safe:hover:-translate-y-1",
                       index === WEEK_DAYS.length - 1 && "col-span-2 lg:col-span-1",
                       isPeak ? "border-2 border-rr-green bg-rr-green-bg" : "border-rr-border",
                     )}
@@ -951,7 +956,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                 );
               })}
             </ul>
-            <ScheduleCta href={copy.scheduleHref} className="hidden lg:flex lg:w-[14.5rem] lg:px-3 lg:py-3 lg:text-lg">
+            <ScheduleCta href={copy.scheduleHref} className="hidden lg:flex lg:w-[14.5rem] lg:px-3 lg:py-3 lg:text-lg xl:w-[13rem] xl:text-base">
               {copy.scheduleCta}
             </ScheduleCta>
           </div>
