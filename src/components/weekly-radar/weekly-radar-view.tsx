@@ -412,7 +412,7 @@ function BiggestPrizeThumb({
     <span
       className={cn(
         "relative block shrink-0 overflow-hidden rounded-md bg-rr-elevated",
-        size === "pill" ? "h-[1.875rem] w-11" : "h-10 w-14",
+        size === "pill" ? "h-auto min-h-[2.75rem] w-12 self-stretch" : "h-10 w-14",
       )}
     >
       <CompetitionImage
@@ -881,24 +881,26 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                     </div>
                   </div>
                   {isPrize ? <BiggestPrizeThumb insights={insights} className="lg:hidden" /> : null}
-                  <div className="hidden lg:mt-2 lg:block">
-                    <div className="flex items-center gap-2">
+                  <div className="hidden lg:mt-2 lg:flex lg:items-stretch lg:gap-2">
+                    <div
+                      className="flex min-h-[2.75rem] min-w-0 flex-1 flex-col items-center justify-center rounded-2xl border border-rr-green bg-[linear-gradient(180deg,var(--accent)_0%,var(--accent-border)_100%)] px-3 py-1 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
+                      title={note ? `${item.value(insights)} · ${note}` : item.value(insights)}
+                    >
                       <p
                         className={cn(
-                          "min-w-0 flex-1 border border-rr-green bg-[linear-gradient(180deg,var(--accent)_0%,var(--accent-border)_100%)] px-3 py-1 text-center font-bold text-rr-primary [text-shadow:0_1px_2px_rgba(0,0,0,0.55)] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]",
-                          isPrize
-                            ? "rounded-xl py-0.5 text-[11px] leading-[1.15]"
-                            : "truncate rounded-full text-base",
+                          "w-full font-bold text-rr-primary [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]",
+                          isPrize ? "line-clamp-2 text-[11px] leading-[1.15]" : "truncate text-base leading-tight",
                         )}
-                        title={item.value(insights)}
                       >
-                        {isPrize ? <span className="line-clamp-2">{item.value(insights)}</span> : item.value(insights)}
+                        {item.value(insights)}
                       </p>
-                      {isPrize ? <BiggestPrizeThumb insights={insights} size="pill" /> : null}
+                      {note ? (
+                        <p className="w-full truncate text-[10.5px] font-semibold leading-tight text-rr-primary/85 [text-shadow:0_1px_1px_rgba(0,0,0,0.45)]">
+                          {note}
+                        </p>
+                      ) : null}
                     </div>
-                    {note ? (
-                      <p className="mt-0.5 truncate text-center text-[11px] text-rr-secondary">{note}</p>
-                    ) : null}
+                    {isPrize ? <BiggestPrizeThumb insights={insights} size="pill" /> : null}
                   </div>
                 </div>
               );
