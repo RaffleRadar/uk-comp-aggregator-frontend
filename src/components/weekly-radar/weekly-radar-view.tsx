@@ -203,8 +203,9 @@ const INSIGHTS: InsightTile[] = [
     title: "Biggest Prize",
     icon: "gift",
     text: () => "The highest published prize value from a completed draw.",
-    value: (insights) => insights?.biggestPrize?.prize ?? placeholderValue,
-    note: (insights) => insights?.biggestPrize?.operatorName ?? null,
+    value: (insights) =>
+      insights?.biggestPrize ? formatPounds(insights.biggestPrize.prizeValue) : placeholderValue,
+    note: (insights) => insights?.biggestPrize?.prize ?? null,
   },
   {
     key: "averageTicketPrice",
@@ -346,40 +347,47 @@ function HeadlineIconGlyph({ icon }: { icon: HeadlineIcon }) {
 
 function InsightIconGlyph({ icon }: { icon: InsightIcon }) {
   return (
-    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-rr-green-border text-rr-green">
+    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rr-green-bg text-rr-green lg:h-auto lg:w-auto lg:bg-transparent">
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
-        className="h-[18px] w-[18px]"
+        className="h-6 w-6 lg:h-8 lg:w-8"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="2.1"
         strokeLinecap="round"
         strokeLinejoin="round"
+        shapeRendering="geometricPrecision"
       >
         {icon === "calendar" ? (
           <>
-            <rect x="4" y="5.5" width="16" height="14" rx="2" />
-            <path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" />
+            <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+            <path d="M3.5 9.5h17M8 3v4M16 3v4M15.5 13.5v4M13.5 15.5h4" />
           </>
         ) : null}
         {icon === "clock" ? (
           <>
-            <circle cx="12" cy="12" r="8" />
-            <path d="M12 8v4.5l3 1.5" />
+            <circle cx="12" cy="12" r="8.5" />
+            <path d="M12 7.5V12l3 2" />
           </>
         ) : null}
-        {icon === "bars" ? <path d="M5 19v-5M10 19V9M15 19v-7M20 19V5" /> : null}
+        {icon === "bars" ? (
+          <g fill="currentColor" stroke="none">
+            <rect x="3" y="12" width="5" height="9" rx="1" />
+            <rect x="9.5" y="8" width="5" height="13" rx="1" />
+            <rect x="16" y="3" width="5" height="18" rx="1" />
+          </g>
+        ) : null}
         {icon === "gift" ? (
           <>
-            <rect x="4" y="10" width="16" height="10" rx="1.5" />
-            <path d="M3.5 7.5h17V10h-17zM12 7.5V20M12 7.5c-1.5-3.5-5-3.5-5-1.5s3 1.5 5 1.5c2 0 5 0 5-1.5s-3.5-2-5 1.5" />
+            <rect x="4" y="11" width="16" height="9.5" rx="1.5" />
+            <path d="M3 7.5h18V11H3zM12 7.5v13M12 7.5C10.5 4 7 3.8 7 5.8 7 7.5 10 7.5 12 7.5c2 0 5 0 5-1.7 0-2-3.5-1.8-5 1.7" />
           </>
         ) : null}
         {icon === "tag" ? (
           <>
-            <path d="M4 12.5V5a1 1 0 0 1 1-1h7.5l7.5 7.5-8.5 8.5L4 12.5Z" />
-            <circle cx="8.5" cy="8.5" r="1.2" />
+            <path d="M3.5 12.5V5a1.5 1.5 0 0 1 1.5-1.5h7.5l8 8-9 9-8-8Z" />
+            <circle cx="8.5" cy="8.5" r="1.4" />
           </>
         ) : null}
       </svg>
@@ -387,11 +395,17 @@ function InsightIconGlyph({ icon }: { icon: InsightIcon }) {
   );
 }
 
-function BiggestPrizeThumb({ insights }: { insights: WeeklyRadarInsights | null }) {
+function BiggestPrizeThumb({
+  insights,
+  className,
+}: {
+  insights: WeeklyRadarInsights | null;
+  className?: string;
+}) {
   const prize = insights?.biggestPrize;
   if (!prize) return null;
   const image = (
-    <span className="relative block h-11 w-14 shrink-0 overflow-hidden rounded-md bg-rr-elevated">
+    <span className="relative block h-10 w-14 shrink-0 overflow-hidden rounded-md bg-rr-elevated">
       <CompetitionImage
         src={prize.imageUrl}
         alt=""
@@ -402,12 +416,12 @@ function BiggestPrizeThumb({ insights }: { insights: WeeklyRadarInsights | null 
       />
     </span>
   );
-  if (!prize.slug) return <span className="shrink-0 lg:hidden xl:block">{image}</span>;
+  if (!prize.slug) return <span className={cn("shrink-0", className)}>{image}</span>;
   return (
     <Link
       href={`/competitions/${prize.slug}`}
       aria-label={prize.prize}
-      className="block shrink-0 no-underline transition-opacity hover:opacity-90 lg:hidden xl:block"
+      className={cn("block shrink-0 no-underline transition-opacity hover:opacity-90", className)}
     >
       {image}
     </Link>
@@ -482,7 +496,7 @@ function SectionHeading({
       {title ? (
         <h2
           className={cn(
-            "mt-1 pl-3 text-2xl font-extrabold leading-tight tracking-[-0.01em] text-rr-primary lg:pl-3.5 lg:text-[1.75rem]",
+            "mt-1 pl-3 text-2xl font-extrabold leading-tight tracking-[-0.01em] text-rr-primary lg:pl-3.5 lg:text-[1.4rem]",
             titleClassName,
           )}
         >
@@ -776,40 +790,48 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
 
         <section aria-label={copy.insightsTitle}>
           <SectionHeading eyebrow={copy.insightsEyebrow} title={copy.insightsTitle} />
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {INSIGHTS.map((item, index) => {
               const note = item.note?.(insights) ?? null;
+              const isPrize = item.key === "biggestPrize";
               return (
                 <div
                   key={item.key}
                   className={cn(
                     panelClass,
-                    "flex min-w-0 flex-col p-4",
-                    index === INSIGHTS.length - 1 && "sm:col-span-2 md:col-span-1",
+                    "flex min-w-0 items-center gap-3 bg-gradient-to-br from-rr-green-bg to-rr-surface p-3 lg:flex-col lg:items-stretch lg:gap-0 lg:bg-none lg:bg-rr-surface",
+                    index === INSIGHTS.length - 1 && "sm:col-span-2 lg:col-span-1",
                   )}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none lg:items-start lg:gap-2.5">
                     <InsightIconGlyph icon={item.icon} />
+                    <span aria-hidden="true" className="h-12 w-0.5 shrink-0 rounded-full bg-rr-border lg:hidden" />
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-sm font-semibold text-rr-primary">{item.title}</h3>
-                      <p className="mt-0.5 text-xs text-rr-secondary">{item.text(insights)}</p>
+                      <h3 className="text-[15px] font-bold leading-tight text-rr-primary">{item.title}</h3>
+                      <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-rr-secondary">
+                        {item.text(insights)}
+                      </p>
+                      <p className="mt-1 truncate text-lg font-extrabold leading-tight text-rr-green lg:hidden">
+                        {item.value(insights)}
+                      </p>
+                      {note ? (
+                        <p className="truncate text-[11px] text-rr-secondary lg:hidden">{note}</p>
+                      ) : null}
                     </div>
                   </div>
-                  <div className="mt-auto pt-3">
-                    <div className="flex items-center gap-2.5">
-                      {item.key === "biggestPrize" ? (
-                        <p className="min-w-0 flex-1 rounded-xl bg-rr-green-bg px-2 py-1.5 text-center text-[11px] font-semibold leading-tight tracking-tight text-rr-green">
-                          <span className="line-clamp-3 break-words">{item.value(insights)}</span>
-                        </p>
-                      ) : (
-                        <p className="min-w-0 flex-1 truncate rounded-full bg-rr-green-bg px-3 py-1.5 text-center text-sm font-semibold text-rr-green">
-                          {item.value(insights)}
-                        </p>
-                      )}
-                      {item.key === "biggestPrize" ? <BiggestPrizeThumb insights={insights} /> : null}
+                  {isPrize ? <BiggestPrizeThumb insights={insights} className="lg:hidden" /> : null}
+                  <div className="hidden lg:mt-auto lg:block lg:pt-2.5">
+                    <div className="flex items-center gap-2">
+                      <p
+                        className="min-w-0 flex-1 truncate rounded-full bg-rr-green px-3 py-1.5 text-center text-sm font-extrabold text-rr-on-accent"
+                        title={item.value(insights)}
+                      >
+                        {item.value(insights)}
+                      </p>
+                      {isPrize ? <BiggestPrizeThumb insights={insights} /> : null}
                     </div>
                     {note ? (
-                      <p className="mt-1.5 truncate text-center text-xs text-rr-secondary">{note}</p>
+                      <p className="mt-1 truncate text-center text-[11px] text-rr-secondary">{note}</p>
                     ) : null}
                   </div>
                 </div>
