@@ -107,6 +107,7 @@ type BigThreePanel = {
   title: string;
   text: string;
   badge: (item: WeeklyRadarListItem) => string;
+  badgeNote?: string;
   detail: (item: WeeklyRadarListItem) => string;
 };
 
@@ -115,15 +116,17 @@ const BIG_THREE: BigThreePanel[] = [
     key: "undersold",
     title: "Most undersold draws",
     text: "The five draws that closed with the most tickets unsold.",
-    badge: (item) => `${formatCount(item.ticketsUnsold)} unsold`,
-    detail: (item) => `${formatPercent(item.percentSold)} sold`,
+    badge: (item) => formatCount(item.ticketsUnsold),
+    badgeNote: "unsold",
+    detail: (item) =>
+      `${formatPercent(item.percentSold)} sold · ${formatCount(item.ticketsUnsold)} unsold`,
   },
   {
     key: "spend",
     title: "Highest ticket spend",
     text: "The five draws with the most money spent on tickets during the week, estimated.",
     badge: (item) => formatPounds(item.ticketSpend),
-    detail: (item) => `${formatCount(item.ticketsSold)} tickets`,
+    detail: (item) => `${formatCount(item.ticketsSold)} tickets sold`,
   },
   {
     key: "bestValue",
@@ -499,24 +502,26 @@ function BigThreeIcon({ panel }: { panel: BigThreeKey }) {
         className="h-5 w-5 lg:h-7 lg:w-7"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2.6"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        shapeRendering="geometricPrecision"
       >
-        {panel === "undersold" ? <path d="M6 6l12 12M18 9v9H9" /> : null}
+        {panel === "undersold" ? <path d="M6.5 6.5 17 17M17 9.5V17H9.5" strokeWidth="2.4" /> : null}
         {panel === "spend" ? (
           <>
-            <ellipse cx="9" cy="7" rx="5" ry="2.5" />
-            <path d="M4 7v3c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V7" />
-            <path d="M4 10v3c0 1.4 2.2 2.5 5 2.5" />
-            <ellipse cx="15" cy="14" rx="5" ry="2.5" />
-            <path d="M10 14v3c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-3" />
+            <ellipse cx="9" cy="6.5" rx="5" ry="2.2" />
+            <path d="M4 6.5v2.6c0 1.2 2.2 2.2 5 2.2s5-1 5-2.2V6.5" />
+            <path d="M4 9.1v2.6c0 1.2 2.2 2.2 5 2.2" />
+            <ellipse cx="15" cy="13.5" rx="5" ry="2.2" />
+            <path d="M10 13.5v2.6c0 1.2 2.2 2.2 5 2.2s5-1 5-2.2v-2.6" />
+            <path d="M10 16.1v2.6c0 1.2 2.2 2.2 5 2.2s5-1 5-2.2v-2.6" />
           </>
         ) : null}
         {panel === "bestValue" ? (
           <>
-            <path d="M6.5 4h11l3.5 5-9 11-9-11 3.5-5Z" />
-            <path d="M3 9h18M9.5 4 8 9l4 11 4-11-1.5-5" />
+            <path d="M7 4.5h10l3.5 4.5L12 19.5 3.5 9 7 4.5Z" />
+            <path d="M3.5 9h17M9.8 4.5 8.3 9 12 19.5 15.7 9l-1.5-4.5" />
           </>
         ) : null}
       </svg>
@@ -540,22 +545,22 @@ function BigThreeRow({
   const href = item.slug ? `/competitions/${item.slug}` : null;
   const body = (
     <>
-      <span className="w-5 shrink-0 text-sm font-semibold text-rr-secondary">{rank}.</span>
+      <span className="w-4 shrink-0 text-sm font-bold text-rr-primary">{rank}.</span>
       <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-md bg-rr-elevated">
         <CompetitionImage
           src={item.imageUrl}
           alt=""
           fill
-          sizes="56px"
+          sizes="72px"
           className="object-cover"
           unoptimized
         />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="line-clamp-2 text-sm font-semibold leading-tight text-rr-primary">
+        <span className="line-clamp-2 text-[13px] font-semibold leading-[1.2] text-rr-primary">
           {item.prize}
         </span>
-        <span className="mt-0.5 block truncate text-xs text-rr-secondary">
+        <span className="mt-0.5 block truncate text-[11px] leading-tight text-rr-secondary xl:text-xs">
           {panel.key !== "undersold" && item.closed === false ? (
             <>
               <span className="font-semibold text-rr-green">Live</span>
@@ -565,20 +570,25 @@ function BigThreeRow({
           {panel.detail(item)}
         </span>
       </span>
-      <span className="shrink-0 whitespace-nowrap rounded-md border border-rr-green-border px-1.5 py-1 text-[11px] font-semibold text-rr-green sm:px-2 sm:text-xs">
-        {panel.badge(item)}
+      <span className="flex min-w-[3.75rem] shrink-0 flex-col items-center justify-center rounded-lg border border-rr-green px-1.5 py-1 text-center">
+        <span className="whitespace-nowrap text-xs font-bold leading-tight text-rr-primary">
+          {panel.badge(item)}
+        </span>
+        {panel.badgeNote ? (
+          <span className="text-[10px] leading-tight text-rr-secondary">{panel.badgeNote}</span>
+        ) : null}
       </span>
     </>
   );
-  const rowClass = "flex min-w-0 items-center gap-2.5 rounded-lg px-1 py-1 no-underline sm:gap-3";
+  const rowClass = "flex min-w-0 items-center gap-2 px-0.5 py-1.5 no-underline";
 
   if (!href) {
-    return <li className={cn(rowClass, "min-w-0")}>{body}</li>;
+    return <li className="min-w-0"><div className={rowClass}>{body}</div></li>;
   }
 
   return (
     <li className="min-w-0">
-      <Link href={href} className={cn(rowClass, "transition-colors hover:bg-rr-elevated")}>
+      <Link href={href} className={cn(rowClass, "rounded-lg transition-colors hover:bg-rr-elevated")}>
         {body}
       </Link>
     </li>
@@ -587,11 +597,11 @@ function BigThreeRow({
 
 function BigThreePlaceholderRow({ rank }: { rank: number }) {
   return (
-    <li className="flex items-center gap-3 px-1 py-1">
-      <span className="w-5 text-sm font-semibold text-rr-secondary">{rank}.</span>
+    <li className="flex items-center gap-2.5 px-1 py-2">
+      <span className="w-5 text-base font-bold text-rr-secondary">{rank}.</span>
       <span className="h-10 w-14 shrink-0 rounded-md bg-rr-elevated" />
       <span className="h-3 flex-1 rounded bg-rr-elevated" />
-      <span className="rounded-md border border-rr-green-border px-2 py-1 text-xs text-rr-muted">
+      <span className="min-w-[4.25rem] rounded-lg border border-rr-green-border px-2 py-1 text-center text-xs text-rr-muted">
         {placeholderValue}
       </span>
     </li>
@@ -642,7 +652,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
               <span aria-hidden="true" className="hidden w-0.5 shrink-0 self-stretch rounded-full bg-rr-green lg:block" />
               <p className="text-sm leading-6 text-rr-secondary lg:min-w-0 lg:flex-1 lg:text-[13px] lg:leading-[1.65] xl:text-[13.5px]">
                 {introLines.map((line, index) => (
-                  <span key={index} className="xl:block xl:whitespace-nowrap">
+                  <span key={index} className={introLines.length > 1 ? "xl:block xl:whitespace-nowrap" : undefined}>
                     {index > 0 ? " " : null}
                     {line}
                   </span>
@@ -749,7 +759,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                       </p>
                     </div>
                   </div>
-                  <ol className="mt-3 space-y-1.5">
+                  <ol className="mt-2 divide-y divide-rr-border">
                     {items.length > 0
                       ? items.map((item, index) => (
                           <BigThreeRow key={item.id} rank={index + 1} item={item} panel={panel} />
