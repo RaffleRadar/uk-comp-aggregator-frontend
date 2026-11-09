@@ -702,14 +702,10 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const schedulePeak = peakDay(schedule);
 
   return (
-    <main className="-mb-6 pb-3 pt-4 md:-mb-14 md:pb-4 md:pt-5">
+    <main className="-mb-6 bg-rr-bg bg-gradient-to-b from-rr-surface to-rr-bg bg-[length:100%_22rem] bg-no-repeat pb-3 pt-8 md:-mb-14 md:bg-[length:100%_26rem] md:pb-4 md:pt-14">
       <div className="container space-y-3 lg:space-y-3.5">
-        <header className="relative">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-4 -top-6 hidden h-[calc(100%+3rem)] w-1/2 bg-[radial-gradient(circle,var(--accent-border)_1.2px,transparent_1.6px)] bg-[length:14px_14px] [mask-image:linear-gradient(to_left,black_35%,transparent)] lg:block"
-          />
-          <div className="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-5 lg:gap-y-3">
+        <header>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-5 lg:gap-y-3">
             <div className="grid gap-3 lg:col-start-1 lg:row-start-1 lg:flex lg:items-center lg:gap-4">
               <div className="lg:shrink-0">
                 <p className={cn(eyebrowClass, "flex items-center gap-2 text-[11px] lg:text-sm lg:tracking-[0.02em]")}>
