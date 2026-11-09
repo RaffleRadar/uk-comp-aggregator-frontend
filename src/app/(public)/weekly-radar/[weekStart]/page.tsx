@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { WeeklyRadarView } from "@/components/weekly-radar/weekly-radar-view";
 import { formatWeekRange, getWeeklyRadarByWeek } from "@/lib/weekly-radar";
 
@@ -24,5 +24,6 @@ export default async function WeeklyRadarWeekPage({ params }: PageProps) {
   const { weekStart } = await params;
   const issue = await getWeeklyRadarByWeek(weekStart);
   if (!issue) notFound();
+  if (issue.nextWeekStart === null) redirect("/weekly-radar");
   return <WeeklyRadarView issue={issue} mode="archive" />;
 }
