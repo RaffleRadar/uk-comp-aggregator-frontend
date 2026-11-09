@@ -35,7 +35,9 @@ const COPY = {
   latest: {
     intro:
       "What sold out, what everyone was entering, and what barely got going. A quick look at the prize competition market, without the number crunching.",
+    weekNote: "Last week · Monday to Sunday",
     bigThree: "The Big Three",
+    bigThreeTitle: "Standout draws from last week.",
     insightsEyebrow: "Also on the Radar",
     insightsTitle: "Five key insights from last week.",
     scheduleEyebrow: "Looking ahead",
@@ -47,7 +49,9 @@ const COPY = {
   archive: {
     intro:
       "Browse historical weeks to see what sold, what spent, and what moved the market. A quick look at the UK prize competition market for the selected week.",
-    bigThree: "The standout draws from the selected week.",
+    weekNote: "Selected week · Monday to Sunday",
+    bigThree: "The Big Three",
+    bigThreeTitle: "Standout draws from the selected week.",
     insightsEyebrow: "Insights",
     insightsTitle: "Five key insights for the selected week.",
     scheduleEyebrow: "Week breakdown",
@@ -64,6 +68,7 @@ type HeadlineTile = {
   label: string;
   unit: string;
   icon: HeadlineIcon;
+  accent?: boolean;
   value: (headline: WeeklyRadarHeadline | null) => string;
 };
 
@@ -84,6 +89,7 @@ const HEADLINES: HeadlineTile[] = [
     label: "Average sold at close",
     unit: "of tickets",
     icon: "bars",
+    accent: true,
     value: (headline) => formatPercent(headline?.averageSoldAtClose),
   },
   {
@@ -107,21 +113,21 @@ type BigThreePanel = {
 const BIG_THREE: BigThreePanel[] = [
   {
     key: "undersold",
-    title: "1. Most undersold draws",
+    title: "Most undersold draws",
     text: "The five draws that closed with the most tickets unsold.",
     badge: (item) => `${formatCount(item.ticketsUnsold)} unsold`,
     detail: (item) => `${formatPercent(item.percentSold)} sold`,
   },
   {
     key: "spend",
-    title: "2. Highest ticket spend",
+    title: "Highest ticket spend",
     text: "The five draws with the most money spent on tickets during the week, estimated.",
     badge: (item) => formatPounds(item.ticketSpend),
     detail: (item) => `${formatCount(item.ticketsSold)} tickets`,
   },
   {
     key: "bestValue",
-    title: "3. Best value draws",
+    title: "Best value draws",
     text: "The five draws with the best value ratio at the end of the week, as shown on the site.",
     badge: (item) => formatRatio(item.valueRatio),
     detail: (item) => `${formatPounds(item.prizeValue)} prize`,
@@ -233,6 +239,29 @@ function peakDay(counts: WeeklyRadarDayCounts | null): number | null {
 
 const panelClass = "rounded-2xl border border-rr-border bg-rr-surface";
 const eyebrowClass = "text-xs font-semibold uppercase tracking-[0.14em] text-rr-green";
+const RADAR_THEME = cn(
+  "dark:bg-rr-bg",
+  "dark:[--bg:#02080a] dark:[--surface:#060c0e] dark:[--elevated:#0d1416] dark:[--border:#3b4247]",
+  "dark:[--text-secondary:#c3c8cd] dark:[--text-muted:#8a9198]",
+  "dark:[--accent:#6ff05e] dark:[--accent-bg:#0c2a10] dark:[--accent-border:#2d7a2a] dark:[--accent-foreground:#02080a]",
+);
+
+const shortDayFormat = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
+const shortYearFormat = new Intl.DateTimeFormat("en-GB", {
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function formatShortWeekRange(weekStart: string, weekEnd: string): string {
+  const start = new Date(`${weekStart}T00:00:00.000Z`);
+  const end = new Date(`${weekEnd}T00:00:00.000Z`);
+  return `${shortDayFormat.format(start)} – ${shortDayFormat.format(end)} ${shortYearFormat.format(end)}`;
+}
 const placeholderValue = "–";
 
 function ChevronIcon({ direction }: { direction: "left" | "right" }) {
@@ -240,10 +269,10 @@ function ChevronIcon({ direction }: { direction: "left" | "right" }) {
     <svg
       aria-hidden="true"
       viewBox="0 0 20 20"
-      className="h-4 w-4"
+      className="h-4 w-4 shrink-0 text-rr-green xl:h-5 xl:w-5"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="2.6"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -252,56 +281,63 @@ function ChevronIcon({ direction }: { direction: "left" | "right" }) {
   );
 }
 
-function CalendarIcon() {
+function CalendarIcon({ className }: { className?: string }) {
   return (
     <svg
       aria-hidden="true"
-      viewBox="0 0 20 20"
-      className="h-4 w-4 text-rr-green"
+      viewBox="0 0 24 24"
+      className={cn("h-4 w-4 shrink-0 text-rr-green", className)}
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="2.2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <rect x="3" y="4.5" width="14" height="12.5" rx="2" />
-      <path d="M3 8.5h14M7 2.5v4M13 2.5v4" />
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+      <path d="M3.5 9.5h17M8 3v4M16 3v4" />
+      <path d="M8 13h.01M12 13h.01M16 13h.01M8 16.5h.01M12 16.5h.01" strokeWidth="2.6" />
+      <path d="M15 16.5h3M16.5 15v3" strokeWidth="1.8" />
     </svg>
   );
 }
 
 function HeadlineIconGlyph({ icon }: { icon: HeadlineIcon }) {
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-rr-green-border text-rr-green">
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        className="h-5 w-5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {icon === "target" ? (
-          <>
-            <circle cx="12" cy="12" r="8" />
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 12l6-6M15 6h3v3" />
-          </>
-        ) : null}
-        {icon === "trophy" ? (
-          <>
-            <path d="M8 4h8v5a4 4 0 0 1-8 0V4Z" />
-            <path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8M10 17h4" />
-          </>
-        ) : null}
-        {icon === "bars" ? <path d="M5 19v-5M10 19V9M15 19v-7M20 19V5" /> : null}
-        {icon === "star" ? (
-          <path d="m12 4 2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6L12 4Z" />
-        ) : null}
-      </svg>
-    </span>
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-8 w-8 shrink-0 text-rr-green sm:h-9 sm:w-9 xl:h-10 xl:w-10"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {icon === "target" ? (
+        <>
+          <path d="M19.5 10.3A8 8 0 1 1 13.7 4.5" />
+          <path d="M15.6 11.2a3.8 3.8 0 1 1-2.8-2.8" />
+          <path d="M12 12l7.5-7.5" />
+          <path d="M16.5 3.5v4h4" />
+        </>
+      ) : null}
+      {icon === "trophy" ? (
+        <>
+          <path d="M7.5 3.5h9v5.5a4.5 4.5 0 0 1-9 0V3.5Z" />
+          <path d="M7.5 5.5H4.5v1a3.5 3.5 0 0 0 3.2 3.5M16.5 5.5h3v1a3.5 3.5 0 0 1-3.2 3.5M12 13.5v4M8 20.5h8M9.5 17.5h5" />
+        </>
+      ) : null}
+      {icon === "bars" ? (
+        <g fill="currentColor" stroke="none">
+          <rect x="3" y="12" width="5" height="9" rx="1" />
+          <rect x="9.5" y="8" width="5" height="13" rx="1" />
+          <rect x="16" y="3" width="5" height="18" rx="1" />
+        </g>
+      ) : null}
+      {icon === "star" ? (
+        <path d="m12 3 2.75 5.6 6.15.9-4.45 4.33 1.05 6.12L12 17.06l-5.5 2.89 1.05-6.12L3.1 9.5l6.15-.9L12 3Z" />
+      ) : null}
+    </svg>
   );
 }
 
@@ -387,19 +423,22 @@ function WeekNavButton({
   const content = (
     <>
       {direction === "left" ? <ChevronIcon direction="left" /> : null}
-      <span className="hidden sm:inline">{children}</span>
+      <span>{children}</span>
       {direction === "right" ? <ChevronIcon direction="right" /> : null}
     </>
   );
-  const base =
-    "inline-flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-2 text-sm font-medium no-underline transition-colors sm:px-4 sm:py-1.5";
+  const base = cn(
+    "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-2 py-2.5 text-[13px] font-semibold no-underline transition-colors",
+    "lg:gap-2 lg:rounded-full lg:px-4 lg:py-1.5 lg:text-sm lg:font-bold xl:gap-2.5 xl:px-9 xl:text-base",
+    direction === "left" ? "lg:order-1 lg:justify-self-end" : "lg:order-5 lg:justify-self-start",
+  );
 
   if (!href) {
     return (
       <span
         aria-disabled="true"
         aria-label={typeof children === "string" ? children : undefined}
-        className={cn(base, "cursor-not-allowed border-rr-border text-rr-muted opacity-60")}
+        className={cn(base, "cursor-not-allowed border-rr-border text-rr-muted opacity-50")}
       >
         {content}
       </span>
@@ -410,19 +449,78 @@ function WeekNavButton({
     <Link
       href={href}
       aria-label={typeof children === "string" ? children : undefined}
-      className={cn(base, "border-rr-green-border text-rr-primary hover:bg-rr-green-bg")}
+      className={cn(base, "border-rr-green-border text-rr-primary hover:bg-rr-green-bg lg:border-rr-green")}
     >
       {content}
     </Link>
   );
 }
 
-function SectionHeading({ eyebrow, title }: { eyebrow: string; title?: string }) {
+function SectionHeading({
+  eyebrow,
+  title,
+  titleClassName,
+}: {
+  eyebrow: string;
+  title?: string;
+  titleClassName?: string;
+}) {
   return (
-    <div className="mb-3">
-      <p className={eyebrowClass}>{eyebrow}</p>
-      {title ? <h2 className="mt-1 text-lg font-semibold text-rr-primary">{title}</h2> : null}
+    <div className="mb-3 lg:mb-4">
+      <p
+        className={cn(
+          eyebrowClass,
+          "flex items-center gap-2 font-bold tracking-[0.08em] lg:text-base lg:tracking-[0.02em]",
+        )}
+      >
+        <span aria-hidden="true" className="h-4 w-1 shrink-0 rounded-full bg-rr-green lg:h-6 lg:w-1.5" />
+        <span>{eyebrow}</span>
+      </p>
+      {title ? (
+        <h2
+          className={cn(
+            "mt-1 pl-3 text-2xl font-extrabold leading-tight tracking-[-0.01em] text-rr-primary lg:pl-3.5 lg:text-[1.75rem]",
+            titleClassName,
+          )}
+        >
+          {title}
+        </h2>
+      ) : null}
     </div>
+  );
+}
+
+function BigThreeIcon({ panel }: { panel: BigThreeKey }) {
+  return (
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rr-green-bg text-rr-green lg:h-12 lg:w-12 lg:bg-rr-green lg:text-rr-on-accent">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-5 w-5 lg:h-7 lg:w-7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {panel === "undersold" ? <path d="M6 6l12 12M18 9v9H9" /> : null}
+        {panel === "spend" ? (
+          <>
+            <ellipse cx="9" cy="7" rx="5" ry="2.5" />
+            <path d="M4 7v3c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V7" />
+            <path d="M4 10v3c0 1.4 2.2 2.5 5 2.5" />
+            <ellipse cx="15" cy="14" rx="5" ry="2.5" />
+            <path d="M10 14v3c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-3" />
+          </>
+        ) : null}
+        {panel === "bestValue" ? (
+          <>
+            <path d="M6.5 4h11l3.5 5-9 11-9-11 3.5-5Z" />
+            <path d="M3 9h18M9.5 4 8 9l4 11 4-11-1.5-5" />
+          </>
+        ) : null}
+      </svg>
+    </span>
   );
 }
 
@@ -503,6 +601,10 @@ function BigThreePlaceholderRow({ rank }: { rank: number }) {
 export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const copy = COPY[mode];
   const weekLabel = issue ? formatWeekRange(issue.weekStart, issue.weekEnd) : "No issue yet";
+  const shortWeekLabel = issue
+    ? formatShortWeekRange(issue.weekStart, issue.weekEnd)
+    : "No issue yet";
+  const introLines = mode === "latest" ? copy.intro.split(/(?<=\.)\s+/) : [copy.intro];
   const headline = readHeadline(issue?.payload);
   const bigThree = readBigThree(issue?.payload);
   const insights = readInsights(issue?.payload);
@@ -511,80 +613,142 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const scheduleLabel = schedule ? formatWeekRange(schedule.weekStart, schedule.weekEnd) : null;
 
   return (
-    <main className="py-6 md:py-10">
-      <div className="container space-y-6 md:space-y-8">
-        <header className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-center">
-          <div>
-            <p className={eyebrowClass}>
-              UK Competition Market –{" "}
-              <span className="whitespace-nowrap">Weekly Round-up</span>
-            </p>
-            <h1 className="mt-2 text-4xl font-bold tracking-[-0.02em] text-rr-primary md:text-5xl">
-              The Weekly <span className="text-rr-green">Radar.</span>
-            </h1>
-          </div>
-          <p className="text-sm leading-6 text-rr-secondary">{copy.intro}</p>
-          <div className="justify-self-start rounded-xl border-2 border-rr-green bg-rr-surface px-4 py-2 text-center md:-rotate-3 md:justify-self-end">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-primary">
-              Your weekly fix
-            </p>
-            <p className="text-3xl font-bold leading-tight text-rr-green">5 min</p>
-            <p className="text-xs text-rr-secondary">All the numbers worth knowing</p>
+    <main className={cn("py-6 md:py-10", RADAR_THEME)}>
+      <div className="container space-y-5 md:space-y-8">
+        <header className="relative">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-4 -top-6 hidden h-[calc(100%+3rem)] w-1/2 bg-[radial-gradient(circle,var(--accent-border)_1.2px,transparent_1.6px)] bg-[length:14px_14px] [mask-image:linear-gradient(to_left,black_35%,transparent)] lg:block"
+          />
+          <div className="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-5 lg:gap-y-5">
+            <div className="grid gap-3 lg:col-start-1 lg:row-start-1 lg:flex lg:items-center lg:gap-4">
+              <div className="lg:shrink-0">
+                <p
+                  className={cn(
+                    eyebrowClass,
+                    "flex items-center gap-2 text-[11px] font-bold tracking-[0.08em] lg:text-sm lg:tracking-[0.02em]",
+                  )}
+                >
+                  <span aria-hidden="true" className="h-4 w-1 shrink-0 rounded-full bg-rr-green lg:h-6 lg:w-1.5" />
+                  <span>
+                    UK Competition Market –{" "}
+                    <span className="whitespace-nowrap">Weekly Round-up</span>
+                  </span>
+                </p>
+                <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-[-0.02em] text-rr-primary md:text-5xl lg:mt-1 lg:text-[2.4rem] xl:text-[2.6rem]">
+                  The Weekly <span className="text-rr-green">Radar.</span>
+                </h1>
+              </div>
+              <span aria-hidden="true" className="hidden w-0.5 shrink-0 self-stretch rounded-full bg-rr-green lg:block" />
+              <p className="text-sm leading-6 text-rr-secondary lg:min-w-0 lg:flex-1 lg:text-[13px] lg:leading-[1.65] xl:text-[13.5px]">
+                {introLines.map((line, index) => (
+                  <span key={index} className="xl:block xl:whitespace-nowrap">
+                    {index > 0 ? " " : null}
+                    {line}
+                  </span>
+                ))}
+              </p>
+              <div className="flex items-center justify-between gap-3 lg:hidden">
+                <p className="inline-flex items-center gap-2 text-xs text-rr-secondary">
+                  <CalendarIcon />
+                  <span>New round-up every Monday</span>
+                </p>
+                <span className="shrink-0 rounded-full border border-rr-green-border bg-rr-green-bg px-3 py-1 text-xs font-semibold text-rr-primary">
+                  5 min read
+                </span>
+              </div>
+            </div>
+
+            <div className="hidden rotate-[4deg] rounded-2xl border-[3px] border-rr-green bg-gradient-to-br from-rr-green-bg to-rr-bg px-4 py-2.5 text-center shadow-[0_0_28px_-6px_var(--accent)] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:block">
+              <p className="text-xs font-extrabold uppercase tracking-[0.06em] text-rr-primary xl:text-sm">
+                Your weekly fix
+              </p>
+              <p className="text-4xl font-black leading-none tracking-[-0.02em] text-rr-primary xl:text-5xl">
+                5 min
+              </p>
+              <p className="mt-1 text-[11px] font-semibold text-rr-primary xl:text-xs">
+                All the numbers worth knowing
+              </p>
+            </div>
+
+            <nav
+              aria-label="Weekly Radar weeks"
+              className="rounded-2xl border border-rr-green-border bg-rr-surface p-3 lg:col-start-1 lg:row-start-2 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] lg:items-center lg:gap-x-4 lg:rounded-full lg:border-2 lg:border-rr-green lg:bg-rr-bg lg:px-3 lg:py-2 xl:gap-x-8"
+            >
+              <div className="text-center lg:order-3 lg:min-w-0">
+                <p className="inline-flex items-center gap-2 text-base font-semibold text-rr-primary lg:gap-2 lg:whitespace-nowrap lg:text-base lg:font-bold xl:gap-2.5 xl:text-xl">
+                  <CalendarIcon className="lg:h-5 lg:w-5 xl:h-6 xl:w-6" />
+                  <span className="lg:hidden">{shortWeekLabel}</span>
+                  <span className="hidden lg:inline">{weekLabel}</span>
+                </p>
+                <p className="mt-0.5 text-xs text-rr-secondary lg:hidden">{copy.weekNote}</p>
+              </div>
+              <span aria-hidden="true" className="hidden h-8 w-0.5 rounded-full bg-rr-green lg:order-2 lg:block" />
+              <span aria-hidden="true" className="hidden h-8 w-0.5 rounded-full bg-rr-green lg:order-4 lg:block" />
+              <div className="mt-3 grid grid-cols-2 gap-2 lg:contents">
+                <WeekNavButton href={weekHref(issue?.previousWeekStart ?? null)} direction="left">
+                  Previous Week
+                </WeekNavButton>
+                <WeekNavButton href={weekHref(issue?.nextWeekStart ?? null)} direction="right">
+                  Next Week
+                </WeekNavButton>
+              </div>
+            </nav>
           </div>
         </header>
 
-        <nav
-          aria-label="Weekly Radar weeks"
-          className="flex items-center justify-between gap-2 rounded-full border border-rr-green-border bg-rr-surface px-2 py-2"
-        >
-          <WeekNavButton href={weekHref(issue?.previousWeekStart ?? null)} direction="left">
-            Previous Week
-          </WeekNavButton>
-          <p className="inline-flex min-w-0 items-center gap-2 text-center text-sm font-semibold text-rr-primary">
-            <CalendarIcon />
-            <span>{weekLabel}</span>
-          </p>
-          <WeekNavButton href={weekHref(issue?.nextWeekStart ?? null)} direction="right">
-            Next Week
-          </WeekNavButton>
-        </nav>
-
-        <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
           {HEADLINES.map((item) => (
             <div
               key={item.label}
-              className={cn(
-                panelClass,
-                "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 px-3 py-3 sm:px-4",
-              )}
+              className={cn(panelClass, "flex min-w-0 items-center gap-3 px-3 py-3 sm:px-4 xl:py-3.5")}
             >
-              <p className="col-span-2 text-[11px] font-semibold uppercase leading-tight tracking-[0.08em] text-rr-secondary sm:col-span-1 sm:col-start-2 sm:row-start-1">
-                {item.label}
-              </p>
-              <div className="sm:row-span-2 sm:row-start-1">
-                <HeadlineIconGlyph icon={item.icon} />
-              </div>
-              <div className="min-w-0 sm:col-start-2">
-                <p className="text-2xl font-bold leading-none text-rr-primary sm:text-3xl">
-                  {item.value(headline)}
+              <HeadlineIconGlyph icon={item.icon} />
+              <span aria-hidden="true" className="hidden h-12 w-0.5 shrink-0 rounded-full bg-rr-border sm:block" />
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase leading-tight tracking-[0.04em] text-rr-primary lg:text-xs xl:whitespace-nowrap">
+                  {item.label}
                 </p>
-                <p className="mt-1 text-xs text-rr-secondary">{item.unit}</p>
+                <p className="mt-1 flex flex-col xl:flex-row xl:items-baseline xl:gap-2">
+                  <span
+                    className={cn(
+                      "text-2xl font-extrabold leading-none sm:text-3xl xl:text-[2.1rem]",
+                      item.accent ? "text-rr-green" : "text-rr-primary",
+                    )}
+                  >
+                    {item.value(headline)}
+                  </span>
+                  <span className="mt-1 whitespace-nowrap text-xs text-rr-secondary xl:mt-0 xl:text-[15px] xl:text-rr-primary">
+                    {item.unit}
+                  </span>
+                </p>
               </div>
             </div>
           ))}
         </section>
 
         <section aria-label={copy.bigThree}>
-          <SectionHeading eyebrow={copy.bigThree} />
-          <div className="grid min-w-0 gap-3 lg:grid-cols-3">
-            {BIG_THREE.map((panel) => {
+          <SectionHeading eyebrow={copy.bigThree} title={copy.bigThreeTitle} titleClassName="lg:hidden" />
+          <div className="grid min-w-0 gap-3 lg:grid-cols-3 lg:gap-4">
+            {BIG_THREE.map((panel, panelIndex) => {
               const items = bigThree?.[panel.key] ?? [];
               return (
                 <div key={panel.key} className={cn(panelClass, "min-w-0 p-4")}>
-                  <h3 className="text-sm font-semibold uppercase tracking-[0.06em] text-rr-primary">
-                    {panel.title}
-                  </h3>
-                  <p className="mt-1 text-xs text-rr-secondary">{panel.text}</p>
+                  <div className="flex items-start gap-3 border-b border-rr-border pb-3 lg:items-center lg:border-0 lg:pb-0">
+                    <BigThreeIcon panel={panel.key} />
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-rr-green lg:hidden">
+                        0{panelIndex + 1} / The Big Three
+                      </p>
+                      <h3 className="text-sm font-extrabold uppercase leading-tight tracking-[0.02em] text-rr-primary lg:text-base xl:text-lg">
+                        <span className="hidden lg:inline">{panelIndex + 1}. </span>
+                        {panel.title}
+                      </h3>
+                      <p className="mt-0.5 text-xs leading-snug text-rr-secondary lg:text-[13px] lg:text-rr-primary">
+                        {panel.text}
+                      </p>
+                    </div>
+                  </div>
                   <ol className="mt-3 space-y-1.5">
                     {items.length > 0
                       ? items.map((item, index) => (
