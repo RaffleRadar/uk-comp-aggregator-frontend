@@ -8,6 +8,7 @@ import {
 import { CompetitionSection } from "@/components/home/competition-section";
 import { Hero, type HeroStats } from "@/components/home/hero";
 import { QuickActions } from "@/components/home/quick-actions";
+import { WeeklyRadarBanner } from "@/components/home/weekly-radar-banner";
 import { FilterBar } from "@/components/layout/filter-bar";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/structured-data";
 import {
@@ -258,6 +259,7 @@ export default async function Page({
       <QuickActions
         title={siteContent?.quickActionsTitle?.trim() || "What are you looking for?"}
       />
+      <WeeklyRadarBanner />
       <CompetitionSection
         titleStart={siteContent?.section1TitleStart?.trim() || "Top"}
         titleAccent={siteContent?.section1TitleAccent?.trim() || "Opportunities"}

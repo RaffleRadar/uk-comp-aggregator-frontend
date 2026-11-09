@@ -19,10 +19,12 @@ export function isWeekStartParam(value: string): boolean {
   return !Number.isNaN(date.getTime()) && date.getUTCDay() === 1;
 }
 
+const WEEKLY_RADAR_TTL = 3600;
+
 export async function getLatestWeeklyRadar(): Promise<WeeklyRadarIssue | null> {
   try {
     return await apiFetch<WeeklyRadarIssue>("/weekly-radar/latest", {
-      revalidate: false,
+      revalidate: WEEKLY_RADAR_TTL,
     });
   } catch {
     return null;
@@ -35,7 +37,7 @@ export async function getWeeklyRadarByWeek(
   if (!isWeekStartParam(weekStart)) return null;
   try {
     return await apiFetch<WeeklyRadarIssue>(`/weekly-radar/${weekStart}`, {
-      revalidate: false,
+      revalidate: WEEKLY_RADAR_TTL,
     });
   } catch {
     return null;

@@ -12,6 +12,7 @@ import {
   IconMail,
   IconMenu2,
   IconMoon,
+  IconRadar,
   IconSettings,
   IconStar,
   IconSun,
@@ -61,6 +62,7 @@ export function Navbar() {
   const isOperatorsActive = pathname === "/operators" || pathname.startsWith("/operators/");
   const isReviewsActive = pathname === "/reviews" || pathname.startsWith("/reviews/");
   const isBlogActive = pathname === "/blog" || pathname.startsWith("/blog/");
+  const isWeeklyRadarActive = pathname === "/weekly-radar" || pathname.startsWith("/weekly-radar/");
   const isContactActive = pathname === "/contact";
   const isSearchPage = pathname === "/search";
 
@@ -192,6 +194,7 @@ export function Navbar() {
             <Link href="/operators" aria-current={isOperatorsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isOperatorsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Operators</Link>
             <Link href="/reviews" aria-current={isReviewsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isReviewsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Reviews</Link>
             <Link href="/blog" aria-current={isBlogActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isBlogActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Blog</Link>
+            <Link href="/weekly-radar" aria-current={isWeeklyRadarActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isWeeklyRadarActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Weekly Radar</Link>
             <Link href="/how-it-works" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline whitespace-nowrap">How It Works</Link>
             <Link href="/get-listed" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline whitespace-nowrap">Get Listed</Link>
             <Link href="/contact" aria-current={isContactActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isContactActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Contact</Link>
@@ -315,6 +318,15 @@ export function Navbar() {
             >
               <IconFileText size={20} className={cn("shrink-0", isBlogActive ? "text-rr-on-accent" : "text-rr-green")} />
               Blog
+            </Link>
+            <Link
+              href="/weekly-radar"
+              aria-current={isWeeklyRadarActive ? "page" : undefined}
+              className={cn(mobileItemBase, isWeeklyRadarActive ? mobileItemActive : mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconRadar size={20} className={cn("shrink-0", isWeeklyRadarActive ? "text-rr-on-accent" : "text-rr-green")} />
+              Weekly Radar
             </Link>
             <Link
               href="/how-it-works"
