@@ -202,7 +202,7 @@ const INSIGHTS: InsightTile[] = [
     key: "biggestPrize",
     title: "Biggest Prize",
     icon: "gift",
-    text: () => "The highest published prize value from a completed draw.",
+    text: () => "Highest prize value from a closed draw.",
     value: (insights) => insights?.biggestPrize?.prize ?? placeholderValue,
     note: (insights) => insights?.biggestPrize?.operatorName ?? null,
   },
@@ -422,7 +422,8 @@ function BiggestPrizeThumb({
   return (
     <Link
       href={`/competitions/${prize.slug}`}
-      aria-label={prize.prize}
+      aria-label={`${prize.prize}, ${prize.operatorName}`}
+      title={`${prize.prize} · ${prize.operatorName}`}
       className={cn("block shrink-0 no-underline transition-opacity hover:opacity-90", className)}
     >
       {image}
@@ -888,7 +889,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                       </p>
                       {isPrize ? <BiggestPrizeThumb insights={insights} /> : null}
                     </div>
-                    {note ? (
+                    {note && !isPrize ? (
                       <p className="mt-0.5 truncate text-center text-[11px] text-rr-secondary">{note}</p>
                     ) : null}
                   </div>
