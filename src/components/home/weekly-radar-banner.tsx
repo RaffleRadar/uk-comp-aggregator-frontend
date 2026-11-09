@@ -6,24 +6,22 @@ export function WeeklyRadarBanner() {
     <section className="container pb-2 lg:pb-4">
       <Link
         href="/weekly-radar"
-        className="group flex items-center gap-3 rounded-xl border border-rr-green bg-rr-surface px-3 py-2.5 no-underline shadow-[0_0_20px_-10px_var(--accent)] transition hover:bg-rr-elevated hover:shadow-[0_0_24px_-6px_var(--accent)] sm:px-4"
+        className="group flex items-center gap-3 rounded-2xl border border-rr-green bg-rr-surface px-3 py-2.5 no-underline shadow-[0_0_20px_-10px_var(--accent)] transition hover:bg-rr-elevated hover:shadow-[0_0_24px_-6px_var(--accent)] sm:gap-4 sm:px-5 sm:py-3"
       >
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rr-green text-rr-on-accent">
-          <IconChartBar className="h-6 w-6" />
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-3">
-          <span className="flex items-center gap-2">
-            <span className="rounded-full bg-rr-green px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-rr-on-accent">
+        <IconChartBar className="h-7 w-7 shrink-0 text-rr-green sm:h-8 sm:w-8" stroke={2.4} />
+        <span className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-center sm:gap-4">
+          <span className="flex items-center gap-2.5">
+            <span className="rounded-full border border-rr-green bg-rr-green-bg px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-rr-green">
               New
             </span>
-            <span className="text-base font-bold text-rr-primary">Weekly Radar</span>
+            <span className="text-base font-bold text-rr-primary sm:text-lg">Weekly Radar</span>
           </span>
-          <span aria-hidden="true" className="hidden h-6 w-px bg-rr-border sm:block" />
-          <span className="text-sm text-rr-secondary">
+          <span aria-hidden="true" className="hidden h-7 w-0.5 rounded-full bg-rr-green sm:block" />
+          <span className="text-sm text-rr-secondary sm:text-[15px] sm:text-rr-primary">
             Last week&apos;s competition trends &amp; stats
           </span>
         </span>
-        <IconChevronRight className="h-5 w-5 shrink-0 text-rr-green transition-transform group-hover:translate-x-0.5" />
+        <IconChevronRight className="h-5 w-5 shrink-0 text-rr-primary transition-transform group-hover:translate-x-0.5" stroke={2.4} />
       </Link>
     </section>
   );
