@@ -210,7 +210,7 @@ const INSIGHTS: InsightTile[] = [
     key: "averageTicketPrice",
     title: "Typical Ticket Price",
     icon: "tag",
-    text: () => "Across draws that closed this week, free draws excluded.",
+    text: () => "Draws closed this week, free ones excluded.",
     value: (insights) => formatPrice(insights?.averageTicketPrice?.median),
   },
 ];
