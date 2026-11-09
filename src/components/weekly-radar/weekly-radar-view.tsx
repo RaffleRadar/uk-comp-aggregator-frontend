@@ -190,7 +190,7 @@ const INSIGHTS: InsightTile[] = [
     title: "Heavily Undersold",
     icon: "bars",
     text: (insights) =>
-      `Draws that closed with fewer than ${insights?.heavilyUndersold?.thresholdPercent ?? 25}% of tickets sold.`,
+      `Closed with under ${insights?.heavilyUndersold?.thresholdPercent ?? 25}% of tickets sold.`,
     value: (insights) =>
       insights?.heavilyUndersold ? `${formatCount(insights.heavilyUndersold.count)} draws` : placeholderValue,
     note: (insights) =>
@@ -400,14 +400,21 @@ function InsightIconGlyph({ icon }: { icon: InsightIcon }) {
 function BiggestPrizeThumb({
   insights,
   className,
+  size = "default",
 }: {
   insights: WeeklyRadarInsights | null;
   className?: string;
+  size?: "default" | "pill";
 }) {
   const prize = insights?.biggestPrize;
   if (!prize) return null;
   const image = (
-    <span className="relative block h-10 w-14 shrink-0 overflow-hidden rounded-md bg-rr-elevated">
+    <span
+      className={cn(
+        "relative block shrink-0 overflow-hidden rounded-md bg-rr-elevated",
+        size === "pill" ? "h-[1.875rem] w-11" : "h-10 w-14",
+      )}
+    >
       <CompetitionImage
         src={prize.imageUrl}
         alt=""
@@ -880,16 +887,16 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                         className={cn(
                           "min-w-0 flex-1 border border-rr-green bg-[linear-gradient(180deg,var(--accent)_0%,var(--accent-border)_100%)] px-3 py-1 text-center font-bold text-rr-primary [text-shadow:0_1px_2px_rgba(0,0,0,0.55)] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]",
                           isPrize
-                            ? "rounded-xl text-[11px] leading-tight"
+                            ? "rounded-xl py-0.5 text-[11px] leading-[1.15]"
                             : "truncate rounded-full text-base",
                         )}
                         title={item.value(insights)}
                       >
                         {isPrize ? <span className="line-clamp-2">{item.value(insights)}</span> : item.value(insights)}
                       </p>
-                      {isPrize ? <BiggestPrizeThumb insights={insights} /> : null}
+                      {isPrize ? <BiggestPrizeThumb insights={insights} size="pill" /> : null}
                     </div>
-                    {note && !isPrize ? (
+                    {note ? (
                       <p className="mt-0.5 truncate text-center text-[11px] text-rr-secondary">{note}</p>
                     ) : null}
                   </div>
