@@ -882,7 +882,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                     <span aria-hidden="true" className={cn(dividerClass, "h-12 bg-rr-border lg:hidden")} />
                     <div className="min-w-0 flex-1">
                       <h3
-                        className="text-[15px] font-bold leading-tight text-rr-primary lg:truncate lg:text-[13.5px] lg:tracking-tight xl:text-sm"
+                        className="text-base font-bold leading-tight text-rr-primary lg:truncate lg:text-[13.5px] lg:tracking-tight xl:text-sm"
                         title={item.title}
                       >
                         {item.title}
@@ -892,8 +892,8 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                       </p>
                       <p
                         className={cn(
-                          "mt-1 text-lg font-extrabold leading-tight text-rr-green lg:hidden",
-                          isPrize ? "line-clamp-2 text-base" : "truncate",
+                          "mt-1 font-extrabold leading-tight text-rr-green lg:hidden",
+                          isPrize ? "line-clamp-2 text-[13px]" : "truncate text-[15px]",
                         )}
                       >
                         {value}
