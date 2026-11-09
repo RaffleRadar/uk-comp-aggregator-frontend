@@ -221,6 +221,7 @@ const INSIGHTS: InsightTile[] = [
 ];
 
 const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const WEEK_DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 function scheduleCounts(
   mode: Mode,
@@ -507,6 +508,42 @@ function SectionHeading({
   );
 }
 
+function ScheduleCta({
+  href,
+  className,
+  children,
+}: {
+  href: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "items-center justify-center gap-2 rounded-2xl bg-rr-green px-5 py-3.5 text-center text-base font-extrabold leading-tight text-rr-on-accent no-underline shadow-[0_0_24px_-8px_var(--accent)] transition-opacity hover:opacity-90",
+        className,
+      )}
+    >
+      <span>
+        {children}
+        <svg
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        className="ml-1.5 inline-block h-5 w-5 align-[-4px]"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M6 14 14 6M7.5 6H14v6.5" />
+        </svg>
+      </span>
+    </Link>
+  );
+}
+
 function BigThreeIcon({ panel }: { panel: BigThreeKey }) {
   return (
     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rr-green-bg text-rr-green lg:h-12 lg:w-12 lg:bg-rr-green lg:text-rr-on-accent">
@@ -634,7 +671,6 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const insights = readInsights(issue?.payload);
   const schedule = scheduleCounts(mode, issue?.payload);
   const schedulePeak = peakDay(schedule);
-  const scheduleLabel = schedule ? formatWeekRange(schedule.weekStart, schedule.weekEnd) : null;
 
   return (
     <main className={cn("py-6 md:py-10", RADAR_THEME)}>
@@ -840,55 +876,69 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
           </div>
         </section>
 
-        <section
-          aria-label={copy.scheduleTitle}
-          className={cn(panelClass, "grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center")}
-        >
-          <div>
-            <p className={eyebrowClass}>{copy.scheduleEyebrow}</p>
-            <h2 className="mt-1 text-xl font-bold text-rr-primary">{copy.scheduleTitle}</h2>
-            <p className="mt-1 text-sm text-rr-secondary">{copy.scheduleText}</p>
-            {scheduleLabel ? (
-              <p className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-rr-primary">
-                <CalendarIcon />
-                <span>{scheduleLabel}</span>
-                {schedule ? (
-                  <span className="font-normal text-rr-secondary">
-                    · {formatCount(schedule.total)} draws
-                  </span>
-                ) : null}
-              </p>
-            ) : null}
-          </div>
-          <ul className="grid grid-cols-7 gap-1.5 sm:gap-2">
-            {WEEK_DAYS.map((day, index) => {
-              const count = schedule ? schedule.byDay[index] : null;
-              const isPeak = schedulePeak === index;
-              return (
-                <li
-                  key={day}
-                  className={cn(
-                    "rounded-lg border px-1.5 py-2 text-center sm:px-3",
-                    isPeak ? "border-rr-green bg-rr-green-bg" : "border-rr-border",
-                  )}
-                >
-                  <p className={cn("text-xs", isPeak ? "text-rr-green" : "text-rr-secondary")}>
-                    {day}
-                  </p>
-                  <p className={cn("text-lg font-bold", isPeak ? "text-rr-green" : "text-rr-primary")}>
-                    {count === null ? placeholderValue : formatCount(count)}
-                  </p>
-                  <p className="text-[10px] text-rr-muted sm:text-xs">draws</p>
-                </li>
-              );
-            })}
-          </ul>
-          <Link
-            href={copy.scheduleHref}
-            className="inline-flex items-center justify-center rounded-xl bg-rr-green px-5 py-3 text-sm font-semibold text-rr-on-accent no-underline transition-opacity hover:opacity-90"
+        <section aria-label={copy.scheduleTitle} className="space-y-3">
+          <div
+            className={cn(
+              panelClass,
+              "p-4 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-5 lg:gap-y-4 lg:p-5 xl:grid-cols-[minmax(0,1fr)_auto_auto]",
+            )}
           >
+            <div className="lg:col-span-2 xl:col-span-1">
+              <p
+                className={cn(
+                  eyebrowClass,
+                  "flex items-center gap-2 font-bold tracking-[0.08em] lg:text-base lg:tracking-[0.02em]",
+                )}
+              >
+                <span aria-hidden="true" className="h-4 w-1 shrink-0 rounded-full bg-rr-green lg:h-6 lg:w-1.5" />
+                <span>{copy.scheduleEyebrow}</span>
+              </p>
+              <h2 className="mt-1 text-2xl font-extrabold leading-tight tracking-[-0.01em] text-rr-primary lg:text-[1.75rem] xl:text-[1.4rem]">
+                {copy.scheduleTitle}
+              </h2>
+              <p className="mt-1 text-sm leading-snug text-rr-secondary lg:text-[15px] lg:text-rr-primary">
+                {copy.scheduleText}
+              </p>
+            </div>
+            <ul className="mt-4 grid grid-cols-2 gap-2 lg:mt-0 lg:grid-cols-7 lg:gap-2 xl:gap-1.5">
+              {WEEK_DAYS.map((day, index) => {
+                const count = schedule ? schedule.byDay[index] : null;
+                const isPeak = schedulePeak === index;
+                return (
+                  <li
+                    key={day}
+                    className={cn(
+                      "rounded-xl border px-3 py-2.5 text-center lg:min-w-[4.25rem] lg:px-2 lg:py-2 xl:min-w-[4rem]",
+                      index === WEEK_DAYS.length - 1 && "col-span-2 lg:col-span-1",
+                      isPeak ? "border-2 border-rr-green bg-rr-green-bg" : "border-rr-border",
+                    )}
+                  >
+                    <p className={cn("text-xs lg:text-sm", isPeak ? "text-rr-green" : "text-rr-secondary lg:text-rr-primary")}>
+                      <span className="lg:hidden">{WEEK_DAY_NAMES[index]}</span>
+                      <span className="hidden lg:inline">{day}</span>
+                    </p>
+                    <p
+                      className={cn(
+                        "text-2xl font-extrabold leading-tight lg:text-[1.65rem]",
+                        isPeak ? "text-rr-green" : "text-rr-primary",
+                      )}
+                    >
+                      {count === null ? placeholderValue : formatCount(count)}
+                    </p>
+                    <p className={cn("text-[11px] lg:text-sm", isPeak ? "text-rr-green" : "text-rr-secondary lg:text-rr-primary")}>
+                      draws
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+            <ScheduleCta href={copy.scheduleHref} className="hidden lg:flex lg:w-[14.5rem] lg:px-3 lg:py-4 lg:text-lg">
+              {copy.scheduleCta}
+            </ScheduleCta>
+          </div>
+          <ScheduleCta href={copy.scheduleHref} className="flex w-full lg:hidden">
             {copy.scheduleCta}
-          </Link>
+          </ScheduleCta>
         </section>
       </div>
     </main>
