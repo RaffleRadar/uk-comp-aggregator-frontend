@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { OperatorCompetitions } from "@/components/operators/operator-competitions";
 import { TrackedOperatorLink } from "@/components/operators/tracked-operator-link";
 import { OperatorProfileSections } from "@/components/operators/operator-profile-sections";
+import { OperatorSectionEyebrow } from "@/components/operators/operator-section-heading";
 import { VoluntaryCodeBadge } from "@/components/operators/voluntary-code-badge";
 import { Badge } from "@/components/ui/badge";
 import { OperatorJsonLd } from "@/components/seo/structured-data";
@@ -272,10 +273,8 @@ export default async function OperatorPage({
       {linkedReview && reviewHref ? (
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-              Read our review
-            </p>
-            <p className="mt-2 text-lg font-medium tracking-[-0.02em] text-rr-primary md:text-xl">
+            <OperatorSectionEyebrow>Read our review</OperatorSectionEyebrow>
+            <p className="mt-2 text-lg font-bold tracking-[-0.02em] text-rr-primary md:text-xl">
               {linkedReview.title}
             </p>
             {reviewDate ? (
@@ -298,9 +297,7 @@ export default async function OperatorPage({
       ) : (
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-8">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-              Read our review
-            </p>
+            <OperatorSectionEyebrow>Read our review</OperatorSectionEyebrow>
             <p className="mt-2 text-sm leading-6 text-rr-secondary">
               A dedicated review page for this operator will be linked here in the next stage.
             </p>

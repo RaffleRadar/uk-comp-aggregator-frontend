@@ -9,6 +9,10 @@ import {
   yesNo,
 } from "@/types/operator-profile";
 import { OperatorKeyTerms } from "@/components/operators/operator-key-terms";
+import {
+  OperatorSectionHeading,
+  OperatorSectionLabel,
+} from "@/components/operators/operator-section-heading";
 
 type OperatorProfileSectionsProps = {
   profile: OperatorProfile | null;
@@ -85,9 +89,7 @@ export function OperatorProfileSections({
     <div className="mt-6 flex flex-col gap-4">
       {hasFullProfile ? (
         <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
-          <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-            About {operatorName}
-          </h2>
+          <OperatorSectionHeading>About {operatorName}</OperatorSectionHeading>
           <div className="mt-4">
             <PortableText
               value={profile.fullProfile!}
@@ -99,9 +101,7 @@ export function OperatorProfileSections({
 
       {hasCompanyDetails ? (
         <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
-          <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-            Company details
-          </h2>
+          <OperatorSectionHeading>Company details</OperatorSectionHeading>
           <dl className="mt-4 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
             {profile.registeredCompanyName ? (
               <>
@@ -144,9 +144,7 @@ export function OperatorProfileSections({
 
       {hasHowTheyRunIt ? (
         <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
-          <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-            How they run it
-          </h2>
+          <OperatorSectionHeading>How they run it</OperatorSectionHeading>
           <dl className="mt-4 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
             {drawMethodLabel ? (
               <>
@@ -246,13 +244,19 @@ export function OperatorProfileSections({
 
       {hasProsCons ? (
         <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
-          <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-            Pros and cons
-          </h2>
+          <OperatorSectionHeading>Pros and cons</OperatorSectionHeading>
           <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
             {hasPros ? (
               <div>
-                <h3 className="text-sm font-medium text-rr-primary">Pros</h3>
+                <h3 className="flex items-center gap-2 text-base font-bold text-rr-primary">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-5 w-5 items-center justify-center rounded-full bg-rr-green text-sm font-bold leading-none text-rr-on-accent"
+                  >
+                    +
+                  </span>
+                  Pros
+                </h3>
                 <ul className="mt-3 space-y-2">
                   {profile.pros!.map((item, idx) => (
                     <li
@@ -268,7 +272,15 @@ export function OperatorProfileSections({
             ) : null}
             {hasCons ? (
               <div>
-                <h3 className="text-sm font-medium text-rr-primary">Cons</h3>
+                <h3 className="flex items-center gap-2 text-base font-bold text-rr-primary">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-5 w-5 items-center justify-center rounded-full bg-rr-secondary text-sm font-bold leading-none text-rr-bg"
+                  >
+                    −
+                  </span>
+                  Cons
+                </h3>
                 <ul className="mt-3 space-y-2">
                   {profile.cons!.map((item, idx) => (
                     <li
@@ -285,10 +297,8 @@ export function OperatorProfileSections({
           </div>
           {hasBestFor ? (
             <div className="mt-6">
-              <p className="text-xs uppercase tracking-[0.14em] text-rr-muted">
-                Best for
-              </p>
-              <p className="mt-1 text-sm text-rr-primary">{profile.bestFor}</p>
+              <OperatorSectionLabel>Best for</OperatorSectionLabel>
+              <p className="mt-2 text-sm text-rr-primary">{profile.bestFor}</p>
             </div>
           ) : null}
         </section>
@@ -299,7 +309,7 @@ export function OperatorProfileSections({
           terms={keyTerms}
           operatorName={operatorName}
           termsUrl={profile.freeEntryUrl}
-          headingClassName="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted"
+          heading={<OperatorSectionHeading>Terms worth knowing about</OperatorSectionHeading>}
         />
       ) : null}
 
@@ -307,9 +317,7 @@ export function OperatorProfileSections({
 
       {hasElsewhere ? (
         <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
-          <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-            Elsewhere on the web
-          </h2>
+          <OperatorSectionHeading>Elsewhere on the web</OperatorSectionHeading>
           <div className="mt-4 space-y-4">
             {hasTrustpilot ? (
               <div>

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import type { OperatorKeyTerm } from "@/types/operator-profile";
 
@@ -5,7 +6,7 @@ type OperatorKeyTermsProps = {
   terms: OperatorKeyTerm[];
   operatorName: string;
   termsUrl?: string | null;
-  headingClassName: string;
+  heading: ReactNode;
 };
 
 type DisplayTerm = {
@@ -71,7 +72,7 @@ export function OperatorKeyTerms({
   terms,
   operatorName,
   termsUrl,
-  headingClassName,
+  heading,
 }: OperatorKeyTermsProps) {
   const items = toDisplayTerms(terms);
 
@@ -88,7 +89,7 @@ export function OperatorKeyTerms({
 
   return (
     <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
-      <h2 className={headingClassName}>Terms worth knowing about</h2>
+      {heading}
       <div className="mt-3 space-y-3 text-sm leading-6 text-rr-secondary">
         <p>
           We&apos;ve highlighted {count} {clauseWord} in {possessive(operatorName)} terms
@@ -103,7 +104,7 @@ export function OperatorKeyTerms({
         </p>
       </div>
 
-      <h3 className="mt-6 text-base font-semibold text-rr-primary">{listHeading}</h3>
+      <h3 className="mt-6 text-base font-bold text-rr-primary">{listHeading}</h3>
       <p className="mt-1 text-sm text-rr-muted">{listSubheading}</p>
 
       <div className="mt-4 hidden overflow-hidden rounded-lg border border-rr-border lg:block">
