@@ -89,8 +89,10 @@ export function TicketSalesChart({ history, hasEnded = false, isSoldOut = false 
 
   return (
     <div className="ticket-sales-chart">
-      <div className="ticket-sales-chart__chip">
-        {hasEnded || isSoldOut ? `Final: ${currentLabel}` : `Current: ${currentLabel}`}
+      <div className="ticket-sales-chart__chip-row">
+        <div className="ticket-sales-chart__chip">
+          {hasEnded || isSoldOut ? `Final: ${currentLabel}` : `Current: ${currentLabel}`}
+        </div>
       </div>
       <div className="ticket-sales-chart__canvas">
         <ResponsiveContainer width="100%" height="100%">
@@ -121,7 +123,7 @@ export function TicketSalesChart({ history, hasEnded = false, isSoldOut = false 
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              width={36}
+              width={44}
               tickFormatter={(value) => `${value}%`}
               domain={[0, yMax]}
               ticks={yTicks}
@@ -166,11 +168,12 @@ export function TicketSalesChart({ history, hasEnded = false, isSoldOut = false 
         .ticket-sales-chart__canvas :global(.recharts-responsive-container) {
           flex: 1;
         }
+        .ticket-sales-chart__chip-row {
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 8px;
+        }
         .ticket-sales-chart__chip {
-          position: absolute;
-          top: 0;
-          right: 0;
-          z-index: 1;
           padding: 4px 10px;
           border-radius: 8px;
           font-size: 12px;
