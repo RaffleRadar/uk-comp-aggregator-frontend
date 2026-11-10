@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { portableTextComponents } from "@/components/sanity/portableTextComponents";
@@ -12,13 +13,17 @@ import { OperatorKeyTerms } from "@/components/operators/operator-key-terms";
 type OperatorProfileSectionsProps = {
   profile: OperatorProfile | null;
   operatorName: string;
+  review?: ReactNode;
 };
 
 export function OperatorProfileSections({
   profile,
   operatorName,
+  review,
 }: OperatorProfileSectionsProps) {
-  if (!profile) return null;
+  if (!profile) {
+    return review ? <div className="mt-6 flex flex-col gap-4">{review}</div> : null;
+  }
 
   const hasCompanyDetails =
     !!profile.registeredCompanyName ||
@@ -70,13 +75,28 @@ export function OperatorProfileSections({
     !hasProsCons &&
     !hasFullProfile &&
     !hasKeyTerms &&
-    !hasElsewhere
+    !hasElsewhere &&
+    !review
   ) {
     return null;
   }
 
   return (
     <div className="mt-6 flex flex-col gap-4">
+      {hasFullProfile ? (
+        <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
+          <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
+            About {operatorName}
+          </h2>
+          <div className="mt-4">
+            <PortableText
+              value={profile.fullProfile!}
+              components={portableTextComponents}
+            />
+          </div>
+        </section>
+      ) : null}
+
       {hasCompanyDetails ? (
         <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
           <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
@@ -274,20 +294,6 @@ export function OperatorProfileSections({
         </section>
       ) : null}
 
-      {hasFullProfile ? (
-        <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
-          <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-            About {operatorName}
-          </h2>
-          <div className="mt-4">
-            <PortableText
-              value={profile.fullProfile!}
-              components={portableTextComponents}
-            />
-          </div>
-        </section>
-      ) : null}
-
       {hasKeyTerms ? (
         <OperatorKeyTerms
           terms={keyTerms}
@@ -296,6 +302,8 @@ export function OperatorProfileSections({
           headingClassName="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted"
         />
       ) : null}
+
+      {review}
 
       {hasElsewhere ? (
         <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">

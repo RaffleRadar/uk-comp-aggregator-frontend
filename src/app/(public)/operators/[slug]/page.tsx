@@ -267,6 +267,53 @@ export default async function OperatorPage({
     profile?.youtubeUrl,
   ].filter((value): value is string => typeof value === "string" && value.length > 0);
 
+  const reviewSection = (
+    <div className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
+      {linkedReview && reviewHref ? (
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
+              Read our review
+            </p>
+            <p className="mt-2 text-lg font-medium tracking-[-0.02em] text-rr-primary md:text-xl">
+              {linkedReview.title}
+            </p>
+            {reviewDate ? (
+              <p className="mt-1 text-xs text-rr-muted">{reviewDate}</p>
+            ) : null}
+            {linkedReview.excerpt ? (
+              <p className="mt-3 max-w-[760px] text-sm leading-6 text-rr-secondary line-clamp-3">
+                {linkedReview.excerpt}
+              </p>
+            ) : null}
+          </div>
+
+          <Link
+            href={reviewHref}
+            className="inline-flex h-10 shrink-0 items-center justify-center rounded-md bg-rr-green px-4 text-sm font-medium text-rr-on-accent no-underline transition-opacity hover:opacity-90"
+          >
+            Read the full review
+          </Link>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-8">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
+              Read our review
+            </p>
+            <p className="mt-2 text-sm leading-6 text-rr-secondary">
+              A dedicated review page for this operator will be linked here in the next stage.
+            </p>
+          </div>
+
+          <span className="inline-flex h-10 shrink-0 items-center justify-center rounded-md border border-rr-border bg-rr-elevated px-4 text-sm font-medium text-rr-muted">
+            Coming soon
+          </span>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <main className="bg-rr-bg">
       <OperatorJsonLd
@@ -433,52 +480,11 @@ export default async function OperatorPage({
               ) : null}
             </div>
 
-            <div className="mt-6 rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
-              {linkedReview && reviewHref ? (
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-                      Read our review
-                    </p>
-                    <p className="mt-2 text-lg font-medium tracking-[-0.02em] text-rr-primary md:text-xl">
-                      {linkedReview.title}
-                    </p>
-                    {reviewDate ? (
-                      <p className="mt-1 text-xs text-rr-muted">{reviewDate}</p>
-                    ) : null}
-                    {linkedReview.excerpt ? (
-                      <p className="mt-3 max-w-[760px] text-sm leading-6 text-rr-secondary line-clamp-3">
-                        {linkedReview.excerpt}
-                      </p>
-                    ) : null}
-                  </div>
-
-                  <Link
-                    href={reviewHref}
-                    className="inline-flex h-10 shrink-0 items-center justify-center rounded-md bg-rr-green px-4 text-sm font-medium text-rr-on-accent no-underline transition-opacity hover:opacity-90"
-                  >
-                    Read the full review
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-8">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted">
-                      Read our review
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-rr-secondary">
-                      A dedicated review page for this operator will be linked here in the next stage.
-                    </p>
-                  </div>
-
-                  <span className="inline-flex h-10 shrink-0 items-center justify-center rounded-md border border-rr-border bg-rr-elevated px-4 text-sm font-medium text-rr-muted">
-                    Coming soon
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <OperatorProfileSections profile={profile} operatorName={operator.name} />
+            <OperatorProfileSections
+              profile={profile}
+              operatorName={operator.name}
+              review={reviewSection}
+            />
           </div>
         </div>
       </section>
