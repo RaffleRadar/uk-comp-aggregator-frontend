@@ -51,6 +51,14 @@ function TermNumber({ value }: { value: number }) {
   );
 }
 
+function CardLabel({ children }: { children: string }) {
+  return (
+    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-green">
+      {children}
+    </p>
+  );
+}
+
 function ClauseBadge({ value }: { value: string }) {
   return (
     <span className="inline-flex items-center rounded-md border border-rr-green-border bg-rr-green-bg px-2 py-1 text-xs font-medium leading-4 text-rr-green">
@@ -149,24 +157,26 @@ export function OperatorKeyTerms({
             <div className="flex items-start gap-3">
               <TermNumber value={index + 1} />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold leading-6 text-rr-primary">
+                <CardLabel>Term (summary)</CardLabel>
+                <p className="mt-1 text-sm font-semibold leading-6 text-rr-primary">
                   {item.title}
                 </p>
-                {item.clause ? (
-                  <div className="mt-2">
-                    <ClauseBadge value={item.clause} />
-                  </div>
+                {item.summary ? (
+                  <p className="mt-1 text-sm leading-6 text-rr-secondary">{item.summary}</p>
                 ) : null}
               </div>
             </div>
-            {item.summary ? (
-              <p className="mt-3 text-sm leading-6 text-rr-secondary">{item.summary}</p>
+            {item.clause ? (
+              <div className="mt-3 border-t border-rr-border pt-3">
+                <CardLabel>Section in T&amp;Cs</CardLabel>
+                <div className="mt-2">
+                  <ClauseBadge value={item.clause} />
+                </div>
+              </div>
             ) : null}
             {item.whyItMatters ? (
               <div className="mt-3 border-t border-rr-border pt-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-rr-green">
-                  Why it matters
-                </p>
+                <CardLabel>Why it matters</CardLabel>
                 <p className="mt-1 text-sm leading-6 text-rr-secondary">
                   {item.whyItMatters}
                 </p>
