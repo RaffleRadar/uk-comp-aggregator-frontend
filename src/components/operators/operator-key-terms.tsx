@@ -161,11 +161,11 @@ export function OperatorKeyTerms({
                 <p className="mt-1 text-sm font-semibold leading-6 text-rr-primary">
                   {item.title}
                 </p>
-                {item.summary ? (
-                  <p className="mt-1 text-sm leading-6 text-rr-secondary">{item.summary}</p>
-                ) : null}
               </div>
             </div>
+            {item.summary ? (
+              <p className="mt-3 text-sm leading-6 text-rr-secondary">{item.summary}</p>
+            ) : null}
             {item.clause ? (
               <div className="mt-3 border-t border-rr-border pt-3">
                 <CardLabel>Section in T&amp;Cs</CardLabel>
