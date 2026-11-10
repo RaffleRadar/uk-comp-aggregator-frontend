@@ -81,7 +81,7 @@ export function OperatorKeyTerms({
   return (
     <section className="rounded-xl border border-rr-border bg-rr-surface p-4 md:p-5">
       <h2 className={headingClassName}>Terms worth knowing about</h2>
-      <div className="mt-3 max-w-[860px] space-y-3 text-sm leading-6 text-rr-secondary">
+      <div className="mt-3 space-y-3 text-sm leading-6 text-rr-secondary">
         <p>
           We&apos;ve highlighted {count} {clauseWord} in {possessive(operatorName)} terms
           that entrants may want to be aware of before entering. Like many competition
