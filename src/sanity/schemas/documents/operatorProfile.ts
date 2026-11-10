@@ -9,6 +9,7 @@ export const operatorProfile = defineType({
     { name: "identity", title: "Identity", default: true },
     { name: "operations", title: "How the operator runs" },
     { name: "editorial", title: "Editorial content" },
+    { name: "terms", title: "Terms worth knowing" },
     { name: "links", title: "External links" },
   ],
   fields: [
@@ -103,6 +104,8 @@ export const operatorProfile = defineType({
       title: "Free entry / terms URL",
       type: "url",
       group: "operations",
+      description:
+        "Also used for the Read the full terms and conditions button under Terms worth knowing.",
     }),
     defineField({
       name: "postalFreeEntry",
@@ -206,6 +209,55 @@ export const operatorProfile = defineType({
       type: "string",
       group: "editorial",
       description: "Short line, for example: cars, tech, low cost entries.",
+    }),
+
+    defineField({
+      name: "keyTerms",
+      title: "Terms worth knowing",
+      type: "array",
+      group: "terms",
+      description:
+        "Add as many terms as were found, in order of impact. The intro and the note are the same on every operator page, with the operator name filled in. The button links to the Free entry / terms URL.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "keyTerm",
+          title: "Term",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Term (summary)",
+              type: "string",
+              description: "Short heading, for example: No refunds, even if eligibility rules change.",
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "summary",
+              title: "What the term says",
+              type: "text",
+              rows: 2,
+            }),
+            defineField({
+              name: "clause",
+              title: "Section in T&Cs",
+              type: "string",
+              description: "For example: Eligibility – Clause 5.",
+            }),
+            defineField({
+              name: "whyItMatters",
+              title: "Why it matters",
+              type: "text",
+              rows: 2,
+            }),
+          ],
+          preview: {
+            select: {
+              title: "title",
+              subtitle: "clause",
+            },
+          },
+        }),
+      ],
     }),
 
     defineField({

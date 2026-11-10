@@ -2,6 +2,14 @@
 
 import type { PortableTextBlock } from "@portabletext/types";
 
+export type OperatorKeyTerm = {
+  _key?: string | null;
+  title?: string | null;
+  summary?: string | null;
+  clause?: string | null;
+  whyItMatters?: string | null;
+};
+
 export type OperatorProfile = {
   operatorId?: string | null;
   operatorName?: string | null;
@@ -26,6 +34,7 @@ export type OperatorProfile = {
   pros?: string[] | null;
   cons?: string[] | null;
   bestFor?: string | null;
+  keyTerms?: OperatorKeyTerm[] | null;
   trustpilotUrl?: string | null;
   trustpilotScore?: number | null;
   facebookUrl?: string | null;

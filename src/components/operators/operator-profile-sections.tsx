@@ -7,6 +7,7 @@ import {
   formatPaymentMethods,
   yesNo,
 } from "@/types/operator-profile";
+import { OperatorKeyTerms } from "@/components/operators/operator-key-terms";
 
 type OperatorProfileSectionsProps = {
   profile: OperatorProfile | null;
@@ -58,12 +59,17 @@ export function OperatorProfileSections({
     !!profile.youtubeUrl ||
     !!profile.supportEmail;
   const hasElsewhere = hasTrustpilot || hasSocial;
+  const keyTerms = Array.isArray(profile.keyTerms) ? profile.keyTerms : [];
+  const hasKeyTerms = keyTerms.some(
+    (term) => typeof term?.title === "string" && term.title.trim().length > 0,
+  );
 
   if (
     !hasCompanyDetails &&
     !hasHowTheyRunIt &&
     !hasProsCons &&
     !hasFullProfile &&
+    !hasKeyTerms &&
     !hasElsewhere
   ) {
     return null;
@@ -280,6 +286,15 @@ export function OperatorProfileSections({
             />
           </div>
         </section>
+      ) : null}
+
+      {hasKeyTerms ? (
+        <OperatorKeyTerms
+          terms={keyTerms}
+          operatorName={operatorName}
+          termsUrl={profile.freeEntryUrl}
+          headingClassName="text-[11px] font-medium uppercase tracking-[0.14em] text-rr-muted"
+        />
       ) : null}
 
       {hasElsewhere ? (

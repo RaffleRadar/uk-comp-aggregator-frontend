@@ -95,6 +95,13 @@ const OPERATOR_PROFILE_FIELDS = `
   pros,
   cons,
   bestFor,
+  keyTerms[]{
+    _key,
+    title,
+    summary,
+    clause,
+    whyItMatters
+  },
   trustpilotUrl,
   trustpilotScore,
   facebookUrl,
