@@ -16,6 +16,7 @@ export type CompetitionResultsHeadingParams = {
   operator?: string;
   minPrizeValue?: string;
   freeOnly?: string;
+  instantPrizes?: string;
   excludeInstant?: string;
   excludeFree?: string;
   excludeSoldOut?: string;
@@ -117,10 +118,12 @@ export async function resolveCompetitionOperatorLabel(
   params: CompetitionResultsHeadingParams,
 ) {
   const operatorSlug = params.operator?.trim() || undefined;
+  const instantOnly = params.instantPrizes === "true";
   const includesGamesCategory =
-    params.category
+    instantOnly ||
+    (params.category
       ?.split(",")
-      .some((value) => value.trim().toLowerCase() === "games") ?? false;
+      .some((value) => value.trim().toLowerCase() === "games") ?? false);
   const spendParam = params.spend?.trim() || undefined;
   const spendNum = spendParam
     ? (() => {
@@ -147,7 +150,8 @@ export async function resolveCompetitionOperatorLabel(
         ? Number(params.minPrizeValue)
         : undefined,
       freeOnly: params.freeOnly === "true",
-      excludeInstant: params.excludeInstant === "true",
+      instantPrizes: instantOnly || undefined,
+      excludeInstant: !instantOnly && params.excludeInstant === "true",
       excludeFree: params.excludeFree === "true",
       excludeSoldOut: params.excludeSoldOut === "true",
       excludeGames: !includesGamesCategory,
@@ -226,6 +230,7 @@ export function CompetitionResultsHeading({
         })()
       : null,
     params.freeOnly === "true" ? "Free" : null,
+    params.instantPrizes === "true" ? "Instants" : null,
   ].filter((value): value is string => Boolean(value));
   const sortPresentation = getCompetitionSortPresentation({
     sortBy,

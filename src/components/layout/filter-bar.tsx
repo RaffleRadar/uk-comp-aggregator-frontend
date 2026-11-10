@@ -54,7 +54,7 @@ const defaultCategoryOptions: FilterOption[] = [
   { value: "watches", label: "Watches" },
   { value: "cash", label: "Cash" },
   { value: "tech", label: "Tech" },
-  { value: "games", label: "Games" },
+  { value: "instants", label: "Instants" },
   { value: "tickets", label: "Tickets" },
   { value: "other", label: "Other" },
   { value: "free", label: "Free" },
@@ -188,6 +188,7 @@ export function FilterBar({
   const closingOpts = closingOptions ?? defaultClosingOptions;
 
   const freeOnly = searchParams.get("freeOnly") === "true";
+  const instantOnly = searchParams.get("instantPrizes") === "true";
   const categoryParam = searchParams.get("category");
   const currentClosing = searchParams.get("closing");
   const closing = currentClosing ?? "";
@@ -246,7 +247,9 @@ export function FilterBar({
 
   const currentMainCategory = freeOnly
     ? "free"
-    : isVehicleSubcategory
+    : instantOnly || categoryParam === "games"
+      ? "instants"
+      : isVehicleSubcategory
       ? "vehicles"
       : isOtherSubcategory
         ? "other"
@@ -576,7 +579,7 @@ export function FilterBar({
                     onClick={() => {
                       if (opt.value === "all") {
                         updateParams(
-                          { category: null, freeOnly: null },
+                          { category: null, freeOnly: null, instantPrizes: null },
                           { filterType: "category", filterValue: "all" },
                         );
                         return;
@@ -587,11 +590,28 @@ export function FilterBar({
                           {
                             category: null,
                             freeOnly: isActive ? null : "true",
+                            instantPrizes: null,
                             excludeInstant: null,
                             excludeFree: null,
                           },
                           {
                             filterType: "free",
+                            filterValue: isActive ? "false" : "true",
+                          },
+                        );
+                        return;
+                      }
+
+                      if (opt.value === "instants") {
+                        updateParams(
+                          {
+                            category: null,
+                            instantPrizes: isActive ? null : "true",
+                            freeOnly: null,
+                            excludeInstant: null,
+                          },
+                          {
+                            filterType: "instants",
                             filterValue: isActive ? "false" : "true",
                           },
                         );
@@ -606,6 +626,7 @@ export function FilterBar({
                                 ? null
                                 : VEHICLES_ALL,
                             freeOnly: null,
+                            instantPrizes: null,
                           },
                           {
                             filterType: "category",
@@ -627,6 +648,7 @@ export function FilterBar({
                                 ? null
                                 : "other",
                             freeOnly: null,
+                            instantPrizes: null,
                           },
                           {
                             filterType: "category",
@@ -644,6 +666,7 @@ export function FilterBar({
                         {
                           category: isActive ? null : opt.value,
                           freeOnly: null,
+                          instantPrizes: null,
                         },
                         {
                           filterType: "category",

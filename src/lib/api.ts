@@ -89,6 +89,7 @@ export type GetCompetitionsParams = {
   minPrizeValue?: number;
   website?: string;
   freeOnly?: boolean;
+  instantPrizes?: boolean;
   excludeInstant?: boolean;
   excludeFree?: boolean;
   excludeSoldOut?: boolean;
@@ -384,6 +385,7 @@ export async function getCompetitions(
     query.set("minPrizeValue", String(params.minPrizeValue));
   if (params?.website) query.set("website", params.website);
   if (params?.freeOnly) query.set("freeOnly", "true");
+  if (params?.instantPrizes) query.set("instantPrizes", "true");
   if (params?.excludeInstant) query.set("excludeInstant", "true");
   if (params?.excludeFree) query.set("excludeFree", "true");
   if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");
@@ -416,6 +418,7 @@ export async function getCompetitionsTotal(
     query.set("minPrizeValue", String(params.minPrizeValue));
   if (params?.website) query.set("website", params.website);
   if (params?.freeOnly) query.set("freeOnly", "true");
+  if (params?.instantPrizes) query.set("instantPrizes", "true");
   if (params?.excludeInstant) query.set("excludeInstant", "true");
   if (params?.excludeFree) query.set("excludeFree", "true");
   if (params?.excludeSoldOut) query.set("excludeSoldOut", "true");

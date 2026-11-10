@@ -53,6 +53,7 @@ type HomePageSearchParams = {
   operator?: string;
   minPrizeValue?: string;
   freeOnly?: string;
+  instantPrizes?: string;
   excludeInstant?: string;
   excludeFree?: string;
   section?: string;
@@ -74,13 +75,16 @@ export default async function Page({
     params.operator ||
     params.minPrizeValue ||
     params.freeOnly ||
+    params.instantPrizes ||
     params.excludeInstant ||
     params.excludeFree ||
     params.section
   );
+  const instantOnly = params.instantPrizes === "true";
   const includesGamesCategory =
-    params.category?.split(",").some((value) => value.trim().toLowerCase() === "games") ??
-    false;
+    instantOnly ||
+    (params.category?.split(",").some((value) => value.trim().toLowerCase() === "games") ??
+      false);
 
   if (hasFilters) {
     const operatorLabel = await resolveCompetitionOperatorLabel(params);
@@ -96,7 +100,8 @@ export default async function Page({
         ? Number(params.minPrizeValue)
         : undefined,
       freeOnly: params.freeOnly === "true",
-      excludeInstant: params.excludeInstant === "true",
+      instantPrizes: instantOnly || undefined,
+      excludeInstant: !instantOnly && params.excludeInstant === "true",
       excludeFree: params.excludeFree === "true",
       excludeGames: !includesGamesCategory,
     });
@@ -127,7 +132,8 @@ export default async function Page({
                 ? Number(params.minPrizeValue)
                 : undefined,
               freeOnly: params.freeOnly === "true",
-              excludeInstant: params.excludeInstant === "true",
+              instantPrizes: instantOnly || undefined,
+              excludeInstant: !instantOnly && params.excludeInstant === "true",
               excludeFree: params.excludeFree === "true",
               excludeGames: !includesGamesCategory,
               limit: 500,

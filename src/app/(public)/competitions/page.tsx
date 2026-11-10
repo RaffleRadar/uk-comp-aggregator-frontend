@@ -43,6 +43,7 @@ const FILTER_ROBOT_KEYS = [
   "operator",
   "minPrizeValue",
   "freeOnly",
+  "instantPrizes",
   "excludeInstant",
   "excludeFree",
   "excludeSoldOut",
@@ -76,6 +77,7 @@ type CompetitionsPageSearchParams = {
   operator?: string;
   minPrizeValue?: string;
   freeOnly?: string;
+  instantPrizes?: string;
   excludeInstant?: string;
   excludeFree?: string;
   excludeSoldOut?: string;
@@ -92,10 +94,12 @@ export default async function CompetitionsPage({
   const params = await searchParams;
   const suspenseKey = JSON.stringify(params);
   const operatorSlug = params.operator?.trim() || undefined;
+  const instantOnly = params.instantPrizes === "true";
   const includesGamesCategory =
-    params.category
+    instantOnly ||
+    (params.category
       ?.split(",")
-      .some((value) => value.trim().toLowerCase() === "games") ?? false;
+      .some((value) => value.trim().toLowerCase() === "games") ?? false);
   const spendParam = params.spend?.trim() || undefined;
   const spendNum = spendParam
     ? (() => {
@@ -156,6 +160,8 @@ export default async function CompetitionsPage({
     if (params.minPrizeValue)
       nextParams.set("minPrizeValue", params.minPrizeValue);
     if (params.freeOnly) nextParams.set("freeOnly", params.freeOnly);
+    if (params.instantPrizes)
+      nextParams.set("instantPrizes", params.instantPrizes);
     if (params.excludeInstant)
       nextParams.set("excludeInstant", params.excludeInstant);
     if (params.excludeFree) nextParams.set("excludeFree", params.excludeFree);
@@ -184,6 +190,7 @@ export default async function CompetitionsPage({
     operator: operatorSlug,
     minPrizeValue: params.minPrizeValue,
     freeOnly: params.freeOnly,
+    instantPrizes: params.instantPrizes,
     excludeInstant: params.excludeInstant,
     excludeFree: params.excludeFree,
     excludeSoldOut: params.excludeSoldOut,
@@ -200,6 +207,8 @@ export default async function CompetitionsPage({
   if (params.minPrizeValue)
     resetOperatorParams.set("minPrizeValue", params.minPrizeValue);
   if (params.freeOnly) resetOperatorParams.set("freeOnly", params.freeOnly);
+  if (params.instantPrizes)
+    resetOperatorParams.set("instantPrizes", params.instantPrizes);
   if (params.excludeInstant)
     resetOperatorParams.set("excludeInstant", params.excludeInstant);
   if (params.excludeFree)
@@ -230,7 +239,8 @@ export default async function CompetitionsPage({
       ? Number(params.minPrizeValue)
       : undefined,
     freeOnly: params.freeOnly === "true",
-    excludeInstant: params.excludeInstant === "true",
+    instantPrizes: instantOnly || undefined,
+    excludeInstant: !instantOnly && params.excludeInstant === "true",
     excludeFree: params.excludeFree === "true",
     excludeSoldOut: params.excludeSoldOut === "true",
     excludeGames: !includesGamesCategory,
@@ -269,6 +279,7 @@ export default async function CompetitionsPage({
           operator: operatorSlug,
           minPrizeValue: params.minPrizeValue,
           freeOnly: params.freeOnly,
+          instantPrizes: params.instantPrizes,
           excludeInstant: params.excludeInstant,
           excludeFree: params.excludeFree,
           section: params.section,
@@ -306,7 +317,8 @@ export default async function CompetitionsPage({
               ? Number(params.minPrizeValue)
               : undefined,
             freeOnly: params.freeOnly === "true",
-            excludeInstant: params.excludeInstant === "true",
+            instantPrizes: instantOnly || undefined,
+            excludeInstant: !instantOnly && params.excludeInstant === "true",
             excludeFree: params.excludeFree === "true",
             excludeSoldOut: params.excludeSoldOut === "true",
             excludeGames: !includesGamesCategory,
