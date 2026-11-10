@@ -62,6 +62,7 @@ const categoryLabelMap: Record<string, string> = {
   none: "Misc",
   uncategorised: "Misc",
   tickets: "Tickets",
+  games: "Instants",
   other: "Other",
 };
 
@@ -185,7 +186,10 @@ export function CompetitionResultsHeading({
   const sortOrder = (params.sortOrder as "asc" | "desc" | undefined) ?? "desc";
   const section = params.section?.trim() || "";
   const searchTerm = params.search?.trim() || undefined;
-  const categoryLabel = getCategoryTitleLabel(params.category);
+  const explicitCategoryLabel = getCategoryTitleLabel(params.category);
+  const instantOnly = params.instantPrizes === "true";
+  const categoryLabel =
+    explicitCategoryLabel ?? (instantOnly ? "Instants" : null);
   const sectionTitle = sectionBaseTitles[section];
   const sectionDefaultSort = sectionDefaultSorts[section];
   const explicitSortBy = params.sortBy?.trim() || undefined;
@@ -230,7 +234,7 @@ export function CompetitionResultsHeading({
         })()
       : null,
     params.freeOnly === "true" ? "Free" : null,
-    params.instantPrizes === "true" ? "Instants" : null,
+    instantOnly && explicitCategoryLabel !== null ? "Instants" : null,
   ].filter((value): value is string => Boolean(value));
   const sortPresentation = getCompetitionSortPresentation({
     sortBy,

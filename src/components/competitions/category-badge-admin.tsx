@@ -35,6 +35,10 @@ function capitalizeFirstLetter(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+function formatCategoryLabel(value: string) {
+  return value.trim().toLowerCase() === "games" ? "instants" : value;
+}
+
 export function CategoryBadgeAdmin({
   competitionId,
   category,
@@ -153,7 +157,7 @@ export function CategoryBadgeAdmin({
   if (!isAdmin) {
     return currentCategory ? (
       <Badge variant="neutral" className="inline-flex h-[22px] items-center text-rr-muted bg-rr-elevated">
-        {currentCategory}
+        {formatCategoryLabel(currentCategory)}
       </Badge>
     ) : null;
   }
@@ -172,7 +176,7 @@ export function CategoryBadgeAdmin({
             variant="neutral"
             className="inline-flex h-[22px] items-center text-rr-muted bg-rr-elevated hover:bg-rr-elevated/80"
           >
-            {currentCategory ?? "Uncategorised"}
+            {currentCategory ? formatCategoryLabel(currentCategory) : "Uncategorised"}
           </Badge>
         </button>
         {error ? (
@@ -199,7 +203,7 @@ export function CategoryBadgeAdmin({
         <option value="">Uncategorised</option>
         {(categories ?? []).map((cat) => (
           <option key={cat} value={cat}>
-            {capitalizeFirstLetter(cat)}
+            {capitalizeFirstLetter(formatCategoryLabel(cat))}
           </option>
         ))}
       </select>

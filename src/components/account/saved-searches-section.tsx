@@ -66,6 +66,10 @@ function formatCategory(value: string) {
     return "Other";
   }
 
+  if (value === "games") {
+    return "Instants";
+  }
+
   return titleCase(value);
 }
 
@@ -133,7 +137,7 @@ function buildFiltersSummary(filters: SavedSearchFilters) {
   }
 
   if (filters.instantPrizes === true) {
-    parts.push("instant prizes");
+    parts.push("Instants");
   }
 
   if (filters.excludeInstant === true) {
@@ -145,7 +149,7 @@ function buildFiltersSummary(filters: SavedSearchFilters) {
   }
 
   if (filters.excludeGames === true) {
-    parts.push("exclude games");
+    parts.push("exclude Instants");
   }
 
   if (filters.freeOnly === true) {
