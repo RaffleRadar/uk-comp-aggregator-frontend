@@ -15,6 +15,7 @@ import {
   readClosingDays,
   readHeadline,
   readInsights,
+  readTopPrizes,
   type WeeklyRadarBusiest,
   type WeeklyRadarDayCounts,
   type WeeklyRadarHeadline,
@@ -22,6 +23,7 @@ import {
   type WeeklyRadarIssue,
   type WeeklyRadarListItem,
   type WeeklyRadarPeak,
+  type WeeklyRadarTopPrize,
 } from "@/lib/weekly-radar";
 
 type Mode = "latest" | "archive";
@@ -40,6 +42,9 @@ const COPY = {
     bigThreeTitle: "Standout draws from last week.",
     insightsEyebrow: "Also on the Radar",
     insightsTitle: "Five key insights from last week.",
+    topPrizesEyebrow: "Top Prizes",
+    topPrizesTitle: "The prizes most operators ran last week.",
+    topPrizesText: "Ranked by the number of operators running each prize. Cash and gift cards left out.",
     scheduleEyebrow: "Looking ahead",
     scheduleTitle: "What's closing this week?",
     scheduleText: "A glance at scheduled closing dates, with links to browse the live draws.",
@@ -54,6 +59,9 @@ const COPY = {
     bigThreeTitle: "Standout draws from the selected week.",
     insightsEyebrow: "Insights",
     insightsTitle: "Five key insights for the selected week.",
+    topPrizesEyebrow: "Top Prizes",
+    topPrizesTitle: "The prizes most operators ran in the selected week.",
+    topPrizesText: "Ranked by the number of operators running each prize. Cash and gift cards left out.",
     scheduleEyebrow: "Week breakdown",
     scheduleTitle: "Closing days in the selected week",
     scheduleText: "How many draws closed on each day of the selected week.",
@@ -694,6 +702,82 @@ function BigThreePlaceholderRow({ rank }: { rank: number }) {
   );
 }
 
+function topPrizeOperators(item: WeeklyRadarTopPrize): string {
+  return `${formatCount(item.operators)} ${item.operators === 1 ? "operator" : "operators"}`;
+}
+
+function topPrizeDetail(item: WeeklyRadarTopPrize): string {
+  const draws = `${formatCount(item.draws)} ${item.draws === 1 ? "draw" : "draws"}`;
+  return item.lowestTicketPrice === null ? draws : `${draws} · from ${formatPrice(item.lowestTicketPrice)}`;
+}
+
+function TopPrizesSection({
+  items,
+  eyebrow,
+  title,
+  text,
+}: {
+  items: WeeklyRadarTopPrize[];
+  eyebrow: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <section aria-label={title}>
+      <SectionHeading eyebrow={eyebrow} title={title} className="mb-1.5 lg:mb-2">
+        <p className="mt-0.5 text-xs leading-snug text-rr-secondary lg:text-[13px]">{text}</p>
+      </SectionHeading>
+      <ol className={cn(panelClass, "divide-y divide-rr-border px-3 py-1 lg:hidden")}>
+        {items.map((item, index) => (
+          <li key={item.key} className="flex min-w-0 items-center gap-2.5 py-2">
+            <span className={cn(bigThreeRankClass, "text-rr-primary")}>{index + 1}.</span>
+            <span className="min-w-0 flex-1">
+              <span className="line-clamp-2 text-[13px] font-semibold leading-[1.2] text-rr-primary">
+                {item.label}
+              </span>
+              <span className="mt-0.5 block truncate text-[11px] leading-tight text-rr-secondary">
+                {topPrizeDetail(item)}
+              </span>
+            </span>
+            <span className={cn(bigThreeBadgeClass, "border-rr-green")}>
+              <span className="whitespace-nowrap text-xs font-bold leading-tight text-rr-primary">
+                {formatCount(item.operators)}
+              </span>
+              <span className="text-[10px] leading-tight text-rr-secondary">
+                {item.operators === 1 ? "operator" : "operators"}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <ol className="hidden gap-4 lg:grid lg:grid-cols-5">
+        {items.map((item, index) => (
+          <li
+            key={item.key}
+            className={cn(panelClass, liftClass, "group/tile flex min-w-0 flex-col gap-2 px-3 py-2.5")}
+          >
+            <div className="flex min-w-0 items-start gap-2">
+              <span className="text-2xl font-extrabold leading-none text-rr-green">{index + 1}</span>
+              <h3
+                className="line-clamp-2 min-h-[2.5em] text-sm font-bold leading-tight text-rr-primary"
+                title={item.label}
+              >
+                {item.label}
+              </h3>
+            </div>
+            <div className="flex min-h-[2.75rem] flex-col items-center justify-center rounded-2xl bg-rr-green px-3 py-1 text-center text-rr-on-accent">
+              <p className="w-full truncate text-base font-bold leading-tight">{topPrizeOperators(item)}</p>
+              <p className="w-full truncate text-[10.5px] font-semibold leading-tight opacity-85">
+                {topPrizeDetail(item)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const copy = COPY[mode];
   const weekLabel = issue ? formatWeekRange(issue.weekStart, issue.weekEnd) : "No issue yet";
@@ -702,6 +786,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const headline = readHeadline(issue?.payload);
   const bigThree = readBigThree(issue?.payload);
   const insights = readInsights(issue?.payload);
+  const topPrizes = readTopPrizes(issue?.payload);
   const schedule = scheduleCounts(mode, issue?.payload);
   const schedulePeak = peakDay(schedule);
 
@@ -927,6 +1012,15 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
             })}
           </div>
         </section>
+
+        {topPrizes && topPrizes.length > 0 ? (
+          <TopPrizesSection
+            items={topPrizes}
+            eyebrow={copy.topPrizesEyebrow}
+            title={copy.topPrizesTitle}
+            text={copy.topPrizesText}
+          />
+        ) : null}
 
         <section aria-label={copy.scheduleTitle} className="space-y-3">
           <div

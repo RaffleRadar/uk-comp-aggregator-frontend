@@ -357,6 +357,37 @@ function readDayCounts(value: unknown): WeeklyRadarDayCounts | null {
   };
 }
 
+export type WeeklyRadarTopPrize = {
+  key: string;
+  label: string;
+  operators: number;
+  draws: number;
+  lowestTicketPrice: number | null;
+};
+
+function readTopPrize(value: unknown): WeeklyRadarTopPrize | null {
+  if (!isRecord(value)) return null;
+  const key = readString(value.key);
+  const label = readString(value.label);
+  const operators = readNumber(value.operators);
+  const draws = readNumber(value.draws);
+  if (!key || !label || operators === null || draws === null) return null;
+  return {
+    key,
+    label,
+    operators,
+    draws,
+    lowestTicketPrice: readNumber(value.lowestTicketPrice),
+  };
+}
+
+export function readTopPrizes(payload: unknown): WeeklyRadarTopPrize[] | null {
+  if (!isRecord(payload) || !Array.isArray(payload.topPrizes)) return null;
+  return payload.topPrizes
+    .map(readTopPrize)
+    .filter((item): item is WeeklyRadarTopPrize => item !== null);
+}
+
 export function readClosingDays(payload: unknown): WeeklyRadarClosingDays | null {
   if (!isRecord(payload) || !isRecord(payload.closingDays)) return null;
   return {
