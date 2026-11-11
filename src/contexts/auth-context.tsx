@@ -68,8 +68,34 @@ const initialState: AuthState = {
   error: null,
 };
 
+const ME_RETRY_DELAYS_MS = [1000, 3000];
+
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
+}
+
+function isSignedOutError(error: unknown) {
+  return error instanceof AuthClientError && error.status === 401;
+}
+
+function wait(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
+async function fetchCurrentUser(): Promise<AuthUser> {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await authFetchJson<AuthUser>("/me");
+    } catch (error) {
+      if (isSignedOutError(error) || attempt >= ME_RETRY_DELAYS_MS.length) {
+        throw error;
+      }
+
+      await wait(ME_RETRY_DELAYS_MS[attempt]);
+    }
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -82,10 +108,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const user = await authFetchJson<AuthUser>("/me");
+      const user = await fetchCurrentUser();
       dispatch({ type: "authenticated", user });
     } catch (error) {
-      if (error instanceof AuthClientError && error.status === 401) {
+      if (isSignedOutError(error)) {
         dispatch({ type: "unauthenticated", error: null });
         return;
       }
@@ -154,7 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const user = await authFetchJson<AuthUser>("/me");
+        const user = await fetchCurrentUser();
         if (!cancelled) {
           dispatch({ type: "authenticated", user });
         }
@@ -162,7 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (cancelled) {
           return;
         }
-        if (error instanceof AuthClientError && error.status === 401) {
+        if (isSignedOutError(error)) {
           dispatch({ type: "unauthenticated", error: null });
           return;
         }

@@ -38,9 +38,14 @@ export class AuthClientError extends Error {
   }
 }
 
-let refreshPromise: Promise<boolean> | null = null;
+export type RefreshOutcome = "refreshed" | "signed-out" | "unavailable";
+
+let refreshPromise: Promise<RefreshOutcome> | null = null;
 
 const SESSION_HINT_COOKIE_NAME = "rr_session";
+const REFRESH_LOCK_NAME = "rr-auth-refresh";
+const REFRESH_TIMEOUT_MS = 10 * 1000;
+const FRESH_ACCESS_MARGIN_MS = 30 * 1000;
 
 function readSessionHint() {
   if (typeof document === "undefined") {
@@ -130,13 +135,17 @@ async function request(
     path !== "/refresh" &&
     hasSessionHint()
   ) {
-    const refreshed = await ensureRefreshed();
+    const outcome = await refreshSession();
 
-    if (refreshed) {
+    if (outcome === "refreshed") {
       return request(path, options, retryOnUnauthorized, true);
     }
 
-    throw new AuthClientError("Signed out", 401);
+    if (outcome === "signed-out") {
+      throw new AuthClientError("Signed out", 401);
+    }
+
+    throw new AuthClientError("Service unavailable", 503);
   }
 
   if (!response.ok) {
@@ -154,31 +163,88 @@ async function readJson<T>(response: Response): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export function ensureRefreshed() {
+async function requestRefresh(): Promise<RefreshOutcome> {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => controller.abort(),
+    REFRESH_TIMEOUT_MS,
+  );
+
+  try {
+    const response = await fetch("/api/auth/refresh", {
+      method: "POST",
+      credentials: "same-origin",
+      signal: controller.signal,
+    });
+
+    if (response.ok) {
+      return "refreshed";
+    }
+
+    return response.status === 401 ? "signed-out" : "unavailable";
+  } catch {
+    return "unavailable";
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+function wasRefreshedElsewhere(expiryBefore: number | null) {
+  const expiry = getAccessTokenExpiry();
+
+  return (
+    expiry !== null &&
+    expiry !== expiryBefore &&
+    expiry - Date.now() > FRESH_ACCESS_MARGIN_MS
+  );
+}
+
+async function refreshUnderLock(): Promise<RefreshOutcome> {
+  const expiryBefore = getAccessTokenExpiry();
+
+  const run = async (): Promise<RefreshOutcome> => {
+    if (!hasSessionHint()) {
+      return "signed-out";
+    }
+
+    if (wasRefreshedElsewhere(expiryBefore)) {
+      return "refreshed";
+    }
+
+    return requestRefresh();
+  };
+
+  if (typeof navigator === "undefined" || !navigator.locks) {
+    return run();
+  }
+
+  const outcome = await navigator.locks.request(REFRESH_LOCK_NAME, run);
+
+  return outcome;
+}
+
+export function refreshSession(): Promise<RefreshOutcome> {
   if (!hasSessionHint()) {
-    return Promise.resolve(false);
+    return Promise.resolve("signed-out");
   }
 
   if (refreshPromise) {
     return refreshPromise;
   }
 
-  refreshPromise = (async () => {
-    try {
-      const response = await fetch("/api/auth/refresh", {
-        method: "POST",
-        credentials: "same-origin",
-      });
-
-      return response.ok;
-    } catch {
-      return false;
-    } finally {
+  refreshPromise = refreshUnderLock()
+    .catch((): RefreshOutcome => "unavailable")
+    .finally(() => {
       refreshPromise = null;
-    }
-  })();
+    });
 
   return refreshPromise;
+}
+
+export async function ensureRefreshed() {
+  const outcome = await refreshSession();
+
+  return outcome === "refreshed";
 }
 
 export function authFetch(path: string, options: AuthRequestOptions = {}) {

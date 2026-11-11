@@ -14,10 +14,7 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const ACCESS_COOKIE_MAX_AGE = 60 * 15;
 const REFRESH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
-export async function setAuthCookies({
-  accessToken,
-  refreshToken,
-}: AuthTokenPair) {
+export async function setAccessCookies(accessToken: string) {
   const cookieStore = await cookies();
 
   cookieStore.set(ACCESS_COOKIE_NAME, accessToken, {
@@ -28,14 +25,6 @@ export async function setAuthCookies({
     maxAge: ACCESS_COOKIE_MAX_AGE,
   });
 
-  cookieStore.set(REFRESH_COOKIE_NAME, refreshToken, {
-    httpOnly: true,
-    secure: IS_PRODUCTION,
-    sameSite: "lax",
-    path: "/api/auth",
-    maxAge: REFRESH_COOKIE_MAX_AGE,
-  });
-
   const accessExpiresAt = Date.now() + ACCESS_COOKIE_MAX_AGE * 1000;
 
   cookieStore.set(SESSION_HINT_COOKIE_NAME, String(accessExpiresAt), {
@@ -43,6 +32,23 @@ export async function setAuthCookies({
     secure: IS_PRODUCTION,
     sameSite: "lax",
     path: "/",
+    maxAge: REFRESH_COOKIE_MAX_AGE,
+  });
+}
+
+export async function setAuthCookies({
+  accessToken,
+  refreshToken,
+}: AuthTokenPair) {
+  await setAccessCookies(accessToken);
+
+  const cookieStore = await cookies();
+
+  cookieStore.set(REFRESH_COOKIE_NAME, refreshToken, {
+    httpOnly: true,
+    secure: IS_PRODUCTION,
+    sameSite: "lax",
+    path: "/api/auth",
     maxAge: REFRESH_COOKIE_MAX_AGE,
   });
 }
