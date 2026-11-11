@@ -651,28 +651,28 @@ export default async function Page({
             </div>
             {hasFinalResult ? (
               <>
-                <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2">
+                <div className="mt-2 grid grid-cols-[auto_auto_auto] justify-between gap-2 sm:grid-cols-3">
                   <div>
-                    <p className="text-xs text-rr-muted mb-1">
+                    <p className="mb-1 whitespace-nowrap text-[clamp(0.625rem,2.9vw,0.75rem)] text-rr-muted">
                       Final tickets sold
                     </p>
-                    <p className="text-lg font-semibold text-rr-primary sm:text-xl">
+                    <p className="whitespace-nowrap text-[clamp(0.875rem,4.4vw,1.125rem)] font-semibold tabular-nums text-rr-primary sm:text-xl">
                       {finalSoldValue !== null
                         ? finalSoldValue.toLocaleString("en-GB")
                         : "\u2014"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-rr-muted mb-1">Final % sold</p>
-                    <p className="text-lg font-semibold text-rr-primary sm:text-xl">
+                    <p className="mb-1 whitespace-nowrap text-[clamp(0.625rem,2.9vw,0.75rem)] text-rr-muted">Final % sold</p>
+                    <p className="whitespace-nowrap text-[clamp(0.875rem,4.4vw,1.125rem)] font-semibold tabular-nums text-rr-primary sm:text-xl">
                       {finalPercentValue !== null
                         ? `${finalPercentValue.toFixed(0)}%`
                         : "\u2014"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-rr-muted mb-1">Final sales</p>
-                    <p className="text-lg font-semibold text-rr-primary sm:text-xl">
+                    <p className="mb-1 whitespace-nowrap text-[clamp(0.625rem,2.9vw,0.75rem)] text-rr-muted">Final sales</p>
+                    <p className="whitespace-nowrap text-[clamp(0.875rem,4.4vw,1.125rem)] font-semibold tabular-nums text-rr-primary sm:text-xl">
                       {finalRevenue !== null
                         ? `\u00a3${Math.round(finalRevenue).toLocaleString("en-GB")}`
                         : "\u2014"}
