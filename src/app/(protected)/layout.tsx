@@ -7,7 +7,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
     <AppShell>
       <RequireAuth>{children}</RequireAuth>
-      <Footer />
+      <Footer compact />
     </AppShell>
   );
 }

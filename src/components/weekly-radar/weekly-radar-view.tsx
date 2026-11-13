@@ -229,6 +229,7 @@ const INSIGHTS: InsightTile[] = [
   },
 ];
 
+const PUBLIC_TOP_PRIZES = 5;
 const WEEK_DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const WEEK_DAYS = WEEK_DAY_NAMES.map((day) => day.slice(0, 3));
 
@@ -786,7 +787,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const headline = readHeadline(issue?.payload);
   const bigThree = readBigThree(issue?.payload);
   const insights = readInsights(issue?.payload);
-  const topPrizes = readTopPrizes(issue?.payload);
+  const topPrizes = readTopPrizes(issue?.payload)?.slice(0, PUBLIC_TOP_PRIZES) ?? null;
   const schedule = scheduleCounts(mode, issue?.payload);
   const schedulePeak = peakDay(schedule);
 

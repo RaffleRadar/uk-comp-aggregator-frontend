@@ -25,7 +25,7 @@ function isExternalHref(href: string) {
   return href.startsWith("http://") || href.startsWith("https://");
 }
 
-export async function Footer() {
+export async function Footer({ compact = false }: { compact?: boolean } = {}) {
   let settings: SiteSettingsData | null = null;
 
   try {
@@ -61,7 +61,7 @@ export async function Footer() {
     "Track every UK prize competition in one place — real odds, real value, no noise.";
 
   return (
-    <footer className="mt-10 border-t border-rr-border bg-rr-bg md:mt-20">
+    <footer className={compact ? "mt-6 border-t border-rr-border bg-rr-bg md:mt-8" : "mt-10 border-t border-rr-border bg-rr-bg md:mt-20"}>
       <div className="container py-8 md:py-16">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
           <div className="max-w-[320px]">
