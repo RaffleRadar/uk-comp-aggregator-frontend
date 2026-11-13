@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import {
   ClosingPanel,
-  SalesPanel,
+  SalesTiming,
 } from "@/components/operator-dashboard/operator-dashboard-charts";
 import {
   changeDirection,
@@ -81,12 +81,14 @@ function ChangeNote({
 
 function StatTile({
   label,
+  mobileLabel,
   metric,
   unit,
   tone,
   footnote,
 }: {
   label: string;
+  mobileLabel?: string;
   metric: MetricChange;
   unit: ChangeUnit;
   tone?: "neutral" | "performance";
@@ -94,7 +96,14 @@ function StatTile({
 }) {
   return (
     <div className={cn(panelClass, "flex min-w-0 flex-col gap-1 px-3 py-2.5")}>
-      <span className="text-xs font-semibold text-rr-secondary">{label}</span>
+      {mobileLabel ? (
+        <span className="truncate text-xs font-semibold text-rr-secondary">
+          <span className="sm:hidden">{mobileLabel}</span>
+          <span className="hidden sm:inline">{label}</span>
+        </span>
+      ) : (
+        <span className="text-xs font-semibold text-rr-secondary">{label}</span>
+      )}
       <span className="text-xl font-extrabold leading-none tracking-[-0.02em] text-rr-primary sm:text-2xl">
         {formatMetric(metric.value, unit)}
       </span>
@@ -243,23 +252,27 @@ function PerformanceSection({
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <StatTile
           label="Your draws completed"
+          mobileLabel="Draws completed"
           metric={performance.drawsCompleted}
           unit="count"
         />
         <StatTile
           label="Your draws sold out"
+          mobileLabel="Sold out"
           metric={performance.soldOut}
           unit="count"
           tone="performance"
         />
         <StatTile
           label="Clicks from RaffleRadar"
+          mobileLabel="Clicks"
           metric={performance.visits.clicks}
           unit="count"
           tone="performance"
         />
         <StatTile
           label="Unique visitors"
+          mobileLabel="Visitors"
           metric={performance.visits.uniqueVisitors}
           unit="count"
           tone="performance"
@@ -358,10 +371,7 @@ function MarketSections({ market }: { market: OperatorDashboardMarket }) {
         title="When tickets sell"
         text="When tickets were bought across the market. Hover or tap a bar for its share. It does not prove that a slot causes better results."
       >
-        <div className="grid gap-2 lg:grid-cols-2">
-          <SalesPanel kind="day" busiest={market.salesByDay} />
-          <SalesPanel kind="hour" busiest={market.salesByHour} />
-        </div>
+        <SalesTiming market={market} />
       </Section>
 
       <Section

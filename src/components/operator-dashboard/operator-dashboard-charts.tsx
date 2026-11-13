@@ -1,15 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { barHeights } from "@/lib/operator-dashboard";
+import {
+  barHeights,
+  busiestIndex,
+  dayHours,
+  type OperatorDashboardMarket,
+} from "@/lib/operator-dashboard";
 import {
   formatCount,
   formatHourRange,
   formatPounds,
   formatWeekRange,
   formatWeekday,
-  type WeeklyRadarBusiest,
   type WeeklyRadarDayCounts,
 } from "@/lib/weekly-radar";
 
@@ -52,6 +56,16 @@ function tooltipPosition(index: number, count: number) {
   return { style: { left: `${centre}%` }, className: "-translate-x-1/2" };
 }
 
+function formatSales(value: number, inPounds: boolean) {
+  return inPounds ? formatPounds(value) : `${formatCount(value)} tickets`;
+}
+
+function formatSalesCompact(value: number, inPounds: boolean) {
+  return inPounds
+    ? `£${compactFormat.format(value)}`
+    : compactFormat.format(value);
+}
+
 function BarChart({
   values,
   shortLabels,
@@ -62,6 +76,8 @@ function BarChart({
   formatCompact,
   shareOf,
   averageOf,
+  selected = null,
+  onSelect,
 }: {
   values: number[];
   shortLabels: string[];
@@ -72,13 +88,15 @@ function BarChart({
   formatCompact: (value: number) => string;
   shareOf: string;
   averageOf: string;
+  selected?: number | null;
+  onSelect?: (index: number) => void;
 }) {
   const [active, setActive] = useState<number | null>(null);
   const heights = barHeights(values);
   const total = sum(values);
   const average = values.length > 0 ? total / values.length : 0;
   const max = Math.max(0, ...values);
-  const peak = max > 0 ? values.indexOf(max) : null;
+  const strong = selected ?? busiestIndex(values);
   const averageHeight = max > 0 ? (average / max) * 100 : null;
   const share = active !== null ? formatShare(values[active], total) : null;
   const versus =
@@ -115,7 +133,7 @@ function BarChart({
               key={shortLabels[index]}
               className={cn(
                 "min-w-0 flex-1 text-center text-[10px] font-semibold leading-none",
-                index === peak || index === active
+                index === strong || index === active
                   ? "text-rr-primary"
                   : "text-rr-secondary",
               )}
@@ -139,18 +157,26 @@ function BarChart({
             key={shortLabels[index]}
             type="button"
             aria-label={`${fullLabel(index)}: ${formatValue(values[index])}`}
+            aria-pressed={onSelect ? selected === index : undefined}
             onMouseEnter={() => setActive(index)}
             onFocus={() => setActive(index)}
             onBlur={() => setActive(null)}
-            onClick={() => setActive(index)}
-            className="flex h-full min-w-0 flex-1 cursor-default items-end rounded-t-[3px] outline-none focus-visible:ring-1 focus-visible:ring-rr-green"
+            onClick={() => {
+              setActive(index);
+              onSelect?.(index);
+            }}
+            className={cn(
+              "flex h-full min-w-0 flex-1 items-end rounded-t-[3px] outline-none focus-visible:ring-1 focus-visible:ring-rr-green",
+              onSelect ? "cursor-pointer" : "cursor-default",
+            )}
           >
             <span
               className={cn(
                 "block w-full rounded-t-[3px] transition-opacity duration-150",
-                index === peak ? "bg-rr-green" : "bg-rr-green-border",
+                index === strong || index === active
+                  ? "bg-rr-green"
+                  : "bg-rr-green-border",
                 active !== null && active !== index ? "opacity-50" : "",
-                active === index && index !== peak ? "bg-rr-green" : "",
               )}
               style={{
                 height: `${Math.max(height, values[index] > 0 ? 3 : 0)}%`,
@@ -166,7 +192,7 @@ function BarChart({
             key={label}
             className={cn(
               "min-w-0 flex-1 text-center text-[10px] leading-none",
-              index === active
+              index === active || index === selected
                 ? "font-semibold text-rr-primary"
                 : "text-rr-muted",
             )}
@@ -222,79 +248,162 @@ function MetricToggle({
   );
 }
 
-export function SalesPanel({
-  kind,
+function PanelHeader({
+  title,
   busiest,
+  children,
 }: {
-  kind: "day" | "hour";
-  busiest: WeeklyRadarBusiest | null;
+  title: string;
+  busiest: string | null;
+  children?: ReactNode;
 }) {
-  const [chosen, setChosen] = useState<Metric>("spend");
-  const title = kind === "day" ? "Sales by day" : "Sales by hour";
-  const labels = kind === "day" ? WEEK_DAYS : HOURS;
-  const spend = busiest?.spend ?? null;
-  const tickets = busiest?.tickets ?? null;
-  const metric: Metric =
-    chosen === "spend"
-      ? spend
-        ? "spend"
-        : "tickets"
-      : tickets
-        ? "tickets"
-        : "spend";
-  const peak = metric === "spend" ? spend : tickets;
-
-  if (!peak || peak.values.length !== labels.length) {
-    return <EmptyPanel title={title} text="No sales data for this week yet." />;
-  }
-
-  const inPounds = metric === "spend";
-  const total = sum(peak.values);
-
   return (
-    <div className={cn(panelClass, "space-y-2 px-3 py-2.5")}>
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-        <h3 className="text-sm font-bold text-rr-primary">{title}</h3>
-        <span className="flex items-center gap-2 text-xs text-rr-secondary">
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <h3 className="text-sm font-bold text-rr-primary">{title}</h3>
+      <span className="flex items-center gap-2 text-xs text-rr-secondary">
+        {busiest ? (
           <span>
             Busiest:{" "}
-            <span className="font-semibold text-rr-primary">
-              {kind === "day"
-                ? formatWeekday(peak.at)
-                : formatHourRange(peak.at)}
-            </span>
+            <span className="font-semibold text-rr-primary">{busiest}</span>
           </span>
-          {spend && tickets ? (
+        ) : null}
+        {children}
+      </span>
+    </div>
+  );
+}
+
+function busiestLabel(values: number[], format: (index: number) => string) {
+  const index = busiestIndex(values);
+  return index === null ? null : format(index);
+}
+
+export function SalesTiming({ market }: { market: OperatorDashboardMarket }) {
+  const [chosen, setChosen] = useState<Metric>("spend");
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+
+  const daySpend = market.salesByDay?.spend ?? null;
+  const dayTickets = market.salesByDay?.tickets ?? null;
+  const hourSpend = market.salesByHour?.spend ?? null;
+  const hourTickets = market.salesByHour?.tickets ?? null;
+  const bothMetrics = Boolean(daySpend && dayTickets);
+  const metric: Metric =
+    chosen === "spend"
+      ? daySpend
+        ? "spend"
+        : "tickets"
+      : dayTickets
+        ? "tickets"
+        : "spend";
+  const inPounds = metric === "spend";
+  const dayValues =
+    (metric === "spend" ? daySpend : dayTickets)?.values ?? null;
+  const weekHours =
+    (metric === "spend" ? hourSpend : hourTickets)?.values ?? null;
+  const grid = market.salesByDayHour?.[metric] ?? null;
+  const canPickDay = Boolean(grid && dayValues);
+  const pickedHours = canPickDay ? dayHours(grid, selectedDay) : null;
+  const hourValues = pickedHours ?? weekHours;
+  const dayName =
+    pickedHours && selectedDay !== null ? formatWeekday(selectedDay + 1) : null;
+
+  const dayPanel =
+    dayValues && dayValues.length === 7 ? (
+      <div className={cn(panelClass, "space-y-2 px-3 py-2.5")}>
+        <PanelHeader
+          title="Sales by day"
+          busiest={busiestLabel(dayValues, (index) => formatWeekday(index + 1))}
+        >
+          {bothMetrics ? (
             <MetricToggle metric={metric} onChange={setChosen} />
           ) : null}
-        </span>
+        </PanelHeader>
+        <BarChart
+          values={dayValues}
+          shortLabels={WEEK_DAYS}
+          fullLabel={(index) => formatWeekday(index + 1)}
+          showLabel={() => true}
+          showValues
+          formatValue={(value) => formatSales(value, inPounds)}
+          formatCompact={(value) => formatSalesCompact(value, inPounds)}
+          shareOf="the week"
+          averageOf="day"
+          selected={canPickDay ? selectedDay : null}
+          onSelect={
+            canPickDay
+              ? (index) =>
+                  setSelectedDay((current) =>
+                    current === index ? null : index,
+                  )
+              : undefined
+          }
+        />
+        <p className="text-[11px] leading-snug text-rr-muted">
+          {inPounds
+            ? `${formatPounds(sum(dayValues))} ticket spend`
+            : `${formatCount(sum(dayValues))} tickets sold`}{" "}
+          across all tracked operators, UK time.
+          {canPickDay ? " Click a day to see its hours." : ""}
+        </p>
       </div>
-      <BarChart
-        values={peak.values}
-        shortLabels={labels}
-        fullLabel={(index) =>
-          kind === "day" ? formatWeekday(index + 1) : formatHourRange(index)
-        }
-        showLabel={(index) => (kind === "day" ? true : HOUR_LABELS.has(index))}
-        showValues={kind === "day"}
-        formatValue={(value) =>
-          inPounds ? formatPounds(value) : `${formatCount(value)} tickets`
-        }
-        formatCompact={(value) =>
-          inPounds
-            ? `£${compactFormat.format(value)}`
-            : compactFormat.format(value)
-        }
-        shareOf={kind === "day" ? "the week" : "the day"}
-        averageOf={kind === "day" ? "day" : "hour"}
+    ) : (
+      <EmptyPanel
+        title="Sales by day"
+        text="No sales data for this week yet."
       />
-      <p className="text-[11px] leading-snug text-rr-muted">
-        {inPounds
-          ? `${formatPounds(total)} ticket spend`
-          : `${formatCount(total)} tickets sold`}{" "}
-        across all tracked operators, UK time. Dashed line: average{" "}
-        {kind === "day" ? "day" : "hour"}.
-      </p>
+    );
+
+  const hourPanel =
+    hourValues && hourValues.length === 24 ? (
+      <div className={cn(panelClass, "space-y-2 px-3 py-2.5")}>
+        <PanelHeader
+          title={dayName ? `Sales by hour · ${dayName}` : "Sales by hour"}
+          busiest={busiestLabel(hourValues, formatHourRange)}
+        >
+          {dayName ? (
+            <button
+              type="button"
+              onClick={() => setSelectedDay(null)}
+              className="rounded-md border border-rr-border px-2 py-0.5 text-[11px] font-semibold leading-tight text-rr-secondary hover:text-rr-primary"
+            >
+              All week
+            </button>
+          ) : null}
+        </PanelHeader>
+        <BarChart
+          values={hourValues}
+          shortLabels={HOURS}
+          fullLabel={(index) =>
+            dayName
+              ? `${dayName} ${formatHourRange(index)}`
+              : formatHourRange(index)
+          }
+          showLabel={(index) => HOUR_LABELS.has(index)}
+          showValues={false}
+          formatValue={(value) => formatSales(value, inPounds)}
+          formatCompact={(value) => formatSalesCompact(value, inPounds)}
+          shareOf={dayName ?? "the week"}
+          averageOf="hour"
+        />
+        <p className="text-[11px] leading-snug text-rr-muted">
+          {inPounds
+            ? `${formatPounds(sum(hourValues))} ticket spend`
+            : `${formatCount(sum(hourValues))} tickets sold`}{" "}
+          {dayName ? `on ${dayName}` : "across the week"}, UK time. Dashed line:
+          average hour.
+        </p>
+      </div>
+    ) : (
+      <EmptyPanel
+        title="Sales by hour"
+        text="No sales data for this week yet."
+      />
+    );
+
+  return (
+    <div className="grid gap-2 lg:grid-cols-2">
+      {dayPanel}
+      {hourPanel}
     </div>
   );
 }

@@ -6,12 +6,8 @@ import { Footer } from "@/components/layout/Footer";
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
     <AppShell>
-      <div className="flex min-h-screen flex-col">
-        <div className="flex-1">
-          <RequireAuth>{children}</RequireAuth>
-        </div>
-        <Footer />
-      </div>
+      <RequireAuth>{children}</RequireAuth>
+      <Footer />
     </AppShell>
   );
 }

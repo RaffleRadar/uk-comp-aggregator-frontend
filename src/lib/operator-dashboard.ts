@@ -37,6 +37,7 @@ export type OperatorDashboardMarket = {
   };
   salesByDay: WeeklyRadarBusiest | null;
   salesByHour: WeeklyRadarBusiest | null;
+  salesByDayHour: { tickets: number[][]; spend: number[][] } | null;
   closingDays: WeeklyRadarClosingDays | null;
   topPrizes: WeeklyRadarTopPrize[];
 };
@@ -109,6 +110,23 @@ export function changeDirection(
   if (change > 0) return "up";
   if (change < 0) return "down";
   return "flat";
+}
+
+export function busiestIndex(values: number[]): number | null {
+  let best: number | null = null;
+  values.forEach((value, index) => {
+    if (value > 0 && (best === null || value > values[best])) best = index;
+  });
+  return best;
+}
+
+export function dayHours(
+  grid: number[][] | null | undefined,
+  day: number | null,
+): number[] | null {
+  if (!grid || day === null) return null;
+  const hours = grid[day];
+  return Array.isArray(hours) && hours.length === 24 ? hours : null;
 }
 
 export function barHeights(values: number[]): number[] {
