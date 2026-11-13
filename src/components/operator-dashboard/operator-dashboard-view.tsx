@@ -5,15 +5,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { RadarLoader } from "@/components/ui/RadarLoader";
 import { useAuth } from "@/contexts/auth-context";
 import { protectedFetch } from "@/lib/protected-fetch";
+import { OperatorDashboardContent } from "@/components/operator-dashboard/operator-dashboard-content";
 import {
   canOpenOperatorDashboard,
-  operatorDashboardMePath,
-  type OperatorDashboardMe,
-  type OperatorDashboardOperator,
+  operatorDashboardOverviewPath,
+  type OperatorDashboardOverview,
 } from "@/lib/operator-dashboard";
 
 type LoadedState =
-  | { kind: "ready"; operator: OperatorDashboardOperator }
+  | { kind: "ready"; overview: OperatorDashboardOverview }
   | { kind: "not-linked" }
   | { kind: "other-operator" }
   | { kind: "choose-operator" }
@@ -41,24 +41,16 @@ async function loadOperator(path: string): Promise<LoadedState> {
     }
     if (!response.ok) return { kind: "error", message: LOAD_ERROR };
 
-    const data = (await response.json()) as OperatorDashboardMe;
-    return { kind: "ready", operator: data.operator };
+    const overview = (await response.json()) as OperatorDashboardOverview;
+    return { kind: "ready", overview };
   } catch {
     return { kind: "error", message: LOAD_ERROR };
   }
 }
 
-function siteHost(baseUrl: string) {
-  try {
-    return new URL(baseUrl).host.replace(/^www\./, "");
-  } catch {
-    return baseUrl;
-  }
-}
-
 function Notice({ title, text }: { title: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-rr-border bg-rr-surface p-6">
+    <div className="rounded-xl border border-rr-border bg-rr-surface px-4 py-3">
       <h1 className="text-lg font-semibold text-rr-primary">{title}</h1>
       <p className="mt-2 text-sm text-rr-secondary">{text}</p>
     </div>
@@ -75,7 +67,7 @@ export function OperatorDashboardView() {
   const needsOperatorChoice = role === "admin" && !requestedOperatorId?.trim();
   const requestPath =
     status === "authenticated" && allowed && !needsOperatorChoice
-      ? operatorDashboardMePath(requestedOperatorId)
+      ? operatorDashboardOverviewPath(requestedOperatorId)
       : null;
   const [loaded, setLoaded] = useState<{
     path: string;
@@ -117,7 +109,7 @@ export function OperatorDashboardView() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
       {state.kind === "loading" ? (
         <div className="flex justify-center py-16">
           <RadarLoader size="md" />
@@ -150,22 +142,7 @@ export function OperatorDashboardView() {
       ) : null}
 
       {state.kind === "ready" ? (
-        <div className="space-y-6">
-          <header>
-            <p className="text-xs font-semibold uppercase tracking-wide text-rr-muted">
-              Operator dashboard
-            </p>
-            <h1 className="mt-1 text-2xl font-semibold text-rr-primary sm:text-3xl">
-              {state.operator.name}
-            </h1>
-            <p className="mt-1 text-sm text-rr-secondary">
-              {siteHost(state.operator.baseUrl)}
-            </p>
-          </header>
-          <div className="rounded-2xl border border-rr-border bg-rr-surface p-6 text-sm text-rr-secondary">
-            Market overview is being prepared.
-          </div>
-        </div>
+        <OperatorDashboardContent overview={state.overview} />
       ) : null}
     </div>
   );
