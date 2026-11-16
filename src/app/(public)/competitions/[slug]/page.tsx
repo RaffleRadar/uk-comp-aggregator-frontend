@@ -15,6 +15,13 @@ import { EnterButton } from "@/components/competitions/enter-button";
 import { CompetitionViewTracker } from "@/components/competitions/competition-view-tracker";
 import { SaveActions } from "@/components/competitions/save-actions";
 import { TicketCalculator } from "@/components/competitions/ticket-calculator";
+import { OddsBox } from "@/components/competitions/odds-box";
+import {
+  getOddsPerTicket,
+  getPercentTextClass,
+  getProjectedSales,
+  percentTextClass,
+} from "@/lib/odds-forecast";
 import { DrawCountdown } from "@/components/competitions/draw-countdown";
 import { TicketSalesChart } from "@/components/competitions/ticket-sales-chart";
 import { CompetitionCard } from "@/components/competitions/competition-card";
@@ -422,10 +429,19 @@ export default async function Page({
   const makeModel = [prizeMake, prizeModel].filter(Boolean).join(" / ");
   const winnersForOdds =
     typeof numWinners === "number" && numWinners > 0 ? numWinners : 1;
-  const liveOdds =
-    ticketsSoldForOdds && ticketsSoldForOdds > 0
-      ? Math.max(1, Math.round(ticketsSoldForOdds / winnersForOdds))
+  const liveOdds = getOddsPerTicket(ticketsSoldForOdds, winnersForOdds);
+  const sellsOutOdds = getOddsPerTicket(totalTicketsValue, winnersForOdds);
+  const projectedSales =
+    !hasEnded && projection && totalTicketsValue !== null
+      ? getProjectedSales(
+          projection.projectedPercent,
+          totalTicketsValue,
+          soldTickets,
+        )
       : null;
+  const forecastOdds = projectedSales
+    ? getOddsPerTicket(projectedSales.tickets, winnersForOdds)
+    : null;
   const operatorVrValue =
     operator &&
     operator.avgVr !== null &&
@@ -1032,42 +1048,41 @@ export default async function Page({
               </div>
             </div>
             {!instantPrizes && ticketsSoldForOdds !== null ? (
-              <div className="order-10 mb-1.5 mt-1.5 rounded-lg border border-rr-border bg-rr-elevated md:order-none md:mt-0">
-                <div className="flex flex-row items-center divide-x divide-rr-border md:items-stretch">
-                  <div className="flex flex-1 flex-col items-center px-4 py-3 text-center md:w-[46%] md:flex-none md:shrink-0 md:items-start md:py-5 md:text-left">
-                    <p className="flex items-center justify-center gap-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-muted md:mb-1 md:justify-start">
-                      <span>
-                        {hasEnded
-                          ? "Final odds per ticket based on tickets sold"
-                          : "Odds per ticket based on tickets sold"}
-                      </span>
-                      <InfoTooltip
-                        text={
-                          hasEnded
-                            ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
-                            : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
-                        }
-                      />
-                    </p>
-                    <p className="mt-2 whitespace-nowrap text-[clamp(1.5rem,8vw,2.5rem)] font-semibold leading-none text-rr-green md:mt-0 md:text-2xl">
-                      {liveOdds
-                        ? `1 in ${liveOdds.toLocaleString("en-GB")}`
-                        : "No tickets sold yet"}
-                    </p>
-                  </div>
-                  {!hasEnded ? (
-                    <div className="hidden flex-1 px-4 py-5 md:block">
-                      <p className="text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
-                        FEWER TICKETS SOLD ={" "}
-                        <span className="text-rr-green">HIGHER CHANCE</span>
-                      </p>
-                      <p className="mt-5 text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-rr-secondary">
-                        MORE TICKETS SOLD ={" "}
-                        <span className="text-rr-primary">LOWER CHANCE</span>
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
+              <div className="order-10 mb-1.5 mt-1.5 flex flex-col gap-1.5 md:order-none md:mt-0">
+                <OddsBox
+                  label={hasEnded ? "Final odds" : "Live odds"}
+                  tooltip={
+                    hasEnded
+                      ? "Your chance per ticket at the point the competition closed, based on final tickets sold."
+                      : "Your chance per ticket based on how many have sold so far. This shortens as more tickets sell before the draw."
+                  }
+                  value={
+                    liveOdds
+                      ? `1 in ${liveOdds.toLocaleString("en-GB")}`
+                      : "No tickets sold yet"
+                  }
+                  valueClassName={
+                    liveOdds
+                      ? getPercentTextClass(percentValue)
+                      : "text-rr-muted"
+                  }
+                />
+                {!hasEnded && sellsOutOdds !== null ? (
+                  <OddsBox
+                    label="Odds if sells out"
+                    tooltip="Your chance per ticket if every ticket sells before the draw."
+                    value={`1 in ${sellsOutOdds.toLocaleString("en-GB")}`}
+                    valueClassName={percentTextClass.red}
+                  />
+                ) : null}
+                {projectedSales && forecastOdds !== null ? (
+                  <OddsBox
+                    label="Odds forecasted"
+                    tooltip="Your chance per ticket based on the tickets projected to sell by the draw, from previous draws and the current sales pace."
+                    value={`1 in ${forecastOdds.toLocaleString("en-GB")}`}
+                    valueClassName={getPercentTextClass(projectedSales.percent)}
+                  />
+                ) : null}
               </div>
             ) : null}
             <div className="order-11 rounded-lg border border-rr-border bg-rr-elevated mb-2 divide-y divide-rr-border md:order-none">
