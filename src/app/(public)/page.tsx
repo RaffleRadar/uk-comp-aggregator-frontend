@@ -53,6 +53,7 @@ type HomePageSearchParams = {
   operator?: string;
   minPrizeValue?: string;
   freeOnly?: string;
+  seasonal?: string;
   instantPrizes?: string;
   excludeInstant?: string;
   excludeFree?: string;
@@ -75,6 +76,7 @@ export default async function Page({
     params.operator ||
     params.minPrizeValue ||
     params.freeOnly ||
+    params.seasonal ||
     params.instantPrizes ||
     params.excludeInstant ||
     params.excludeFree ||
@@ -100,6 +102,7 @@ export default async function Page({
         ? Number(params.minPrizeValue)
         : undefined,
       freeOnly: params.freeOnly === "true",
+      seasonal: params.seasonal,
       instantPrizes: instantOnly || undefined,
       excludeInstant: !instantOnly && params.excludeInstant === "true",
       excludeFree: params.excludeFree === "true",
@@ -132,6 +135,7 @@ export default async function Page({
                 ? Number(params.minPrizeValue)
                 : undefined,
               freeOnly: params.freeOnly === "true",
+              seasonal: params.seasonal,
               instantPrizes: instantOnly || undefined,
               excludeInstant: !instantOnly && params.excludeInstant === "true",
               excludeFree: params.excludeFree === "true",

@@ -43,6 +43,7 @@ const FILTER_ROBOT_KEYS = [
   "operator",
   "minPrizeValue",
   "freeOnly",
+  "seasonal",
   "instantPrizes",
   "excludeInstant",
   "excludeFree",
@@ -77,6 +78,7 @@ type CompetitionsPageSearchParams = {
   operator?: string;
   minPrizeValue?: string;
   freeOnly?: string;
+  seasonal?: string;
   instantPrizes?: string;
   excludeInstant?: string;
   excludeFree?: string;
@@ -160,6 +162,7 @@ export default async function CompetitionsPage({
     if (params.minPrizeValue)
       nextParams.set("minPrizeValue", params.minPrizeValue);
     if (params.freeOnly) nextParams.set("freeOnly", params.freeOnly);
+    if (params.seasonal) nextParams.set("seasonal", params.seasonal);
     if (params.instantPrizes)
       nextParams.set("instantPrizes", params.instantPrizes);
     if (params.excludeInstant)
@@ -190,6 +193,7 @@ export default async function CompetitionsPage({
     operator: operatorSlug,
     minPrizeValue: params.minPrizeValue,
     freeOnly: params.freeOnly,
+    seasonal: params.seasonal,
     instantPrizes: params.instantPrizes,
     excludeInstant: params.excludeInstant,
     excludeFree: params.excludeFree,
@@ -207,6 +211,7 @@ export default async function CompetitionsPage({
   if (params.minPrizeValue)
     resetOperatorParams.set("minPrizeValue", params.minPrizeValue);
   if (params.freeOnly) resetOperatorParams.set("freeOnly", params.freeOnly);
+  if (params.seasonal) resetOperatorParams.set("seasonal", params.seasonal);
   if (params.instantPrizes)
     resetOperatorParams.set("instantPrizes", params.instantPrizes);
   if (params.excludeInstant)
@@ -239,6 +244,7 @@ export default async function CompetitionsPage({
       ? Number(params.minPrizeValue)
       : undefined,
     freeOnly: params.freeOnly === "true",
+    seasonal: params.seasonal,
     instantPrizes: instantOnly || undefined,
     excludeInstant: !instantOnly && params.excludeInstant === "true",
     excludeFree: params.excludeFree === "true",
@@ -279,6 +285,7 @@ export default async function CompetitionsPage({
           operator: operatorSlug,
           minPrizeValue: params.minPrizeValue,
           freeOnly: params.freeOnly,
+          seasonal: params.seasonal,
           instantPrizes: params.instantPrizes,
           excludeInstant: params.excludeInstant,
           excludeFree: params.excludeFree,
@@ -317,6 +324,7 @@ export default async function CompetitionsPage({
               ? Number(params.minPrizeValue)
               : undefined,
             freeOnly: params.freeOnly === "true",
+            seasonal: params.seasonal,
             instantPrizes: instantOnly || undefined,
             excludeInstant: !instantOnly && params.excludeInstant === "true",
             excludeFree: params.excludeFree === "true",

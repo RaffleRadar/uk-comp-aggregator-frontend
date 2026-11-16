@@ -4,6 +4,11 @@ import { CompetitionGridClient } from "@/components/competitions/competition-gri
 import { getCompetitions } from "@/lib/api";
 import type { GetCompetitionsParams } from "@/lib/api";
 import { cn } from "@/lib/cn";
+import {
+  getCategoryGroupLabel,
+  getCategoryLabel,
+  getSeasonalLabel,
+} from "@/lib/category-labels";
 import { getCompetitionSortPresentation } from "@/lib/competition-sort";
 import type { Competition } from "@/types/competition";
 
@@ -16,6 +21,7 @@ export type CompetitionResultsHeadingParams = {
   operator?: string;
   minPrizeValue?: string;
   freeOnly?: string;
+  seasonal?: string;
   instantPrizes?: string;
   excludeInstant?: string;
   excludeFree?: string;
@@ -46,39 +52,11 @@ const sectionDefaultSorts: Record<
   "recent-draws": { sortBy: "bestValue", sortOrder: "desc" },
 };
 
-const categoryLabelMap: Record<string, string> = {
-  cars: "Cars",
-  houses: "Houses",
-  bikes: "Bikes",
-  motorhomes: "Motorhomes",
-  vans: "Vans",
-  boats: "Boats",
-  plant: "Plant",
-  watches: "Watches",
-  cash: "Cash",
-  tech: "Tech",
-  music: "Music",
-  beauty: "Beauty",
-  none: "Misc",
-  uncategorised: "Misc",
-  tickets: "Tickets",
-  games: "Instants",
-  other: "Other",
-};
-
 const closingLabelMap: Record<string, string> = {
   today: "Ending Today",
   "3days": "Ending Within 3 Days",
   "5days": "Ending Within 5 Days",
 };
-
-function titleCaseValue(value: string) {
-  return value
-    .split(/[-_\s]+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-    .join(" ");
-}
 
 function joinTitleLabels(values: string[]) {
   if (values.length === 0) return null;
@@ -89,22 +67,15 @@ function joinTitleLabels(values: string[]) {
 
 function getCategoryTitleLabel(category?: string) {
   if (!category) return null;
-  const normalized = category.trim().toLowerCase();
-  if (normalized === "cars,bikes,motorhomes,vans,boats,plant") {
-    return "Vehicles";
-  }
-  if (normalized === "vans,boats,plant") {
-    return "Other Vehicles";
+  const groupLabel = getCategoryGroupLabel(category);
+  if (groupLabel !== null) {
+    return groupLabel;
   }
   const values = category
     .split(",")
     .map((value) => value.trim())
     .filter(Boolean);
-  return joinTitleLabels(
-    values.map(
-      (value) => categoryLabelMap[value.toLowerCase()] ?? titleCaseValue(value),
-    ),
-  );
+  return joinTitleLabels(values.map((value) => getCategoryLabel(value)));
 }
 
 function formatOperatorLabel(slug: string) {
@@ -151,6 +122,7 @@ export async function resolveCompetitionOperatorLabel(
         ? Number(params.minPrizeValue)
         : undefined,
       freeOnly: params.freeOnly === "true",
+      seasonal: params.seasonal,
       instantPrizes: instantOnly || undefined,
       excludeInstant: !instantOnly && params.excludeInstant === "true",
       excludeFree: params.excludeFree === "true",
@@ -234,6 +206,7 @@ export function CompetitionResultsHeading({
         })()
       : null,
     params.freeOnly === "true" ? "Free" : null,
+    getSeasonalLabel(params.seasonal),
     instantOnly && explicitCategoryLabel !== null ? "Instants" : null,
   ].filter((value): value is string => Boolean(value));
   const sortPresentation = getCompetitionSortPresentation({

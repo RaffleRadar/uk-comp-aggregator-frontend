@@ -16,6 +16,12 @@ import {
   IconClock,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
+import {
+  HOME_ALL,
+  VEHICLES_ALL,
+  VEHICLES_LEGACY_ALL,
+  VEHICLES_OTHER,
+} from "@/lib/category-labels";
 import { RadarLoader } from "@/components/ui/RadarLoader";
 import { pushEvent } from "@/lib/analytics";
 import {
@@ -44,20 +50,20 @@ export type SortOption = {
   excludeFree?: boolean;
 };
 
-const VEHICLES_ALL = "cars,bikes,motorhomes,vans,boats,plant";
-const VEHICLES_OTHER = "vans,boats,plant";
-
 const defaultCategoryOptions: FilterOption[] = [
   { value: "all", label: "All" },
   { value: "vehicles", label: "Vehicles" },
   { value: "houses", label: "Houses" },
-  { value: "watches", label: "Watches" },
+  { value: "watches", label: "Watches & Jewellery" },
   { value: "cash", label: "Cash" },
   { value: "tech", label: "Tech" },
   { value: "instants", label: "Instants" },
-  { value: "tickets", label: "Tickets" },
-  { value: "other", label: "Other" },
+  { value: "home", label: "Home" },
+  { value: "sports", label: "Sports" },
+  { value: "collectibles", label: "Collectibles" },
+  { value: "other", label: "More" },
   { value: "free", label: "Free" },
+  { value: "christmas", label: "Christmas" },
 ];
 
 const defaultClosingOptions: FilterOption[] = [
@@ -96,14 +102,22 @@ const defaultSortOptions: SortOption[] = [
 
 const otherSubcategoryOptions: FilterOption[] = [
   { value: "other", label: "All" },
-  { value: "home", label: "Home" },
+  { value: "tickets", label: "Tickets" },
   { value: "holidays", label: "Holidays" },
-  { value: "collectibles", label: "Collectibles" },
   { value: "beauty", label: "Beauty" },
   { value: "music", label: "Music" },
   { value: "experiences", label: "Experiences" },
-  { value: "sports", label: "Sports" },
   { value: "none", label: "Misc" },
+];
+
+const homeSubcategoryOptions: FilterOption[] = [
+  { value: HOME_ALL, label: "All" },
+  { value: "food", label: "Food & Drink" },
+  { value: "apparel", label: "Apparel" },
+  { value: "diy", label: "DIY" },
+  { value: "toys", label: "Toys & Games" },
+  { value: "household", label: "Household" },
+  { value: "home", label: "Appliances & Garden" },
 ];
 
 const vehicleSubcategoryOptions: FilterOption[] = [
@@ -111,6 +125,7 @@ const vehicleSubcategoryOptions: FilterOption[] = [
   { value: "cars", label: "Cars" },
   { value: "bikes", label: "Bikes" },
   { value: "motorhomes", label: "Motorhomes" },
+  { value: "gear", label: "Gear & Accessories" },
   { value: VEHICLES_OTHER, label: "Other" },
 ];
 
@@ -189,7 +204,10 @@ export function FilterBar({
 
   const freeOnly = searchParams.get("freeOnly") === "true";
   const instantOnly = searchParams.get("instantPrizes") === "true";
-  const categoryParam = searchParams.get("category");
+  const rawCategoryParam = searchParams.get("category");
+  const categoryParam =
+    rawCategoryParam === VEHICLES_LEGACY_ALL ? VEHICLES_ALL : rawCategoryParam;
+  const seasonalParam = searchParams.get("seasonal");
   const currentClosing = searchParams.get("closing");
   const closing = currentClosing ?? "";
   const excludeInstant = searchParams.get("excludeInstant") === "true";
@@ -236,32 +254,48 @@ export function FilterBar({
   const vehicleSubcategoryValues = new Set(
     vehicleSubcategoryOptions.map((opt) => opt.value),
   );
+  const homeSubcategoryValues = new Set(
+    homeSubcategoryOptions.map((opt) => opt.value),
+  );
 
   const isVehicleSubcategory = categoryParam
     ? vehicleSubcategoryValues.has(categoryParam)
     : false;
-  const isOtherSubcategory =
+  const isHomeSubcategory =
     !isVehicleSubcategory && categoryParam
+      ? homeSubcategoryValues.has(categoryParam)
+      : false;
+  const isOtherSubcategory =
+    !isVehicleSubcategory && !isHomeSubcategory && categoryParam
       ? otherSubcategoryValues.has(categoryParam)
       : false;
 
   const currentMainCategory = freeOnly
     ? "free"
-    : instantOnly || categoryParam === "games"
-      ? "instants"
-      : isVehicleSubcategory
-      ? "vehicles"
-      : isOtherSubcategory
-        ? "other"
-        : (categoryParam ?? "all");
+    : seasonalParam === "christmas"
+      ? "christmas"
+      : instantOnly || categoryParam === "games"
+        ? "instants"
+        : isVehicleSubcategory
+          ? "vehicles"
+          : isHomeSubcategory
+            ? "home"
+            : isOtherSubcategory
+              ? "other"
+              : (categoryParam ?? "all");
 
-  const currentOtherSubcategory =
-    currentMainCategory === "other" ? (categoryParam ?? "other") : null;
-  const currentVehicleSubcategory =
-    currentMainCategory === "vehicles" ? (categoryParam ?? VEHICLES_ALL) : null;
-
-  const showOtherSubcategories = currentMainCategory === "other";
-  const showVehicleSubcategories = currentMainCategory === "vehicles";
+  const activeSubcategoryOptions =
+    currentMainCategory === "vehicles"
+      ? vehicleSubcategoryOptions
+      : currentMainCategory === "home"
+        ? homeSubcategoryOptions
+        : currentMainCategory === "other"
+          ? otherSubcategoryOptions
+          : null;
+  const currentSubcategory =
+    activeSubcategoryOptions !== null
+      ? (categoryParam ?? activeSubcategoryOptions[0].value)
+      : null;
 
   const isSortOpen = showSort && sortOpen;
   const isSpendOpen = showSpend && spendOpen;
@@ -561,7 +595,7 @@ export function FilterBar({
       <div className="container py-3">
         <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:gap-3">
           {showCategory ? (
-            <div className="order-2 grid grid-cols-5 gap-1 2xl:order-1 2xl:flex 2xl:flex-1 2xl:min-w-0 2xl:flex-nowrap 2xl:gap-1 2xl:overflow-x-auto 2xl:overscroll-x-contain 2xl:pb-0.5 2xl:pr-1 2xl:[scrollbar-width:none] 2xl:[&::-webkit-scrollbar]:hidden">
+            <div className="order-2 flex flex-wrap gap-1 2xl:order-1 2xl:flex-1 2xl:min-w-0 2xl:flex-nowrap 2xl:gap-1 2xl:overflow-x-auto 2xl:overscroll-x-contain 2xl:pb-0.5 2xl:pr-1 2xl:[scrollbar-width:none] 2xl:[&::-webkit-scrollbar]:hidden">
               {categoryOpts.map((opt) => {
                 const isActive = opt.value === currentMainCategory;
 
@@ -570,16 +604,22 @@ export function FilterBar({
                     key={opt.value}
                     type="button"
                     className={cn(
-                      "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full px-1 py-1 text-[11px] leading-[18px] font-medium transition cursor-pointer lg:py-[2px] lg:text-[11px] lg:leading-[18px] 2xl:w-auto 2xl:px-2",
+                      "inline-flex flex-auto shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] leading-[18px] font-medium transition cursor-pointer lg:py-[2px] lg:text-[11px] lg:leading-[18px] 2xl:flex-none 2xl:px-2",
                       isActive
                         ? "bg-rr-green text-rr-on-accent border border-transparent"
                         : "bg-transparent border border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
                     )}
                     aria-pressed={isActive}
                     onClick={() => {
+                      const reset = {
+                        freeOnly: null,
+                        instantPrizes: null,
+                        seasonal: null,
+                      };
+
                       if (opt.value === "all") {
                         updateParams(
-                          { category: null, freeOnly: null, instantPrizes: null },
+                          { ...reset, category: null },
                           { filterType: "category", filterValue: "all" },
                         );
                         return;
@@ -588,9 +628,9 @@ export function FilterBar({
                       if (opt.value === "free") {
                         updateParams(
                           {
+                            ...reset,
                             category: null,
                             freeOnly: isActive ? null : "true",
-                            instantPrizes: null,
                             excludeInstant: null,
                             excludeFree: null,
                           },
@@ -602,12 +642,27 @@ export function FilterBar({
                         return;
                       }
 
+                      if (opt.value === "christmas") {
+                        updateParams(
+                          {
+                            ...reset,
+                            category: null,
+                            seasonal: isActive ? null : "christmas",
+                          },
+                          {
+                            filterType: "seasonal",
+                            filterValue: isActive ? "false" : "christmas",
+                          },
+                        );
+                        return;
+                      }
+
                       if (opt.value === "instants") {
                         updateParams(
                           {
+                            ...reset,
                             category: null,
                             instantPrizes: isActive ? null : "true",
-                            freeOnly: null,
                             excludeInstant: null,
                           },
                           {
@@ -618,56 +673,30 @@ export function FilterBar({
                         return;
                       }
 
-                      if (opt.value === "vehicles") {
-                        updateParams(
-                          {
-                            category:
-                              categoryParam === VEHICLES_ALL
-                                ? null
-                                : VEHICLES_ALL,
-                            freeOnly: null,
-                            instantPrizes: null,
-                          },
-                          {
-                            filterType: "category",
-                            filterValue:
-                              categoryParam === VEHICLES_ALL
-                                ? "all"
-                                : "vehicles",
-                          },
-                        );
-                        return;
-                      }
+                      const groupValue =
+                        opt.value === "vehicles"
+                          ? VEHICLES_ALL
+                          : opt.value === "home"
+                            ? HOME_ALL
+                            : opt.value === "other"
+                              ? "other"
+                              : null;
 
-                      if (opt.value === "other") {
+                      if (groupValue !== null) {
+                        const isGroupAll = isActive && categoryParam === groupValue;
+
                         updateParams(
-                          {
-                            category:
-                              currentMainCategory === "other" &&
-                              categoryParam === "other"
-                                ? null
-                                : "other",
-                            freeOnly: null,
-                            instantPrizes: null,
-                          },
+                          { ...reset, category: isGroupAll ? null : groupValue },
                           {
                             filterType: "category",
-                            filterValue:
-                              currentMainCategory === "other" &&
-                              categoryParam === "other"
-                                ? "all"
-                                : "other",
+                            filterValue: isGroupAll ? "all" : opt.value,
                           },
                         );
                         return;
                       }
 
                       updateParams(
-                        {
-                          category: isActive ? null : opt.value,
-                          freeOnly: null,
-                          instantPrizes: null,
-                        },
+                        { ...reset, category: isActive ? null : opt.value },
                         {
                           filterType: "category",
                           filterValue: isActive ? "all" : opt.value,
@@ -1120,50 +1149,20 @@ export function FilterBar({
           </div>
         </div>
 
-        {showVehicleSubcategories ? (
-          <div className="mt-4 grid grid-cols-5 gap-1 lg:mt-2 lg:flex lg:flex-wrap lg:gap-[6px]">
-            {vehicleSubcategoryOptions.map((opt) => {
-              const isActive = opt.value === currentVehicleSubcategory;
-
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  className={cn(
-                    "inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-2 py-2 text-[9px] font-medium leading-none transition cursor-pointer md:py-1 md:text-[11px] lg:w-auto lg:px-2.5 lg:text-xs",
-                    isActive
-                      ? "bg-rr-elevated text-rr-primary shadow-sm"
-                      : "bg-rr-surface text-rr-muted hover:bg-rr-elevated hover:text-rr-primary",
-                  )}
-                  aria-pressed={isActive}
-                  onClick={() =>
-                    updateParam("category", opt.value, {
-                      filterType: "category",
-                      filterValue: opt.value,
-                    })
-                  }
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
-
-        {showOtherSubcategories ? (
+        {activeSubcategoryOptions !== null ? (
           <div className="mt-4 flex flex-col gap-1 lg:mt-2 lg:flex-row lg:flex-wrap lg:gap-[6px]">
             {[
-              otherSubcategoryOptions.slice(
+              activeSubcategoryOptions.slice(
                 0,
-                Math.ceil(otherSubcategoryOptions.length / 2),
+                Math.ceil(activeSubcategoryOptions.length / 2),
               ),
-              otherSubcategoryOptions.slice(
-                Math.ceil(otherSubcategoryOptions.length / 2),
+              activeSubcategoryOptions.slice(
+                Math.ceil(activeSubcategoryOptions.length / 2),
               ),
             ].map((row, rowIndex) => (
               <div key={rowIndex} className="flex gap-1 lg:contents">
                 {row.map((opt) => {
-                  const isActive = opt.value === currentOtherSubcategory;
+                  const isActive = opt.value === currentSubcategory;
 
                   return (
                     <button

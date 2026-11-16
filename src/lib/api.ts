@@ -89,6 +89,7 @@ export type GetCompetitionsParams = {
   minPrizeValue?: number;
   website?: string;
   freeOnly?: boolean;
+  seasonal?: string;
   instantPrizes?: boolean;
   excludeInstant?: boolean;
   excludeFree?: boolean;
@@ -385,6 +386,7 @@ export async function getCompetitions(
     query.set("minPrizeValue", String(params.minPrizeValue));
   if (params?.website) query.set("website", params.website);
   if (params?.freeOnly) query.set("freeOnly", "true");
+  if (params?.seasonal) query.set("seasonal", params.seasonal);
   if (params?.instantPrizes) query.set("instantPrizes", "true");
   if (params?.excludeInstant) query.set("excludeInstant", "true");
   if (params?.excludeFree) query.set("excludeFree", "true");
@@ -418,6 +420,7 @@ export async function getCompetitionsTotal(
     query.set("minPrizeValue", String(params.minPrizeValue));
   if (params?.website) query.set("website", params.website);
   if (params?.freeOnly) query.set("freeOnly", "true");
+  if (params?.seasonal) query.set("seasonal", params.seasonal);
   if (params?.instantPrizes) query.set("instantPrizes", "true");
   if (params?.excludeInstant) query.set("excludeInstant", "true");
   if (params?.excludeFree) query.set("excludeFree", "true");
@@ -490,6 +493,7 @@ type GetTopOpportunitiesParams = {
   category?: string;
   closing?: string;
   freeOnly?: boolean;
+  seasonal?: string;
   operator?: string;
   minPrizeValue?: number;
 };
@@ -504,6 +508,7 @@ type GetMostUndersoldParams = {
   category?: string;
   closing?: string;
   freeOnly?: boolean;
+  seasonal?: string;
   operator?: string;
   minPrizeValue?: number;
 };
@@ -521,6 +526,7 @@ export async function getTopOpportunities(
   if (params?.category) query.set("category", params.category);
   if (params?.closing) query.set("closing", params.closing);
   if (params?.freeOnly) query.set("freeOnly", "true");
+  if (params?.seasonal) query.set("seasonal", params.seasonal);
   if (params?.operator) query.set("operator", params.operator);
   if (params?.minPrizeValue)
     query.set("minPrizeValue", String(params.minPrizeValue));
@@ -549,6 +555,7 @@ export async function getMostUndersold(
   if (params?.category) query.set("category", params.category);
   if (params?.closing) query.set("closing", params.closing);
   if (params?.freeOnly) query.set("freeOnly", "true");
+  if (params?.seasonal) query.set("seasonal", params.seasonal);
   if (params?.operator) query.set("operator", params.operator);
   if (params?.minPrizeValue)
     query.set("minPrizeValue", String(params.minPrizeValue));

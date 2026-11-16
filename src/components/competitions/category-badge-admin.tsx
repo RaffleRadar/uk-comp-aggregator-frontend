@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { getCategoryLabel } from "@/lib/category-labels";
 import { useAuth } from "@/contexts/auth-context";
 
 type CategoryBadgeAdminProps = {
@@ -36,7 +37,7 @@ function capitalizeFirstLetter(value: string) {
 }
 
 function formatCategoryLabel(value: string) {
-  return value.trim().toLowerCase() === "games" ? "instants" : value;
+  return getCategoryLabel(value).toLowerCase();
 }
 
 export function CategoryBadgeAdmin({

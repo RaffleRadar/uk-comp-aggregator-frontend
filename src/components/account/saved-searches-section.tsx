@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import {
+  getCategoryGroupLabel,
+  getCategoryLabel,
+} from "@/lib/category-labels";
 
 type SavedSearchFilters = Partial<{
   website: string;
@@ -62,15 +66,7 @@ function formatCategory(value: string) {
     return "Uncategorised";
   }
 
-  if (value === "other") {
-    return "Other";
-  }
-
-  if (value === "games") {
-    return "Instants";
-  }
-
-  return titleCase(value);
+  return getCategoryLabel(value);
 }
 
 function formatClosing(value: string) {
@@ -97,13 +93,16 @@ function buildFiltersSummary(filters: SavedSearchFilters) {
   }
 
   if (typeof filters.category === "string" && filters.category.trim()) {
+    const groupLabel = getCategoryGroupLabel(filters.category);
     const categories = filters.category
       .split(",")
       .map((value) => value.trim())
       .filter(Boolean)
       .map(formatCategory);
 
-    if (categories.length > 0) {
+    if (groupLabel !== null) {
+      parts.push(groupLabel);
+    } else if (categories.length > 0) {
       parts.push(categories.join(", "));
     }
   }
