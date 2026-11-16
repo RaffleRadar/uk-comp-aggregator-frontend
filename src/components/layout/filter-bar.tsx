@@ -595,7 +595,7 @@ export function FilterBar({
       <div className="container py-3">
         <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:gap-3">
           {showCategory ? (
-            <div className="order-2 flex flex-wrap gap-1 2xl:order-1 2xl:flex-1 2xl:min-w-0 2xl:flex-nowrap 2xl:gap-1 2xl:overflow-x-auto 2xl:overscroll-x-contain 2xl:pb-0.5 2xl:pr-1 2xl:[scrollbar-width:none] 2xl:[&::-webkit-scrollbar]:hidden">
+            <div className="order-2 flex flex-wrap gap-1 2xl:order-1 2xl:flex-1 2xl:min-w-0 2xl:gap-1 2xl:pr-1">
               {categoryOpts.map((opt) => {
                 const isActive = opt.value === currentMainCategory;
 
