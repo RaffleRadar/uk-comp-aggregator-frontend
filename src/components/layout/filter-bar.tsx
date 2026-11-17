@@ -23,6 +23,7 @@ import {
   VEHICLES_OTHER,
 } from "@/lib/category-labels";
 import { RadarLoader } from "@/components/ui/RadarLoader";
+import { ChristmasTreeIcon } from "@/components/ui/christmas-tree-icon";
 import { pushEvent } from "@/lib/analytics";
 import {
   SPEND_OPTIONS,
@@ -598,6 +599,7 @@ export function FilterBar({
             <div className="order-2 flex flex-wrap gap-1 2xl:order-1 2xl:mr-auto 2xl:grid 2xl:shrink-0 2xl:grid-cols-[repeat(7,auto)] 2xl:gap-1.5">
               {categoryOpts.map((opt) => {
                 const isActive = opt.value === currentMainCategory;
+                const isChristmas = opt.value === "christmas";
 
                 return (
                   <button
@@ -607,7 +609,10 @@ export function FilterBar({
                       "inline-flex flex-auto shrink-0 items-center justify-center whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] leading-[18px] font-medium transition cursor-pointer lg:py-[2px] lg:text-[11px] lg:leading-[18px] 2xl:w-full 2xl:px-3",
                       isActive
                         ? "bg-rr-green text-rr-on-accent border border-transparent"
-                        : "bg-transparent border border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
+                        : isChristmas
+                          ? "bg-red-500/5 border border-red-500/60 text-rr-primary hover:bg-red-500/10"
+                          : "bg-transparent border border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
+                      isChristmas ? "gap-1" : "",
                     )}
                     aria-pressed={isActive}
                     onClick={() => {
@@ -704,6 +709,9 @@ export function FilterBar({
                       );
                     }}
                   >
+                    {isChristmas ? (
+                      <ChristmasTreeIcon active={isActive} />
+                    ) : null}
                     {opt.label}
                   </button>
                 );
