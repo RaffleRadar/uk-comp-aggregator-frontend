@@ -4,6 +4,7 @@ import {
   ClosingPanel,
   SalesTiming,
 } from "@/components/operator-dashboard/operator-dashboard-charts";
+import { CategoryView } from "@/components/operator-dashboard/operator-dashboard-categories";
 import {
   changeDirection,
   formatChange,
@@ -440,6 +441,8 @@ export function OperatorDashboardContent({
           Market figures are not available yet.
         </div>
       )}
+
+      <CategoryView operatorId={operator.id} operatorName={operator.name} />
     </div>
   );
 }

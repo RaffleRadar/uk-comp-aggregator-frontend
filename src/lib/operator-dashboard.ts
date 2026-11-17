@@ -72,6 +72,40 @@ export type OperatorDashboardOverview = {
   performance: OperatorDashboardPerformance | null;
 };
 
+export type OperatorDashboardCategoryFigures = {
+  drawsCompleted: number;
+  soldOut: number;
+  soldOutShare: number | null;
+  averageSoldAtClose: number | null;
+  averageSoldSample: number;
+};
+
+export type OperatorDashboardCategoryRow = {
+  key: string;
+  label: string;
+  market: OperatorDashboardCategoryFigures;
+  operator: OperatorDashboardCategoryFigures;
+  difference: number | null;
+};
+
+export type OperatorDashboardCategories = {
+  period: { days: number; from: string; to: string };
+  minimumDraws: number;
+  rows: OperatorDashboardCategoryRow[];
+  total: {
+    market: OperatorDashboardCategoryFigures;
+    operator: OperatorDashboardCategoryFigures;
+    difference: number | null;
+  };
+};
+
+export type OperatorDashboardCategoriesResponse = {
+  operator: OperatorDashboardOperator;
+  categories: OperatorDashboardCategories;
+};
+
+export const DEFAULT_DASHBOARD_PERIOD_DAYS = 30;
+
 export function canOpenOperatorDashboard(role: string | null | undefined) {
   return OPERATOR_DASHBOARD_ROLES.some((allowed) => allowed === role);
 }
@@ -87,6 +121,17 @@ export function operatorDashboardMePath(operatorId: string | null) {
 
 export function operatorDashboardOverviewPath(operatorId: string | null) {
   return withOperatorId("/api/operator-dashboard/overview", operatorId);
+}
+
+export function operatorDashboardCategoriesPath(
+  operatorId: string,
+  days: number,
+) {
+  const params = new URLSearchParams({
+    operatorId,
+    days: String(days),
+  });
+  return `/api/operator-dashboard/categories?${params.toString()}`;
 }
 
 export type ChangeUnit = "count" | "points" | "price";
