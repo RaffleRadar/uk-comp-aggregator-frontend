@@ -104,6 +104,33 @@ export type OperatorDashboardCategoriesResponse = {
   categories: OperatorDashboardCategories;
 };
 
+export type OperatorDashboardClosingCell = {
+  drawsCompleted: number;
+  averageSoldAtClose: number | null;
+  averageSoldSample: number;
+};
+
+export type OperatorDashboardClosingGrid = {
+  total: OperatorDashboardCategoryFigures;
+  cells: OperatorDashboardClosingCell[][];
+};
+
+export type OperatorDashboardClosingWindows = {
+  period: { days: number; from: string; to: string };
+  category: { key: string; label: string } | null;
+  minimumDraws: number;
+  timeZone: string;
+  days: string[];
+  slots: { key: string; label: string; startHour: number }[];
+  market: OperatorDashboardClosingGrid;
+  operator: OperatorDashboardClosingGrid;
+};
+
+export type OperatorDashboardClosingWindowsResponse = {
+  operator: OperatorDashboardOperator;
+  closingWindows: OperatorDashboardClosingWindows;
+};
+
 export const DEFAULT_DASHBOARD_PERIOD_DAYS = 30;
 
 export function canOpenOperatorDashboard(role: string | null | undefined) {
@@ -132,6 +159,17 @@ export function operatorDashboardCategoriesPath(
     days: String(days),
   });
   return `/api/operator-dashboard/categories?${params.toString()}`;
+}
+
+export function operatorDashboardClosingWindowsPath(
+  operatorId: string,
+  days: number,
+) {
+  const params = new URLSearchParams({
+    operatorId,
+    days: String(days),
+  });
+  return `/api/operator-dashboard/closing-windows?${params.toString()}`;
 }
 
 export type ChangeUnit = "count" | "points" | "price";
