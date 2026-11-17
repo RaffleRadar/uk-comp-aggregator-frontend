@@ -82,6 +82,13 @@ export const competitionListBlock = defineType({
       description: "Show only competitions with a ticket price of £0.",
     }),
     defineField({
+      name: "christmasOnly",
+      title: "Christmas competitions only",
+      type: "boolean",
+      initialValue: false,
+      description: "Show only competitions with Christmas or Xmas in the title.",
+    }),
+    defineField({
       name: "limit",
       title: "Number of competitions to show",
       type: "number",

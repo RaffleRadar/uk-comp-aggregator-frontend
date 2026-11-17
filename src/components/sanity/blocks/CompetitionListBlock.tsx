@@ -21,6 +21,7 @@ type CompetitionListBlockData = {
   sortOrder?: string;
   excludeGames?: boolean;
   freeOnly?: boolean;
+  christmasOnly?: boolean;
   emptyMessage?: string;
   showFallbackWhenEmpty?: boolean;
   faqs?: Faq[];
@@ -56,6 +57,7 @@ export async function CompetitionListBlock({
       : "desc";
   const excludeGames = block.excludeGames ?? false;
   const freeOnly = block.freeOnly ?? false;
+  const seasonal = block.christmasOnly ? "christmas" : undefined;
   const limit =
     typeof block.limit === "number" && block.limit > 0
       ? Math.min(Math.trunc(block.limit), 100)
@@ -69,6 +71,7 @@ export async function CompetitionListBlock({
     sortOrder,
     excludeGames,
     freeOnly,
+    seasonal,
   });
 
   const usedFallback =
@@ -84,6 +87,7 @@ export async function CompetitionListBlock({
       sortOrder: "asc",
       excludeGames,
       freeOnly,
+      seasonal,
     });
   }
 
