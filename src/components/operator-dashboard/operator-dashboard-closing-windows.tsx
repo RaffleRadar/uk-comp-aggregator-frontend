@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { RadarLoader } from "@/components/ui/RadarLoader";
-import { protectedFetch } from "@/lib/protected-fetch";
+import { useDashboardResource } from "@/components/operator-dashboard/use-dashboard-resource";
 import {
-  DEFAULT_DASHBOARD_PERIOD_DAYS,
+  ALL_CATEGORIES_LABEL,
   operatorDashboardClosingWindowsPath,
   type OperatorDashboardClosingCell,
   type OperatorDashboardClosingWindows,
@@ -25,11 +25,6 @@ const EMPTY_CELL: OperatorDashboardClosingCell = {
 };
 
 type Side = "market" | "operator";
-
-type LoadState =
-  | { kind: "loading" }
-  | { kind: "ready"; closingWindows: OperatorDashboardClosingWindows }
-  | { kind: "error" };
 
 type ActiveCell = { slot: number; day: number };
 
@@ -378,47 +373,22 @@ function HeatMap({
 export function ClosingWindowsView({
   operatorId,
   operatorName,
+  days,
+  category,
 }: {
   operatorId: string;
   operatorName: string;
+  days: number;
+  category: string | null;
 }) {
-  const path = operatorDashboardClosingWindowsPath(
-    operatorId,
-    DEFAULT_DASHBOARD_PERIOD_DAYS,
-  );
+  const path =
+    category === null
+      ? null
+      : operatorDashboardClosingWindowsPath(operatorId, days, category);
   const [side, setSide] = useState<Side>("market");
-  const [loaded, setLoaded] = useState<{
-    path: string;
-    state: LoadState;
-  } | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    protectedFetch(path, { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(LOAD_ERROR);
-        const body =
-          (await response.json()) as OperatorDashboardClosingWindowsResponse;
-        if (!cancelled) {
-          setLoaded({
-            path,
-            state: { kind: "ready", closingWindows: body.closingWindows },
-          });
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setLoaded({ path, state: { kind: "error" } });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [path]);
-
-  const state: LoadState =
-    loaded && loaded.path === path ? loaded.state : { kind: "loading" };
-  const data = state.kind === "ready" ? state.closingWindows : null;
+  const resource =
+    useDashboardResource<OperatorDashboardClosingWindowsResponse>(path);
+  const data = resource.data?.closingWindows ?? null;
   const sides: { key: Side; label: string; draws: number | null }[] = [
     {
       key: "market",
@@ -441,7 +411,7 @@ export function ClosingWindowsView({
         </h2>
         <p className="mt-0.5 text-[13px] leading-snug text-rr-secondary">
           {data
-            ? `Last ${data.period.days} days, ${formatWeekRange(data.period.from, data.period.to)}, UK time. `
+            ? `${data.category?.label ?? ALL_CATEGORIES_LABEL}, last ${data.period.days} days, ${formatWeekRange(data.period.from, data.period.to)}, UK time. `
             : ""}
           Average share of tickets sold on draws that closed in each window.
           Shows where draws have done well, not that a window causes better
@@ -477,13 +447,13 @@ export function ClosingWindowsView({
         ))}
       </div>
 
-      {state.kind === "loading" ? (
+      {resource.status === "loading" && !data ? (
         <div className={cn(panelClass, "flex justify-center py-8")}>
           <RadarLoader size="sm" />
         </div>
       ) : null}
 
-      {state.kind === "error" ? (
+      {resource.status === "error" ? (
         <div
           className={cn(panelClass, "px-3 py-2.5 text-sm text-rr-secondary")}
         >
@@ -492,7 +462,13 @@ export function ClosingWindowsView({
       ) : null}
 
       {data ? (
-        <>
+        <div
+          aria-busy={resource.stale}
+          className={cn(
+            "space-y-2 transition-opacity",
+            resource.stale ? "opacity-50" : undefined,
+          )}
+        >
           <style>{`@keyframes rr-tip-in{from{opacity:0}to{opacity:1}}`}</style>
           <HeatMap key={side} data={data} side={side} />
           <p className="text-[11px] leading-snug text-rr-muted">
@@ -502,7 +478,7 @@ export function ClosingWindowsView({
             appear from {formatCount(data.minimumDraws)} draws; small windows
             can swing widely, so check the number of draws.
           </p>
-        </>
+        </div>
       ) : null}
     </section>
   );

@@ -1,15 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { RadarLoader } from "@/components/ui/RadarLoader";
-import { protectedFetch } from "@/lib/protected-fetch";
-import {
-  DEFAULT_DASHBOARD_PERIOD_DAYS,
-  operatorDashboardCategoriesPath,
-  type OperatorDashboardCategories,
-  type OperatorDashboardCategoriesResponse,
-  type OperatorDashboardCategoryFigures,
+import type { DashboardResource } from "@/components/operator-dashboard/use-dashboard-resource";
+import type {
+  OperatorDashboardCategoriesResponse,
+  OperatorDashboardCategoryFigures,
 } from "@/lib/operator-dashboard";
 import { formatCount, formatWeekRange } from "@/lib/weekly-radar";
 
@@ -17,11 +13,7 @@ const panelClass = "rounded-xl border border-rr-border bg-rr-surface";
 const eyebrowClass =
   "text-xs font-bold uppercase tracking-[0.08em] text-rr-green";
 const LOAD_ERROR = "Category figures could not be loaded.";
-
-type LoadState =
-  | { kind: "loading" }
-  | { kind: "ready"; categories: OperatorDashboardCategories }
-  | { kind: "error" };
+const SELECTED_ROW = "bg-rr-green-bg shadow-[inset_3px_0_0_var(--accent)]";
 
 function formatPercentOne(value: number | null) {
   return value === null ? "–" : `${value.toFixed(1)}%`;
@@ -102,9 +94,11 @@ type TableRow = {
 function DesktopTable({
   rows,
   operatorName,
+  selectedKey,
 }: {
   rows: TableRow[];
   operatorName: string;
+  selectedKey: string | null;
 }) {
   return (
     <div className={cn(panelClass, "hidden overflow-hidden md:block")}>
@@ -138,7 +132,11 @@ function DesktopTable({
           {rows.map((row) => (
             <tr
               key={row.key}
-              className={cn(row.total ? "bg-rr-elevated/60" : undefined)}
+              aria-current={row.key === selectedKey ? "true" : undefined}
+              className={cn(
+                row.total ? "bg-rr-elevated/60" : undefined,
+                row.key === selectedKey ? SELECTED_ROW : undefined,
+              )}
             >
               <th
                 scope="row"
@@ -189,15 +187,23 @@ function DesktopTable({
   );
 }
 
-function MobileList({ rows }: { rows: TableRow[] }) {
+function MobileList({
+  rows,
+  selectedKey,
+}: {
+  rows: TableRow[];
+  selectedKey: string | null;
+}) {
   return (
     <ul className={cn(panelClass, "divide-y divide-rr-border md:hidden")}>
       {rows.map((row) => (
         <li
           key={row.key}
+          aria-current={row.key === selectedKey ? "true" : undefined}
           className={cn(
             "space-y-1.5 px-3 py-2.5",
             row.total ? "bg-rr-elevated/60" : undefined,
+            row.key === selectedKey ? SELECTED_ROW : undefined,
           )}
         >
           <div className="flex items-baseline justify-between gap-3">
@@ -239,48 +245,15 @@ function MobileList({ rows }: { rows: TableRow[] }) {
 }
 
 export function CategoryView({
-  operatorId,
   operatorName,
+  resource,
+  selectedKey,
 }: {
-  operatorId: string;
   operatorName: string;
+  resource: DashboardResource<OperatorDashboardCategoriesResponse>;
+  selectedKey: string | null;
 }) {
-  const path = operatorDashboardCategoriesPath(
-    operatorId,
-    DEFAULT_DASHBOARD_PERIOD_DAYS,
-  );
-  const [loaded, setLoaded] = useState<{
-    path: string;
-    state: LoadState;
-  } | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    protectedFetch(path, { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(LOAD_ERROR);
-        const body =
-          (await response.json()) as OperatorDashboardCategoriesResponse;
-        if (!cancelled) {
-          setLoaded({
-            path,
-            state: { kind: "ready", categories: body.categories },
-          });
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setLoaded({ path, state: { kind: "error" } });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [path]);
-
-  const state: LoadState =
-    loaded && loaded.path === path ? loaded.state : { kind: "loading" };
-  const categories = state.kind === "ready" ? state.categories : null;
+  const categories = resource.data?.categories ?? null;
   const rows: TableRow[] = categories
     ? [
         ...categories.rows,
@@ -311,13 +284,13 @@ export function CategoryView({
         </p>
       </div>
 
-      {state.kind === "loading" ? (
+      {resource.status === "loading" && !categories ? (
         <div className={cn(panelClass, "flex justify-center py-8")}>
           <RadarLoader size="sm" />
         </div>
       ) : null}
 
-      {state.kind === "error" ? (
+      {resource.status === "error" ? (
         <div
           className={cn(panelClass, "px-3 py-2.5 text-sm text-rr-secondary")}
         >
@@ -326,16 +299,26 @@ export function CategoryView({
       ) : null}
 
       {categories ? (
-        <>
-          <DesktopTable rows={rows} operatorName={operatorName} />
-          <MobileList rows={rows} />
+        <div
+          aria-busy={resource.stale}
+          className={cn(
+            "space-y-2 transition-opacity",
+            resource.stale ? "opacity-50" : undefined,
+          )}
+        >
+          <DesktopTable
+            rows={rows}
+            operatorName={operatorName}
+            selectedKey={selectedKey}
+          />
+          <MobileList rows={rows} selectedKey={selectedKey} />
           <p className="text-[11px] leading-snug text-rr-muted">
             Excludes the Games category. Percentages appear from{" "}
             {formatCount(categories.minimumDraws)} draws; with fewer, only the
             count is shown. Difference is your average sold minus the market, in
             percentage points.
           </p>
-        </>
+        </div>
       ) : null}
     </section>
   );

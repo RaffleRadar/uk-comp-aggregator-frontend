@@ -167,7 +167,44 @@ export type OperatorDashboardPrizesResponse = {
   prizes: OperatorDashboardPrizes;
 };
 
-export const DEFAULT_DASHBOARD_PERIOD_DAYS = 30;
+export const DASHBOARD_PERIOD_DAYS = [7, 30, 90] as const;
+
+export type DashboardPeriodDays = (typeof DASHBOARD_PERIOD_DAYS)[number];
+
+export const DEFAULT_DASHBOARD_PERIOD_DAYS: DashboardPeriodDays = 30;
+
+export const ALL_CATEGORIES_KEY = "all";
+
+export const ALL_CATEGORIES_LABEL = "All categories";
+
+export function parseDashboardDays(value: string | null): DashboardPeriodDays {
+  const days = Number(value);
+  return (
+    DASHBOARD_PERIOD_DAYS.find((option) => option === days) ??
+    DEFAULT_DASHBOARD_PERIOD_DAYS
+  );
+}
+
+export function parseDashboardCategory(value: string | null): string {
+  const key = (value ?? "").trim().toLowerCase();
+  return /^[a-z]+$/.test(key) ? key : ALL_CATEGORIES_KEY;
+}
+
+function dashboardSectionPath(
+  section: string,
+  operatorId: string,
+  days: number,
+  category?: string,
+) {
+  const params = new URLSearchParams({
+    operatorId,
+    days: String(days),
+  });
+  if (category && category !== ALL_CATEGORIES_KEY) {
+    params.set("category", category);
+  }
+  return `/api/operator-dashboard/${section}?${params.toString()}`;
+}
 
 export function canOpenOperatorDashboard(role: string | null | undefined) {
   return OPERATOR_DASHBOARD_ROLES.some((allowed) => allowed === role);
@@ -190,30 +227,23 @@ export function operatorDashboardCategoriesPath(
   operatorId: string,
   days: number,
 ) {
-  const params = new URLSearchParams({
-    operatorId,
-    days: String(days),
-  });
-  return `/api/operator-dashboard/categories?${params.toString()}`;
+  return dashboardSectionPath("categories", operatorId, days);
 }
 
 export function operatorDashboardClosingWindowsPath(
   operatorId: string,
   days: number,
+  category: string,
 ) {
-  const params = new URLSearchParams({
-    operatorId,
-    days: String(days),
-  });
-  return `/api/operator-dashboard/closing-windows?${params.toString()}`;
+  return dashboardSectionPath("closing-windows", operatorId, days, category);
 }
 
-export function operatorDashboardPrizesPath(operatorId: string, days: number) {
-  const params = new URLSearchParams({
-    operatorId,
-    days: String(days),
-  });
-  return `/api/operator-dashboard/prizes?${params.toString()}`;
+export function operatorDashboardPrizesPath(
+  operatorId: string,
+  days: number,
+  category: string,
+) {
+  return dashboardSectionPath("prizes", operatorId, days, category);
 }
 
 export type ChangeUnit = "count" | "points" | "price";

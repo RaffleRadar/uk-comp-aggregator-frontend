@@ -4,9 +4,7 @@ import {
   ClosingPanel,
   SalesTiming,
 } from "@/components/operator-dashboard/operator-dashboard-charts";
-import { CategoryView } from "@/components/operator-dashboard/operator-dashboard-categories";
-import { ClosingWindowsView } from "@/components/operator-dashboard/operator-dashboard-closing-windows";
-import { PrizeView } from "@/components/operator-dashboard/operator-dashboard-prizes";
+import { OperatorDashboardSections } from "@/components/operator-dashboard/operator-dashboard-sections";
 import {
   changeDirection,
   formatChange,
@@ -444,11 +442,7 @@ export function OperatorDashboardContent({
         </div>
       )}
 
-      <CategoryView operatorId={operator.id} operatorName={operator.name} />
-
-      <PrizeView operatorId={operator.id} operatorName={operator.name} />
-
-      <ClosingWindowsView
+      <OperatorDashboardSections
         operatorId={operator.id}
         operatorName={operator.name}
       />

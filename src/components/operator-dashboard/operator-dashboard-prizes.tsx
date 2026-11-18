@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { RadarLoader } from "@/components/ui/RadarLoader";
-import { protectedFetch } from "@/lib/protected-fetch";
+import { useDashboardResource } from "@/components/operator-dashboard/use-dashboard-resource";
 import {
-  DEFAULT_DASHBOARD_PERIOD_DAYS,
+  ALL_CATEGORIES_LABEL,
   operatorDashboardPrizesPath,
   type OperatorDashboardPrize,
-  type OperatorDashboardPrizes,
   type OperatorDashboardPrizesResponse,
 } from "@/lib/operator-dashboard";
 import { formatCount, formatPrice, formatWeekRange } from "@/lib/weekly-radar";
@@ -22,11 +21,6 @@ const MUTED_FILL =
   "linear-gradient(90deg, color-mix(in srgb, var(--accent) 50%, var(--elevated)), color-mix(in srgb, var(--accent) 28%, var(--elevated)))";
 
 type Mode = "most-run" | "best-selling";
-
-type LoadState =
-  | { kind: "loading" }
-  | { kind: "ready"; prizes: OperatorDashboardPrizes }
-  | { kind: "error" };
 
 const MODES: { key: Mode; label: string }[] = [
   { key: "most-run", label: "Most run" },
@@ -203,43 +197,21 @@ function PrizeRows({
 export function PrizeView({
   operatorId,
   operatorName,
+  days,
+  category,
 }: {
   operatorId: string;
   operatorName: string;
+  days: number;
+  category: string | null;
 }) {
-  const path = operatorDashboardPrizesPath(
-    operatorId,
-    DEFAULT_DASHBOARD_PERIOD_DAYS,
-  );
+  const path =
+    category === null
+      ? null
+      : operatorDashboardPrizesPath(operatorId, days, category);
   const [mode, setMode] = useState<Mode>("most-run");
-  const [loaded, setLoaded] = useState<{
-    path: string;
-    state: LoadState;
-  } | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    protectedFetch(path, { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(LOAD_ERROR);
-        const body = (await response.json()) as OperatorDashboardPrizesResponse;
-        if (!cancelled) {
-          setLoaded({ path, state: { kind: "ready", prizes: body.prizes } });
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setLoaded({ path, state: { kind: "error" } });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [path]);
-
-  const state: LoadState =
-    loaded && loaded.path === path ? loaded.state : { kind: "loading" };
-  const data = state.kind === "ready" ? state.prizes : null;
+  const resource = useDashboardResource<OperatorDashboardPrizesResponse>(path);
+  const data = resource.data?.prizes ?? null;
   const share = data
     ? coverageShare(data.coverage.drawsWithPrize, data.coverage.drawsCompleted)
     : null;
@@ -253,7 +225,7 @@ export function PrizeView({
           </h2>
           <p className="mt-1 text-xs leading-snug text-rr-secondary">
             {data
-              ? `Last ${data.period.days} days, ${formatWeekRange(data.period.from, data.period.to)}. `
+              ? `${data.category?.label ?? ALL_CATEGORIES_LABEL}, last ${data.period.days} days, ${formatWeekRange(data.period.from, data.period.to)}. `
               : ""}
             {mode === "most-run"
               ? "Ranked by the number of operators running each prize. Many listings can mean strong interest or heavy competition."
@@ -263,14 +235,20 @@ export function PrizeView({
         <ModeSwitch mode={mode} onChange={setMode} />
       </div>
 
-      <div className="mt-2">
-        {state.kind === "loading" ? (
+      <div
+        aria-busy={resource.stale}
+        className={cn(
+          "mt-2 transition-opacity",
+          resource.stale ? "opacity-50" : undefined,
+        )}
+      >
+        {resource.status === "loading" && !data ? (
           <div className="flex justify-center py-8">
             <RadarLoader size="sm" />
           </div>
         ) : null}
 
-        {state.kind === "error" ? (
+        {resource.status === "error" ? (
           <p className="py-3 text-sm text-rr-secondary">{LOAD_ERROR}</p>
         ) : null}
 
