@@ -450,7 +450,7 @@ export function OperatorDashboardContent({
         </p>
       </header>
 
-      <div className="grid min-w-0 gap-5 lg:grid-cols-[12rem_minmax(0,1fr)] lg:items-start">
+      <div className="grid min-w-0 gap-5 lg:grid-cols-[12rem_minmax(0,1fr)] lg:items-start lg:gap-3">
         <DashboardMenu screen={screen} />
 
         <div className="min-w-0 space-y-5">
