@@ -89,6 +89,8 @@ type TableRow = {
   operator: OperatorDashboardCategoryFigures;
   difference: number | null;
   total?: boolean;
+  child?: boolean;
+  other?: boolean;
 };
 
 function DesktopTable({
@@ -105,7 +107,7 @@ function DesktopTable({
       <table className="w-full table-fixed text-sm">
         <thead>
           <tr className="border-b border-rr-border text-left text-xs font-semibold text-rr-secondary">
-            <th scope="col" className="w-[19%] px-3 py-2">
+            <th scope="col" className="w-[23%] px-3 py-2">
               Category
             </th>
             <th scope="col" className="w-[9%] px-2 py-2 text-right">
@@ -114,13 +116,13 @@ function DesktopTable({
             <th scope="col" className="w-[10%] px-2 py-2 text-right">
               Sold out
             </th>
-            <th scope="col" className="w-[22%] px-3 py-2">
+            <th scope="col" className="w-[20%] px-3 py-2">
               Market avg sold
             </th>
             <th scope="col" className="w-[8%] px-2 py-2 text-right">
               <span className="sr-only">{operatorName} </span>Your draws
             </th>
-            <th scope="col" className="w-[22%] px-3 py-2">
+            <th scope="col" className="w-[20%] px-3 py-2">
               Your avg sold
             </th>
             <th scope="col" className="w-[10%] px-3 py-2 text-right">
@@ -141,10 +143,16 @@ function DesktopTable({
               <th
                 scope="row"
                 className={cn(
-                  "truncate px-3 py-2 text-left",
+                  "truncate py-2 pr-3 text-left",
+                  row.child ? "pl-7" : "pl-3",
                   row.total
                     ? "font-bold text-rr-primary"
-                    : "font-semibold text-rr-primary",
+                    : row.child
+                      ? cn(
+                          "font-medium",
+                          row.other ? "text-rr-muted" : "text-rr-secondary",
+                        )
+                      : "font-semibold text-rr-primary",
                 )}
               >
                 {row.label}
@@ -201,7 +209,8 @@ function MobileList({
           key={row.key}
           aria-current={row.key === selectedKey ? "true" : undefined}
           className={cn(
-            "space-y-1.5 px-3 py-2.5",
+            "space-y-1.5 py-2.5 pr-3",
+            row.child ? "pl-6" : "pl-3",
             row.total ? "bg-rr-elevated/60" : undefined,
             row.key === selectedKey ? SELECTED_ROW : undefined,
           )}
@@ -209,8 +218,15 @@ function MobileList({
           <div className="flex items-baseline justify-between gap-3">
             <span
               className={cn(
-                "text-sm text-rr-primary",
-                row.total ? "font-bold" : "font-semibold",
+                "text-sm",
+                row.total
+                  ? "font-bold text-rr-primary"
+                  : row.child
+                    ? cn(
+                        "font-medium",
+                        row.other ? "text-rr-muted" : "text-rr-secondary",
+                      )
+                    : "font-semibold text-rr-primary",
               )}
             >
               {row.label}
@@ -256,7 +272,10 @@ export function CategoryView({
   const categories = resource.data?.categories ?? null;
   const rows: TableRow[] = categories
     ? [
-        ...categories.rows,
+        ...categories.rows.flatMap((row) => [
+          row,
+          ...(row.children ?? []).map((child) => ({ ...child, child: true })),
+        ]),
         {
           key: "total",
           label: "All categories",

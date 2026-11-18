@@ -86,6 +86,8 @@ export type OperatorDashboardCategoryRow = {
   market: OperatorDashboardCategoryFigures;
   operator: OperatorDashboardCategoryFigures;
   difference: number | null;
+  other?: boolean;
+  children?: OperatorDashboardCategoryRow[];
 };
 
 export type OperatorDashboardCategories = {

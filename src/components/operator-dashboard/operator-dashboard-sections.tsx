@@ -27,24 +27,48 @@ const eyebrowClass =
   "text-xs font-bold uppercase tracking-[0.08em] text-rr-green";
 const MORE_KEY = "more";
 
-type CategoryOption = { key: string; label: string; draws: number };
+type CategoryOption = {
+  key: string;
+  label: string;
+  draws: number;
+  child?: boolean;
+};
+
+function byLabel(a: { label: string }, b: { label: string }) {
+  return a.label.localeCompare(b.label);
+}
 
 function categoryOptions(
   rows: OperatorDashboardCategoryRow[] | null,
 ): CategoryOption[] {
   if (!rows) return [];
 
-  return rows
-    .map((row) => ({
-      key: row.key,
-      label: row.label,
-      draws: row.market.drawsCompleted,
-    }))
+  return [...rows]
     .sort((a, b) => {
       if (a.key === MORE_KEY) return 1;
       if (b.key === MORE_KEY) return -1;
-      return a.label.localeCompare(b.label);
-    });
+      return byLabel(a, b);
+    })
+    .flatMap((row) => [
+      { key: row.key, label: row.label, draws: row.market.drawsCompleted },
+      ...(row.children ?? [])
+        .filter((child) => !child.other)
+        .sort(byLabel)
+        .map((child) => ({
+          key: child.key,
+          label: child.label,
+          draws: child.market.drawsCompleted,
+          child: true,
+        })),
+    ]);
+}
+
+function hasCategory(rows: OperatorDashboardCategoryRow[], key: string) {
+  return rows.some(
+    (row) =>
+      row.key === key ||
+      (row.children ?? []).some((child) => !child.other && child.key === key),
+  );
 }
 
 function CategorySelect({
@@ -76,6 +100,13 @@ function CategorySelect({
     })),
   ];
   const selected = items.find((item) => item.key === category) ?? items[0];
+
+  useEffect(() => {
+    if (!open) return;
+    rootRef.current
+      ?.querySelector<HTMLElement>('[role="option"][aria-selected="true"]')
+      ?.scrollIntoView({ block: "nearest" });
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -159,7 +190,7 @@ function CategorySelect({
         <div
           role="listbox"
           aria-label="Category"
-          className="absolute right-0 z-50 mt-1 w-full min-w-[15rem] max-w-[calc(100vw-32px)] rounded-md border border-rr-border bg-rr-surface p-1 shadow-lg"
+          className="absolute right-0 z-50 mt-1 max-h-[min(24rem,70vh)] w-full min-w-[15rem] max-w-[calc(100vw-32px)] overflow-y-auto rounded-md border border-rr-border bg-rr-surface p-1 shadow-lg"
         >
           {items.map((item) => {
             const active = item.key === category;
@@ -177,12 +208,18 @@ function CategorySelect({
                   triggerRef.current?.focus();
                 }}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs outline-none transition",
+                  "flex w-full items-center gap-2 rounded py-1.5 pr-2 text-left text-xs outline-none transition",
+                  item.child ? "pl-6" : "pl-2",
                   active
                     ? "bg-rr-green-bg font-bold text-rr-primary"
                     : item.disabled
                       ? "cursor-not-allowed text-rr-secondary"
-                      : "font-semibold text-rr-primary hover:bg-rr-elevated focus-visible:bg-rr-elevated",
+                      : cn(
+                          "hover:bg-rr-elevated focus-visible:bg-rr-elevated",
+                          item.child
+                            ? "font-medium text-rr-secondary"
+                            : "font-semibold text-rr-primary",
+                        ),
                 )}
               >
                 <span className="flex w-3.5 shrink-0 justify-center text-rr-green">
@@ -312,7 +349,7 @@ export function OperatorDashboardSections({
     requested === ALL_CATEGORIES_KEY
       ? ALL_CATEGORIES_KEY
       : rows
-        ? rows.some((row) => row.key === requested)
+        ? hasCategory(rows, requested)
           ? requested
           : ALL_CATEGORIES_KEY
         : categories.status === "error"
