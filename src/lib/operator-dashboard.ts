@@ -131,6 +131,42 @@ export type OperatorDashboardClosingWindowsResponse = {
   closingWindows: OperatorDashboardClosingWindows;
 };
 
+export type OperatorDashboardPrize = {
+  key: string;
+  label: string;
+  operators: number;
+  drawsCompleted: number;
+  averageSoldAtClose: number | null;
+  averageSoldSample: number;
+  lowestTicketPrice: number | null;
+  operator: {
+    drawsCompleted: number;
+    averageSoldAtClose: number | null;
+    averageSoldSample: number;
+  };
+};
+
+export type OperatorDashboardPrizes = {
+  period: { days: number; from: string; to: string };
+  category: { key: string; label: string } | null;
+  minimumDraws: number;
+  minimumOperators: number;
+  limit: number;
+  cashIncluded: boolean;
+  coverage: {
+    drawsCompleted: number;
+    drawsWithPrize: number;
+    prizes: number;
+  };
+  mostRun: OperatorDashboardPrize[];
+  bestSelling: OperatorDashboardPrize[];
+};
+
+export type OperatorDashboardPrizesResponse = {
+  operator: OperatorDashboardOperator;
+  prizes: OperatorDashboardPrizes;
+};
+
 export const DEFAULT_DASHBOARD_PERIOD_DAYS = 30;
 
 export function canOpenOperatorDashboard(role: string | null | undefined) {
@@ -170,6 +206,14 @@ export function operatorDashboardClosingWindowsPath(
     days: String(days),
   });
   return `/api/operator-dashboard/closing-windows?${params.toString()}`;
+}
+
+export function operatorDashboardPrizesPath(operatorId: string, days: number) {
+  const params = new URLSearchParams({
+    operatorId,
+    days: String(days),
+  });
+  return `/api/operator-dashboard/prizes?${params.toString()}`;
 }
 
 export type ChangeUnit = "count" | "points" | "price";

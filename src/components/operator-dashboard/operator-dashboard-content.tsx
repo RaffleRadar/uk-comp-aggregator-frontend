@@ -6,6 +6,7 @@ import {
 } from "@/components/operator-dashboard/operator-dashboard-charts";
 import { CategoryView } from "@/components/operator-dashboard/operator-dashboard-categories";
 import { ClosingWindowsView } from "@/components/operator-dashboard/operator-dashboard-closing-windows";
+import { PrizeView } from "@/components/operator-dashboard/operator-dashboard-prizes";
 import {
   changeDirection,
   formatChange,
@@ -444,6 +445,8 @@ export function OperatorDashboardContent({
       )}
 
       <CategoryView operatorId={operator.id} operatorName={operator.name} />
+
+      <PrizeView operatorId={operator.id} operatorName={operator.name} />
 
       <ClosingWindowsView
         operatorId={operator.id}
