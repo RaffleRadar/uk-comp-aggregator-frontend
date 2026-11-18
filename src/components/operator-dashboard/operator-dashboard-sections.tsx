@@ -273,20 +273,19 @@ function FilterBar({
           ready={ready}
           onSelect={(key) => onChange({ days, category: key })}
         />
-        {changed ? (
-          <button
-            type="button"
-            onClick={() =>
-              onChange({
-                days: DEFAULT_DASHBOARD_PERIOD_DAYS,
-                category: ALL_CATEGORIES_KEY,
-              })
-            }
-            className="shrink-0 rounded-md border border-rr-border px-2.5 py-1.5 text-xs font-bold text-rr-secondary transition hover:border-rr-green hover:text-rr-primary"
-          >
-            Reset
-          </button>
-        ) : null}
+        <button
+          type="button"
+          disabled={!changed}
+          onClick={() =>
+            onChange({
+              days: DEFAULT_DASHBOARD_PERIOD_DAYS,
+              category: ALL_CATEGORIES_KEY,
+            })
+          }
+          className="shrink-0 rounded-md border border-rr-border px-2.5 py-1.5 text-xs font-bold text-rr-secondary transition enabled:hover:border-rr-green enabled:hover:text-rr-primary disabled:cursor-default disabled:opacity-40"
+        >
+          Reset
+        </button>
       </div>
     </section>
   );
