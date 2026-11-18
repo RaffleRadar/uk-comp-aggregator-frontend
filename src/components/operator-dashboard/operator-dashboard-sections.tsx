@@ -213,8 +213,10 @@ function FilterBar({
   options,
   totalDraws,
   ready,
+  weeklyAbove,
   onChange,
 }: {
+  weeklyAbove: boolean;
   days: DashboardPeriodDays;
   category: string;
   options: CategoryOption[];
@@ -236,8 +238,9 @@ function FilterBar({
       <div className="min-w-0 lg:flex-1">
         <p className={eyebrowClass}>Period and category</p>
         <p className="text-xs leading-snug text-rr-secondary">
-          Apply to the categories, prizes and closing windows below. The
-          sections above always show the latest week.
+          {weeklyAbove
+            ? "Apply to the section below. The weekly sections above always show the latest week."
+            : "Apply to the category table below; the chosen category is highlighted."}
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap lg:shrink-0">
@@ -290,9 +293,11 @@ function FilterBar({
 }
 
 export function OperatorDashboardSections({
+  screen,
   operatorId,
   operatorName,
 }: {
+  screen: "market" | "prizes" | "timing";
   operatorId: string;
   operatorName: string;
 }) {
@@ -342,30 +347,39 @@ export function OperatorDashboardSections({
           categories.data?.categories.total.market.drawsCompleted ?? null
         }
         ready={rows !== null}
+        weeklyAbove={screen !== "market"}
         onChange={applyFilters}
       />
 
-      <CategoryView
-        operatorName={operatorName}
-        resource={categories}
-        selectedKey={
-          category !== null && category !== ALL_CATEGORIES_KEY ? category : null
-        }
-      />
+      {screen === "market" ? (
+        <CategoryView
+          operatorName={operatorName}
+          resource={categories}
+          selectedKey={
+            category !== null && category !== ALL_CATEGORIES_KEY
+              ? category
+              : null
+          }
+        />
+      ) : null}
 
-      <PrizeView
-        operatorId={operatorId}
-        operatorName={operatorName}
-        days={days}
-        category={category}
-      />
+      {screen === "prizes" ? (
+        <PrizeView
+          operatorId={operatorId}
+          operatorName={operatorName}
+          days={days}
+          category={category}
+        />
+      ) : null}
 
-      <ClosingWindowsView
-        operatorId={operatorId}
-        operatorName={operatorName}
-        days={days}
-        category={category}
-      />
+      {screen === "timing" ? (
+        <ClosingWindowsView
+          operatorId={operatorId}
+          operatorName={operatorName}
+          days={days}
+          category={category}
+        />
+      ) : null}
     </>
   );
 }

@@ -1,9 +1,16 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 import {
   ClosingPanel,
   SalesTiming,
 } from "@/components/operator-dashboard/operator-dashboard-charts";
+import {
+  DashboardMenu,
+  parseDashboardScreen,
+} from "@/components/operator-dashboard/operator-dashboard-menu";
 import { OperatorDashboardSections } from "@/components/operator-dashboard/operator-dashboard-sections";
 import {
   changeDirection,
@@ -330,43 +337,47 @@ function TopPrizes({ items }: { items: WeeklyRadarTopPrize[] }) {
   );
 }
 
-function MarketSections({ market }: { market: OperatorDashboardMarket }) {
+function MarketHeadline({ market }: { market: OperatorDashboardMarket }) {
+  return (
+    <Section
+      eyebrow="Market overview"
+      title="The UK prize competition market this week"
+      text="Completed draws across all tracked operators, excluding the Games category."
+    >
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-5">
+        <StatTile
+          label="Draws completed"
+          metric={market.headline.drawsCompleted}
+          unit="count"
+        />
+        <StatTile
+          label="Sold out"
+          metric={market.headline.soldOut}
+          unit="count"
+        />
+        <StatTile
+          label="Average sold at close"
+          metric={market.headline.averageSoldAtClose}
+          unit="points"
+        />
+        <StatTile
+          label="New competitions"
+          metric={market.headline.newCompetitions}
+          unit="count"
+        />
+        <StatTile
+          label="Typical ticket price"
+          metric={market.headline.typicalTicketPrice}
+          unit="price"
+        />
+      </div>
+    </Section>
+  );
+}
+
+function WeeklyTiming({ market }: { market: OperatorDashboardMarket }) {
   return (
     <>
-      <Section
-        eyebrow="Market overview"
-        title="The UK prize competition market this week"
-        text="Completed draws across all tracked operators, excluding the Games category."
-      >
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-5">
-          <StatTile
-            label="Draws completed"
-            metric={market.headline.drawsCompleted}
-            unit="count"
-          />
-          <StatTile
-            label="Sold out"
-            metric={market.headline.soldOut}
-            unit="count"
-          />
-          <StatTile
-            label="Average sold at close"
-            metric={market.headline.averageSoldAtClose}
-            unit="points"
-          />
-          <StatTile
-            label="New competitions"
-            metric={market.headline.newCompetitions}
-            unit="count"
-          />
-          <StatTile
-            label="Typical ticket price"
-            metric={market.headline.typicalTicketPrice}
-            unit="price"
-          />
-        </div>
-      </Section>
-
       <Section
         eyebrow="Timing"
         title="When tickets sell"
@@ -391,15 +402,27 @@ function MarketSections({ market }: { market: OperatorDashboardMarket }) {
           />
         </div>
       </Section>
-
-      <Section
-        eyebrow="Prizes"
-        title="Most-run prizes"
-        text="The prizes run by the most operators this week. Many listings can mean strong interest or heavy competition."
-      >
-        <TopPrizes items={market.topPrizes} />
-      </Section>
     </>
+  );
+}
+
+function WeeklyPrizes({ market }: { market: OperatorDashboardMarket }) {
+  return (
+    <Section
+      eyebrow="Prizes"
+      title="Most-run prizes"
+      text="The prizes run by the most operators this week. Many listings can mean strong interest or heavy competition."
+    >
+      <TopPrizes items={market.topPrizes} />
+    </Section>
+  );
+}
+
+function MarketMissing() {
+  return (
+    <div className={cn(panelClass, "px-3 py-2.5 text-sm text-rr-secondary")}>
+      Market figures are not available yet.
+    </div>
   );
 }
 
@@ -409,6 +432,8 @@ export function OperatorDashboardContent({
   overview: OperatorDashboardOverview;
 }) {
   const { operator, market, performance } = overview;
+  const searchParams = useSearchParams();
+  const screen = parseDashboardScreen(searchParams.get("view"));
 
   return (
     <div className="space-y-5">
@@ -425,27 +450,53 @@ export function OperatorDashboardContent({
         </p>
       </header>
 
-      {performance ? (
-        <PerformanceSection
-          operatorName={operator.name}
-          performance={performance}
-        />
-      ) : null}
+      <div className="grid min-w-0 gap-5 lg:grid-cols-[12rem_minmax(0,1fr)] lg:items-start">
+        <DashboardMenu screen={screen} />
 
-      {market ? (
-        <MarketSections market={market} />
-      ) : (
-        <div
-          className={cn(panelClass, "px-3 py-2.5 text-sm text-rr-secondary")}
-        >
-          Market figures are not available yet.
+        <div className="min-w-0 space-y-5">
+          {screen === "overview" ? (
+            <>
+              {performance ? (
+                <PerformanceSection
+                  operatorName={operator.name}
+                  performance={performance}
+                />
+              ) : null}
+              {market ? <MarketHeadline market={market} /> : <MarketMissing />}
+            </>
+          ) : null}
+
+          {screen === "market" ? (
+            <OperatorDashboardSections
+              screen="market"
+              operatorId={operator.id}
+              operatorName={operator.name}
+            />
+          ) : null}
+
+          {screen === "prizes" ? (
+            <>
+              {market ? <WeeklyPrizes market={market} /> : null}
+              <OperatorDashboardSections
+                screen="prizes"
+                operatorId={operator.id}
+                operatorName={operator.name}
+              />
+            </>
+          ) : null}
+
+          {screen === "timing" ? (
+            <>
+              {market ? <WeeklyTiming market={market} /> : null}
+              <OperatorDashboardSections
+                screen="timing"
+                operatorId={operator.id}
+                operatorName={operator.name}
+              />
+            </>
+          ) : null}
         </div>
-      )}
-
-      <OperatorDashboardSections
-        operatorId={operator.id}
-        operatorName={operator.name}
-      />
+      </div>
     </div>
   );
 }
