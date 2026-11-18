@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import {
+  IconChartBar,
   IconChevronDown,
   IconFileText,
   IconLogin,
@@ -24,6 +25,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { useAuth } from "@/contexts/auth-context";
 import { CompetitionSearch } from "@/components/layout/competition-search";
 import { useTheme } from "@/components/theme/theme-provider";
@@ -57,6 +59,7 @@ export function Navbar() {
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const accountLinkRef = useRef<HTMLAnchorElement | null>(null);
   const signOutButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dashboardLinkRef = useRef<HTMLAnchorElement | null>(null);
 
   const isCompetitionsActive = pathname === "/competitions" || pathname.startsWith("/competitions/");
   const isOperatorsActive = pathname === "/operators" || pathname.startsWith("/operators/");
@@ -109,7 +112,7 @@ export function Navbar() {
   }
 
   function focusUserMenuItem(index: number) {
-    const items = [accountLinkRef.current, signOutButtonRef.current].filter(
+    const items = [accountLinkRef.current, dashboardLinkRef.current, signOutButtonRef.current].filter(
       (item): item is HTMLAnchorElement | HTMLButtonElement => item !== null,
     );
     items[index]?.focus();
@@ -119,13 +122,13 @@ export function Navbar() {
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
     event.preventDefault();
     setUserMenuOpen(true);
-    const items = [accountLinkRef.current, signOutButtonRef.current].filter(Boolean);
+    const items = [accountLinkRef.current, dashboardLinkRef.current, signOutButtonRef.current].filter(Boolean);
     if (!items.length) return;
     focusUserMenuItem(event.key === "ArrowDown" ? 0 : items.length - 1);
   }
 
   function handleUserMenuPanelKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    const items = [accountLinkRef.current, signOutButtonRef.current].filter(
+    const items = [accountLinkRef.current, dashboardLinkRef.current, signOutButtonRef.current].filter(
       (item): item is HTMLAnchorElement | HTMLButtonElement => item !== null,
     );
     if (event.key === "Escape") {
@@ -245,6 +248,18 @@ export function Navbar() {
                       <IconUser size={18} className="shrink-0 text-rr-green" />
                       Account
                     </Link>
+                    {user.role === "operator" ? (
+                      <ScrollTopLink
+                        href="/operator-dashboard"
+                        role="menuitem"
+                        ref={(el) => { dashboardLinkRef.current = el; }}
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex w-full min-w-0 items-center gap-3 rounded-lg border border-rr-border bg-rr-elevated px-3 py-2.5 text-sm font-medium text-rr-primary no-underline transition [@media(hover:hover)]:hover:border-rr-green/40 [@media(hover:hover)]:hover:bg-rr-green-bg"
+                      >
+                        <IconChartBar size={18} className="shrink-0 text-rr-green" />
+                        Operator dashboard
+                      </ScrollTopLink>
+                    ) : null}
                     <button
                       type="button"
                       role="menuitem"
@@ -364,6 +379,16 @@ export function Navbar() {
                   <IconUser size={20} className="shrink-0 text-rr-green" />
                   Account
                 </Link>
+                {user.role === "operator" ? (
+                  <ScrollTopLink
+                    href="/operator-dashboard"
+                    className={cn(mobileItemBase, mobileItemIdle)}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <IconChartBar size={20} className="shrink-0 text-rr-green" />
+                    Operator dashboard
+                  </ScrollTopLink>
+                ) : null}
                 <button
                   type="button"
                   className={cn(mobileItemBase, mobileItemIdle, "w-full cursor-pointer text-left")}

@@ -2,12 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  IconChartBar,
   IconHeart,
   IconSearch,
   IconSettings,
   IconShieldLock,
 } from "@tabler/icons-react";
 import { AccountGreeting } from "@/components/account/account-greeting";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { NewsletterBanner } from "@/components/account/newsletter-banner";
 import { SavedSearchesSection } from "@/components/account/saved-searches-section";
 import { SettingsSection } from "@/components/account/settings-section";
@@ -236,6 +238,7 @@ export default function ProfilePage() {
   const { status, user } = useAuth();
 
   const isAdmin = user?.role === "admin";
+  const isOperator = status !== "loading" && user?.role === "operator";
 
   const visibleSections = useMemo(() => {
     const showAdminNav = status !== "loading" && isAdmin;
@@ -284,6 +287,15 @@ export default function ProfilePage() {
                 </button>
               );
             })}
+            {isOperator ? (
+              <ScrollTopLink
+                href="/operator-dashboard"
+                className="flex min-w-0 basis-[calc(50%-0.25rem)] items-center gap-2 rounded-xl border border-rr-border px-4 py-3 text-left text-sm text-rr-secondary no-underline transition hover:bg-rr-elevated hover:text-rr-primary md:w-full md:basis-auto md:rounded-none md:border-x-0 md:border-y-0 md:border-l-2 md:border-l-transparent md:px-3"
+              >
+                <IconChartBar size={18} className="shrink-0" />
+                <span className="min-w-0 break-words md:truncate">Operator dashboard</span>
+              </ScrollTopLink>
+            ) : null}
           </div>
         </nav>
         <SectionContent section={effectiveSection} />
