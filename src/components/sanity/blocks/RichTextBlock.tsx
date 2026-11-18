@@ -7,7 +7,7 @@ type RichTextBlockData = {
   content?: unknown[];
 };
 
-const richTextBlockComponents: PortableTextComponents = {
+const compactTextComponents: PortableTextComponents = {
   ...portableTextComponents,
   block: {
     normal: ({ children }) => (
@@ -48,11 +48,22 @@ const richTextBlockComponents: PortableTextComponents = {
   },
 };
 
-export function RichTextBlock({ block }: { block: RichTextBlockData }) {
+export function RichTextBlock({
+  block,
+  variant = "default",
+}: {
+  block: RichTextBlockData;
+  variant?: "default" | "compact";
+}) {
   return (
     <section className="py-5 md:py-6">
       <div className="container">
-        <PortableText value={block.content ?? []} components={richTextBlockComponents} />
+        <PortableText
+          value={block.content ?? []}
+          components={
+            variant === "compact" ? compactTextComponents : portableTextComponents
+          }
+        />
       </div>
     </section>
   );

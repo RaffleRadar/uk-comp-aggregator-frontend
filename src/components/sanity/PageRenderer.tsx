@@ -58,6 +58,11 @@ function CtaButton({
 
 export function PageRenderer({ page }: { page: PageData }) {
   const sections = page.sections ?? [];
+  const listingPage = sections.some(
+    (section) =>
+      section._type === "competitionListBlock" ||
+      section._type === "categoryNavBlock",
+  );
   const headingColor = titleColorVar(page.heroHeadingColor);
   const hasRichTitle = Array.isArray(page.richTitle) && page.richTitle.length > 0;
 
@@ -123,7 +128,13 @@ export function PageRenderer({ page }: { page: PageData }) {
 
         switch (section._type) {
           case "richTextBlock":
-            return <RichTextBlock key={key} block={section} />;
+            return (
+              <RichTextBlock
+                key={key}
+                block={section}
+                variant={listingPage ? "compact" : "default"}
+              />
+            );
           case "statsBlock":
             return <StatsBlock key={key} block={section} />;
           case "cardsBlock":
