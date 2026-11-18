@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { IconChartBar } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { cn } from "@/lib/cn";
 
 type OperatorRecord = {
@@ -465,6 +467,14 @@ export function OperatorModeration() {
                     {rowError ? (
                       <span className="text-xs text-rr-danger">{rowError}</span>
                     ) : null}
+                    <ScrollTopLink
+                      href={`/operator-dashboard?operatorId=${encodeURIComponent(item.id)}`}
+                      aria-label={`Open the dashboard for ${item.name}`}
+                      className="inline-flex items-center justify-center gap-2 rounded-md border border-rr-border bg-transparent px-3 py-2 text-sm font-medium text-rr-secondary no-underline transition hover:bg-rr-elevated hover:text-rr-primary"
+                    >
+                      <IconChartBar size={16} className="shrink-0" />
+                      Dashboard
+                    </ScrollTopLink>
                     <Button
                       type="button"
                       variant="secondary"
