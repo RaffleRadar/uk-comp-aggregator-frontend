@@ -647,7 +647,7 @@ export async function confirmNewsletterSubscription(token: string) {
   });
 }
 
-export type OutboundClickSource = "detail" | "operator_profile";
+export type OutboundClickSource = "detail" | "operator_profile" | "offers";
 
 export async function trackCompetitionClick(
   id: string,

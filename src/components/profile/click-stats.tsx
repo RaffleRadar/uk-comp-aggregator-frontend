@@ -152,6 +152,10 @@ function sourceLabel(source: string) {
     return "Operator pages";
   }
 
+  if (key === "offers") {
+    return "Offers page";
+  }
+
   if (key === "unknown") {
     return "Unknown";
   }

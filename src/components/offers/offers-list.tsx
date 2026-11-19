@@ -9,6 +9,9 @@ import {
   IconClock,
   IconSearch,
 } from "@tabler/icons-react";
+import { pushEvent } from "@/lib/analytics";
+import { getAnonIdForTracking } from "@/lib/anon-id";
+import { trackOperatorClick } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import type { OfferCardData } from "@/sanity/offers";
 
@@ -294,6 +297,20 @@ function OfferCard({
 }) {
   const ends = offer.endsAt ? endsLabel(offer.endsAt) : null;
 
+  const handleVisit = () => {
+    getAnonIdForTracking();
+    pushEvent("outbound_click", {
+      operator: offer.operatorName,
+      source: "offers",
+      competition: null,
+    });
+    if (offer.operatorId) {
+      void trackOperatorClick(offer.operatorId, "offers").catch(
+        () => undefined,
+      );
+    }
+  };
+
   return (
     <article className="flex min-w-0 flex-col rounded-[10px] border border-rr-border bg-rr-surface p-4">
       <div className="flex items-center gap-3">
@@ -349,6 +366,7 @@ function OfferCard({
           target="_blank"
           rel="noopener noreferrer sponsored"
           aria-label={`Visit ${offer.operatorName}`}
+          onClick={handleVisit}
           className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-rr-green px-3 py-2.5 text-sm font-medium text-rr-on-accent no-underline transition hover:opacity-90"
         >
           Visit operator
