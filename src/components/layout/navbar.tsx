@@ -7,6 +7,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import {
   IconChartBar,
   IconChevronDown,
+  IconDiscount,
   IconFileText,
   IconLogin,
   IconLogout,
@@ -55,6 +56,9 @@ export function Navbar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement | null>(null);
+  const moreButtonRef = useRef<HTMLButtonElement | null>(null);
   const userMenuButtonRef = useRef<HTMLButtonElement | null>(null);
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const accountLinkRef = useRef<HTMLAnchorElement | null>(null);
@@ -63,14 +67,23 @@ export function Navbar() {
 
   const isCompetitionsActive = pathname === "/competitions" || pathname.startsWith("/competitions/");
   const isOperatorsActive = pathname === "/operators" || pathname.startsWith("/operators/");
+  const isOffersActive = pathname === "/offers";
   const isReviewsActive = pathname === "/reviews" || pathname.startsWith("/reviews/");
   const isBlogActive = pathname === "/blog" || pathname.startsWith("/blog/");
   const isWeeklyRadarActive = pathname === "/weekly-radar" || pathname.startsWith("/weekly-radar/");
   const isContactActive = pathname === "/contact";
+  const isHowItWorksActive = pathname === "/how-it-works";
+  const isGetListedActive = pathname === "/get-listed";
+  const isMoreActive = isHowItWorksActive || isGetListedActive || isContactActive;
+  const moreItems = [
+    { href: "/how-it-works", label: "How It Works", active: isHowItWorksActive },
+    { href: "/get-listed", label: "Get Listed", active: isGetListedActive },
+    { href: "/contact", label: "Contact", active: isContactActive },
+  ];
   const isSearchPage = pathname === "/search";
 
   useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)");
+    const media = window.matchMedia("(min-width: 1280px)");
     const onChange = () => {
       if (media.matches) setMenuOpen(false);
     };
@@ -78,6 +91,27 @@ export function Navbar() {
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
   }, []);
+
+  useEffect(() => {
+    if (!moreOpen) return;
+    const handlePointerDown = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (moreRef.current?.contains(target)) return;
+      setMoreOpen(false);
+    };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMoreOpen(false);
+      moreButtonRef.current?.focus();
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [moreOpen]);
 
   useEffect(() => {
     if (!userMenuOpen) return;
@@ -192,15 +226,42 @@ export function Navbar() {
             </Suspense>
           </div>
 
-          <div className="hidden md:ml-8 md:flex md:gap-1 ml-4">
+          <div className="ml-4 hidden xl:ml-8 xl:flex xl:gap-1">
             <ViewAllLink href="/competitions" aria-current={isCompetitionsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isCompetitionsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Competitions</ViewAllLink>
             <Link href="/operators" aria-current={isOperatorsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isOperatorsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Operators</Link>
+            <Link href="/offers" aria-current={isOffersActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isOffersActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Offers</Link>
             <Link href="/reviews" aria-current={isReviewsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isReviewsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Reviews</Link>
             <Link href="/blog" aria-current={isBlogActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isBlogActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Blog</Link>
             <Link href="/weekly-radar" aria-current={isWeeklyRadarActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isWeeklyRadarActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Weekly Radar</Link>
-            <Link href="/how-it-works" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline whitespace-nowrap">How It Works</Link>
-            <Link href="/get-listed" className="text-sm px-3 py-2 rounded-md text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary no-underline whitespace-nowrap">Get Listed</Link>
-            <Link href="/contact" aria-current={isContactActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isContactActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Contact</Link>
+            <div ref={moreRef} className="relative">
+              <button
+                ref={moreButtonRef}
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={moreOpen}
+                onClick={() => setMoreOpen((v) => !v)}
+                className={cn("flex cursor-pointer items-center gap-1 rounded-md px-3 py-2 text-sm whitespace-nowrap transition", isMoreActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}
+              >
+                More
+                <IconChevronDown size={14} className={cn("transition", moreOpen && "rotate-180")} />
+              </button>
+              {moreOpen ? (
+                <div role="menu" className="absolute right-0 top-full z-50 mt-2 flex w-44 flex-col rounded-md border border-rr-border bg-rr-surface p-1 shadow-lg">
+                  {moreItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      role="menuitem"
+                      aria-current={item.active ? "page" : undefined}
+                      onClick={() => setMoreOpen(false)}
+                      className={cn("rounded px-2.5 py-2 text-sm no-underline whitespace-nowrap transition", item.active ? "bg-rr-green-bg font-medium text-rr-primary" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
+            </div>
           </div>
 
           <div className="ml-auto shrink-0 flex items-center gap-2">
@@ -223,12 +284,12 @@ export function Navbar() {
                   <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-rr-green bg-rr-green-bg text-xs font-medium text-rr-green">
                     {initials}
                   </div>
-                  <span className="hidden whitespace-nowrap text-sm text-rr-secondary md:inline">
+                  <span className="hidden max-w-[160px] truncate whitespace-nowrap text-sm text-rr-secondary 2xl:inline">
                     {user.displayName || user.email}
                   </span>
                   <IconChevronDown
                     size={16}
-                    className={cn("hidden transition md:block", userMenuOpen && "rotate-180")}
+                    className={cn("hidden transition xl:block", userMenuOpen && "rotate-180")}
                   />
                 </button>
                 {userMenuOpen ? (
@@ -274,13 +335,13 @@ export function Navbar() {
                 ) : null}
               </div>
             ) : status === "unauthenticated" ? (
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden items-center gap-2 xl:flex">
                 <Button variant="secondary" className="text-sm" onClick={() => router.push("/login")}>Log in</Button>
                 <Button variant="primary" className="text-sm" onClick={() => router.push("/register")}>Sign up</Button>
               </div>
             ) : null}
 
-            <Button variant="icon" className="shrink-0 md:hidden" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((v) => !v)}>
+            <Button variant="icon" className="shrink-0 xl:hidden" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((v) => !v)}>
               {menuOpen ? <IconX size={18} /> : <IconMenu2 size={18} />}
             </Button>
           </div>
@@ -296,7 +357,7 @@ export function Navbar() {
       </div>
 
       {menuOpen ? (
-        <div className="absolute left-0 right-0 top-full z-50 border-t border-rr-border bg-rr-surface shadow-lg md:hidden">
+        <div className="absolute left-0 right-0 top-full z-50 border-t border-rr-border bg-rr-surface shadow-lg xl:hidden">
           <div className="flex flex-col gap-2 px-4 py-4">
             <ViewAllLink
               href="/competitions"
@@ -315,6 +376,15 @@ export function Navbar() {
             >
               <IconUsers size={20} className={cn("shrink-0", isOperatorsActive ? "text-rr-on-accent" : "text-rr-green")} />
               Operators
+            </Link>
+            <Link
+              href="/offers"
+              aria-current={isOffersActive ? "page" : undefined}
+              className={cn(mobileItemBase, isOffersActive ? mobileItemActive : mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconDiscount size={20} className={cn("shrink-0", isOffersActive ? "text-rr-on-accent" : "text-rr-green")} />
+              Offers
             </Link>
             <Link
               href="/reviews"

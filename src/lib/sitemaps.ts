@@ -39,6 +39,7 @@ const STATIC_ROUTES: Array<{
   { path: "/competitions", changeFrequency: "hourly", priority: 0.9 },
   { path: "/recent-draws", changeFrequency: "daily", priority: 0.6 },
   { path: "/operators", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/offers", changeFrequency: "daily", priority: 0.7 },
   { path: "/reviews", changeFrequency: "weekly", priority: 0.7 },
   { path: "/blog", changeFrequency: "weekly", priority: 0.7 },
   { path: "/weekly-radar", changeFrequency: "weekly", priority: 0.7 },
