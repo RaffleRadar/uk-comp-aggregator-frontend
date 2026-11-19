@@ -22,8 +22,9 @@ export default async function OffersPage() {
     <main className="bg-rr-bg">
       <section
         aria-labelledby="offers-title"
-        className="relative isolate overflow-hidden bg-gradient-to-b from-rr-surface to-rr-bg"
+        className="relative isolate overflow-hidden"
       >
+        <div className="absolute inset-0 -z-20 bg-gradient-to-b from-rr-surface to-rr-bg" />
         <div className="container py-8 md:py-14">
           <div className="relative mx-auto max-w-[1100px]">
             <Image
@@ -32,7 +33,7 @@ export default async function OffersPage() {
               width={900}
               height={900}
               priority
-              className="pointer-events-none absolute -right-8 top-1/2 -z-10 h-[190px] w-[190px] -translate-y-1/2 opacity-60 mix-blend-multiply hue-rotate-180 invert [mask-image:radial-gradient(closest-side,black_55%,transparent)] dark:mix-blend-screen dark:hue-rotate-0 dark:invert-0 md:right-0 md:h-[340px] md:w-[340px] md:opacity-100"
+              className="pointer-events-none absolute -right-12 top-[calc(50%+26px)] -z-10 h-[260px] w-[260px] -translate-y-1/2 opacity-60 mix-blend-multiply hue-rotate-180 invert [mask-image:radial-gradient(circle_closest-side_at_66%_44%,black_50%,transparent_85%)] dark:mix-blend-screen dark:hue-rotate-0 dark:invert-0 md:-right-20 md:top-[calc(50%+62px)] md:h-[640px] md:w-[640px] md:opacity-100"
             />
             <div className="max-w-[760px]">
               <nav
