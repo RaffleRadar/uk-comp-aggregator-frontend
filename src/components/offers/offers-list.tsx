@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { IconArrowUpRight, IconClock, IconSearch } from "@tabler/icons-react";
+import {
+  IconArrowUpRight,
+  IconCheck,
+  IconChevronDown,
+  IconClock,
+  IconSearch,
+} from "@tabler/icons-react";
+import { cn } from "@/lib/cn";
 import type { OfferCardData } from "@/sanity/offers";
 
 type SortKey = "newest" | "ending" | "operator";
@@ -26,16 +33,6 @@ function endsLabel(endsAt: string): string | null {
   const time = Date.parse(endsAt);
   if (!Number.isFinite(time)) return null;
   return `Ends ${endsFormatter.format(new Date(time))} UK time`;
-}
-
-function initials(name: string): string {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word[0] ?? "")
-    .join("")
-    .toUpperCase();
 }
 
 function endsAtValue(offer: OfferCardData): number {
@@ -86,16 +83,138 @@ async function writeToClipboard(text: string): Promise<boolean> {
   }
 }
 
+function SortSelect({
+  value,
+  onChange,
+}: {
+  value: SortKey;
+  onChange: (value: SortKey) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const selected =
+    SORT_OPTIONS.find((option) => option.value === value) ?? SORT_OPTIONS[0];
+
+  useEffect(() => {
+    if (!open) return;
+
+    function closeOnOutside(event: PointerEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    }
+
+    document.addEventListener("pointerdown", closeOnOutside);
+    return () => document.removeEventListener("pointerdown", closeOnOutside);
+  }, [open]);
+
+  function moveFocus(step: number) {
+    const buttons = Array.from(
+      rootRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]') ??
+        [],
+    );
+    if (buttons.length === 0) return;
+    const index = buttons.findIndex(
+      (button) => button === document.activeElement,
+    );
+    const next =
+      index === -1
+        ? step > 0
+          ? 0
+          : buttons.length - 1
+        : (index + step + buttons.length) % buttons.length;
+    buttons[next].focus();
+  }
+
+  return (
+    <div
+      ref={rootRef}
+      className="relative shrink-0"
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && open) {
+          setOpen(false);
+          triggerRef.current?.focus();
+        }
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          if (!open) setOpen(true);
+          else moveFocus(event.key === "ArrowDown" ? 1 : -1);
+        }
+      }}
+    >
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label="Sort offers"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        className={cn(
+          "flex h-10 w-[160px] cursor-pointer items-center justify-between gap-2 rounded-md border bg-rr-surface px-3 text-sm text-rr-primary outline-none transition",
+          open
+            ? "border-rr-green"
+            : "border-rr-border hover:border-rr-green focus-visible:border-rr-green",
+        )}
+      >
+        <span className="truncate">{selected.label}</span>
+        <IconChevronDown
+          size={14}
+          className={cn(
+            "shrink-0 text-rr-secondary transition-transform",
+            open ? "rotate-180" : undefined,
+          )}
+        />
+      </button>
+
+      {open ? (
+        <div
+          role="listbox"
+          aria-label="Sort offers"
+          className="absolute right-0 z-50 mt-1 w-full min-w-[180px] rounded-md border border-rr-border bg-rr-surface p-1 shadow-lg"
+        >
+          {SORT_OPTIONS.map((option) => {
+            const active = option.value === value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => {
+                  setOpen(false);
+                  onChange(option.value);
+                  triggerRef.current?.focus();
+                }}
+                className={cn(
+                  "flex w-full cursor-pointer items-center gap-2 rounded px-2 py-2 text-left text-sm outline-none transition",
+                  active
+                    ? "bg-rr-green-bg font-medium text-rr-primary"
+                    : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary focus-visible:bg-rr-elevated focus-visible:text-rr-primary",
+                )}
+              >
+                <span className="flex w-3.5 shrink-0 justify-center text-rr-green">
+                  {active ? <IconCheck size={14} stroke={3} /> : null}
+                </span>
+                <span className="min-w-0 flex-1 truncate">{option.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function OperatorMark({ offer }: { offer: OfferCardData }) {
   if (offer.logoUrl) {
     return (
       <Image
         src={offer.logoUrl}
         alt=""
-        width={32}
-        height={32}
+        width={40}
+        height={40}
         unoptimized
-        className="h-8 w-8 shrink-0 rounded-md border border-rr-border bg-white object-contain p-0.5"
+        className="h-10 w-10 shrink-0 rounded-lg object-contain"
       />
     );
   }
@@ -103,9 +222,9 @@ function OperatorMark({ offer }: { offer: OfferCardData }) {
   return (
     <span
       aria-hidden="true"
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-rr-green-border bg-rr-green-bg text-[10px] font-bold text-rr-green"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rr-elevated text-xs font-semibold text-rr-primary"
     >
-      {initials(offer.operatorName)}
+      {offer.operatorName.slice(0, 2).toUpperCase()}
     </span>
   );
 }
@@ -145,9 +264,23 @@ function CopyCodeButton({
       type="button"
       onClick={handleClick}
       aria-label={`Copy promo code for ${operatorName}`}
-      className="inline-flex min-h-[34px] shrink-0 items-center justify-center rounded-md border border-rr-green-border bg-rr-surface px-2.5 text-xs font-semibold text-rr-primary transition hover:border-rr-green"
+      className={cn(
+        "inline-flex h-8 min-w-[88px] shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition",
+        state === "copied"
+          ? "border-rr-green bg-rr-green text-rr-on-accent"
+          : "border-rr-border bg-rr-surface text-rr-primary hover:border-rr-green",
+      )}
     >
-      {state === "copied" ? "Copied" : state === "failed" ? code : "Copy code"}
+      {state === "copied" ? (
+        <>
+          <IconCheck size={13} stroke={3} />
+          Copied
+        </>
+      ) : state === "failed" ? (
+        "Select code"
+      ) : (
+        "Copy code"
+      )}
     </button>
   );
 }
@@ -162,27 +295,40 @@ function OfferCard({
   const ends = offer.endsAt ? endsLabel(offer.endsAt) : null;
 
   return (
-    <article className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-rr-border bg-rr-surface">
-      <div className="border-b border-rr-border bg-gradient-to-br from-rr-green-bg to-rr-surface px-5 pb-4 pt-5">
-        <div className="flex items-center gap-2.5">
-          <OperatorMark offer={offer} />
-          <span className="min-w-0 truncate text-sm font-semibold text-rr-primary">
+    <article className="flex min-w-0 flex-col rounded-[10px] border border-rr-border bg-rr-surface p-4">
+      <div className="flex items-center gap-3">
+        <OperatorMark offer={offer} />
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-rr-primary">
             {offer.operatorName}
-          </span>
+          </p>
+          {ends ? (
+            <p className="mt-0.5 flex items-center gap-1 text-xs text-rr-muted">
+              <IconClock size={13} className="shrink-0" />
+              <span className="truncate">{ends}</span>
+            </p>
+          ) : null}
         </div>
-        <h3 className="mt-3 break-words text-[26px] font-extrabold leading-[1.12] tracking-[-0.03em] text-rr-green md:text-[30px]">
-          {offer.title}
-        </h3>
       </div>
 
-      <div className="flex flex-1 flex-col gap-4 px-5 pb-5 pt-4">
+      <h3 className="mt-4 break-words text-xl font-medium leading-snug tracking-[-0.02em] text-rr-green">
+        {offer.title}
+      </h3>
+
+      {offer.terms ? (
+        <p className="mt-2 whitespace-pre-line break-words text-sm leading-6 text-rr-secondary">
+          {offer.terms}
+        </p>
+      ) : null}
+
+      <div className="mt-auto pt-4">
         {offer.promoCode ? (
-          <div className="flex min-h-[52px] items-center justify-between gap-2 rounded-md border border-dashed border-rr-green-border bg-rr-green-bg py-1.5 pl-3 pr-2">
+          <div className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-rr-green-border bg-rr-green-bg py-2 pl-3 pr-2">
             <div className="min-w-0">
-              <span className="block text-[11px] font-semibold text-rr-secondary">
+              <span className="block text-[11px] uppercase tracking-[0.08em] text-rr-secondary">
                 Promo code
               </span>
-              <code className="block break-all font-mono text-[15px] font-extrabold tracking-[0.05em] text-rr-primary">
+              <code className="block select-all break-all font-mono text-sm font-semibold tracking-[0.05em] text-rr-primary">
                 {offer.promoCode}
               </code>
             </div>
@@ -193,38 +339,21 @@ function OfferCard({
             />
           </div>
         ) : (
-          <p className="flex min-h-[52px] items-center rounded-md bg-rr-elevated px-3 text-sm text-rr-secondary">
+          <p className="rounded-lg border border-rr-border bg-rr-elevated px-3 py-3.5 text-sm text-rr-secondary">
             No promo code needed.
           </p>
         )}
 
-        {offer.terms ? (
-          <p className="whitespace-pre-line break-words text-sm text-rr-secondary">
-            <strong className="mb-0.5 block text-xs font-semibold text-rr-primary">
-              Offer terms
-            </strong>
-            {offer.terms}
-          </p>
-        ) : null}
-
-        <div className="mt-auto grid gap-2.5">
-          {ends ? (
-            <p className="flex items-center gap-1.5 text-xs text-rr-muted">
-              <IconClock size={15} className="shrink-0 text-rr-green" />
-              {ends}
-            </p>
-          ) : null}
-          <a
-            href={offer.url}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            aria-label={`Visit ${offer.operatorName}`}
-            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-md bg-rr-green px-4 text-sm font-bold text-rr-on-accent no-underline transition hover:opacity-90"
-          >
-            Visit operator
-            <IconArrowUpRight size={17} />
-          </a>
-        </div>
+        <a
+          href={offer.url}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          aria-label={`Visit ${offer.operatorName}`}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-rr-green px-3 py-2.5 text-sm font-medium text-rr-on-accent no-underline transition hover:opacity-90"
+        >
+          Visit operator
+          <IconArrowUpRight size={16} />
+        </a>
       </div>
     </article>
   );
@@ -275,7 +404,7 @@ export function OffersList({ offers }: { offers: OfferCardData[] }) {
         <div>
           <h2
             id="offers-heading"
-            className="text-2xl font-extrabold tracking-[-0.03em] text-rr-primary"
+            className="text-xl font-medium tracking-[-0.02em] text-rr-primary"
           >
             Current offers
           </h2>
@@ -285,9 +414,9 @@ export function OffersList({ offers }: { offers: OfferCardData[] }) {
         </div>
 
         {active.length > 0 ? (
-          <div className="flex w-full flex-wrap gap-2 sm:w-auto">
-            <label className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-md border border-rr-border bg-rr-surface px-3 transition-colors focus-within:border-rr-green-border sm:w-[260px] sm:flex-none">
-              <IconSearch size={17} className="shrink-0 text-rr-muted" />
+          <div className="flex w-full gap-2 sm:w-auto">
+            <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-md border border-rr-border bg-rr-surface px-3 transition-colors focus-within:border-rr-green sm:w-[260px] sm:flex-none">
+              <IconSearch size={16} className="shrink-0 text-rr-muted" />
               <span className="sr-only">Search offers or operators</span>
               <input
                 type="search"
@@ -297,20 +426,7 @@ export function OffersList({ offers }: { offers: OfferCardData[] }) {
                 className="min-w-0 flex-1 bg-transparent text-sm text-rr-primary outline-none placeholder:text-rr-muted"
               />
             </label>
-            <label className="shrink-0">
-              <span className="sr-only">Sort offers</span>
-              <select
-                value={sort}
-                onChange={(event) => setSort(event.target.value as SortKey)}
-                className="h-11 cursor-pointer rounded-md border border-rr-border bg-rr-surface px-3 text-sm text-rr-primary outline-none focus-visible:border-rr-green-border"
-              >
-                {SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SortSelect value={sort} onChange={setSort} />
           </div>
         ) : null}
       </div>
@@ -322,7 +438,7 @@ export function OffersList({ offers }: { offers: OfferCardData[] }) {
           ))}
         </div>
       ) : (
-        <p className="rounded-xl border border-rr-border px-5 py-9 text-center text-sm text-rr-muted">
+        <p className="rounded-[10px] border border-rr-border bg-rr-surface px-5 py-9 text-center text-sm text-rr-muted">
           {active.length > 0
             ? "No matching offers. Try a different search."
             : "There are no current offers. Check back soon."}

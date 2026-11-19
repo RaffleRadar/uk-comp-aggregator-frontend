@@ -20,61 +20,62 @@ export default async function OffersPage() {
 
   return (
     <main className="bg-rr-bg">
-      <div className="container pb-12 pt-6 md:pb-16 md:pt-8">
-        <div className="mx-auto max-w-[1100px]">
-          <nav
-            aria-label="Breadcrumb"
-            className="mb-4 flex items-center gap-2.5 text-sm text-rr-muted"
-          >
-            <ScrollTopLink
-              href="/"
-              className="text-rr-muted no-underline hover:text-rr-primary"
-            >
-              Home
-            </ScrollTopLink>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page" className="text-rr-primary">
-              Offers
-            </span>
-          </nav>
-
-          <section
-            aria-labelledby="offers-title"
-            className="relative isolate overflow-hidden rounded-2xl border border-[#254232] bg-[#030706] px-6 py-10 md:min-h-[250px] md:px-14 md:py-12"
-          >
+      <section
+        aria-labelledby="offers-title"
+        className="relative isolate overflow-hidden bg-gradient-to-b from-rr-surface to-rr-bg"
+      >
+        <div className="container py-8 md:py-14">
+          <div className="relative mx-auto max-w-[1100px]">
             <Image
               src="/images/offers-hero.webp"
               alt=""
               width={900}
               height={900}
               priority
-              className="pointer-events-none absolute -right-6 -top-10 -z-20 h-[230px] w-[230px] object-cover md:-right-2 md:top-1/2 md:h-[460px] md:w-[460px] md:-translate-y-[38%]"
+              className="pointer-events-none absolute -right-8 top-1/2 -z-10 h-[190px] w-[190px] -translate-y-1/2 opacity-60 mix-blend-multiply hue-rotate-180 invert [mask-image:radial-gradient(closest-side,black_55%,transparent)] dark:mix-blend-screen dark:hue-rotate-0 dark:invert-0 md:right-0 md:h-[340px] md:w-[340px] md:opacity-100"
             />
-            <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-[#030706] via-[#030706]/80 to-transparent" />
-            <div className="flex h-full flex-col justify-center">
+            <div className="max-w-[760px]">
+              <nav
+                aria-label="Breadcrumb"
+                className="mb-3 flex items-center gap-2.5 text-sm text-rr-muted md:mb-4"
+              >
+                <ScrollTopLink
+                  href="/"
+                  className="text-rr-muted no-underline hover:text-rr-primary"
+                >
+                  Home
+                </ScrollTopLink>
+                <span aria-hidden="true">/</span>
+                <span aria-current="page" className="text-rr-primary">
+                  Offers
+                </span>
+              </nav>
               <h1
                 id="offers-title"
-                className="text-[38px] font-extrabold leading-[1.02] tracking-[-0.055em] text-white md:text-[64px]"
+                className="text-2xl font-medium leading-[1.1] tracking-[-0.03em] text-rr-primary md:text-6xl md:leading-[1.05]"
               >
-                Operator <span className="text-[#56dd78]">Offers</span>
+                Operator <span className="text-rr-green">Offers</span>
               </h1>
-              <p className="mt-3 max-w-[440px] text-base text-[#d0dcd5] md:mt-4 md:text-lg">
+              <p className="mt-3 max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:text-lg">
                 Browse discounts and promo codes from UK prize competition
                 operators.
               </p>
             </div>
-          </section>
-
-          <div className="mt-9">
-            <OffersList offers={offers} />
           </div>
-
-          <p className="mt-6 text-xs text-rr-muted">
-            Offers are provided by the operators. Check their terms before using
-            an offer.
-          </p>
         </div>
-      </div>
+      </section>
+
+      <section className="pb-12 pt-6 md:pb-16 md:pt-4">
+        <div className="container">
+          <div className="mx-auto max-w-[1100px]">
+            <OffersList offers={offers} />
+            <p className="mt-6 text-xs text-rr-muted">
+              Offers are provided by the operators. Check their terms before
+              using an offer.
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
