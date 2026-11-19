@@ -25,7 +25,7 @@ export default async function OffersPage() {
         className="relative isolate overflow-hidden"
       >
         <div className="absolute inset-0 -z-20 bg-gradient-to-b from-rr-surface to-rr-bg" />
-        <div className="container py-8 md:py-14">
+        <div className="container py-6 md:py-14">
           <div className="relative mx-auto max-w-[1100px]">
             <Image
               src="/images/offers-hero.webp"
@@ -33,12 +33,12 @@ export default async function OffersPage() {
               width={900}
               height={900}
               priority
-              className="pointer-events-none absolute -right-12 top-[calc(50%+26px)] -z-10 h-[260px] w-[260px] -translate-y-1/2 opacity-60 mix-blend-multiply hue-rotate-180 invert [mask-image:radial-gradient(circle_closest-side_at_66%_44%,black_50%,transparent_85%)] dark:mix-blend-screen dark:hue-rotate-0 dark:invert-0 md:-right-20 md:top-[calc(50%+62px)] md:h-[640px] md:w-[640px] md:opacity-100"
+              className="pointer-events-none absolute -right-4 top-[calc(50%+22px)] -z-10 h-[240px] w-[240px] -translate-y-1/2 mix-blend-multiply hue-rotate-180 invert [mask-image:radial-gradient(circle_closest-side_at_66%_44%,black_50%,transparent_85%)] dark:mix-blend-screen dark:hue-rotate-0 dark:invert-0 md:-right-20 md:top-[calc(50%+62px)] md:h-[640px] md:w-[640px]"
             />
-            <div className="max-w-[760px]">
+            <div className="max-w-[210px] sm:max-w-[420px] md:max-w-[760px]">
               <nav
                 aria-label="Breadcrumb"
-                className="mb-3 flex items-center gap-2.5 text-sm text-rr-muted md:mb-4"
+                className="mb-2 flex items-center gap-2.5 text-sm text-rr-muted md:mb-4"
               >
                 <ScrollTopLink
                   href="/"
@@ -57,7 +57,7 @@ export default async function OffersPage() {
               >
                 Operator <span className="text-rr-green">Offers</span>
               </h1>
-              <p className="mt-3 max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:text-lg">
+              <p className="mt-2 max-w-[600px] text-sm leading-6 text-rr-secondary md:mt-6 md:text-lg md:leading-7">
                 Browse discounts and promo codes from UK prize competition
                 operators.
               </p>
