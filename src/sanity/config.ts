@@ -47,6 +47,16 @@ const sanityConfig = defineConfig({
                   ]),
               ),
             S.listItem()
+              .title("Offers")
+              .schemaType("offer")
+              .child(
+                S.documentTypeList("offer")
+                  .title("Offers")
+                  .defaultOrdering([
+                    { field: "_createdAt", direction: "desc" },
+                  ]),
+              ),
+            S.listItem()
               .title("Reviews")
               .schemaType("review")
               .child(S.documentTypeList("review")),
