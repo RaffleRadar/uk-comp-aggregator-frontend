@@ -332,7 +332,7 @@ export function CategoryView({
           />
           <MobileList rows={rows} selectedKey={selectedKey} />
           <p className="text-[11px] leading-snug text-rr-muted">
-            Excludes the Games category. Percentages appear from{" "}
+            Excludes Instants. Percentages appear from{" "}
             {formatCount(categories.minimumDraws)} draws; with fewer, only the
             count is shown. Difference is your average sold minus the market, in
             percentage points.

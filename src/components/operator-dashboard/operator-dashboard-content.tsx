@@ -342,7 +342,7 @@ function MarketHeadline({ market }: { market: OperatorDashboardMarket }) {
     <Section
       eyebrow="Market overview"
       title="The UK prize competition market this week"
-      text="Completed draws across all tracked operators, excluding the Games category."
+      text="Completed draws across all tracked operators, excluding Instants."
     >
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-5">
         <StatTile

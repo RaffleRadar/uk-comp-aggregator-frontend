@@ -278,7 +278,8 @@ export function PrizeView({
           the right is operators in Most run and average sold in Best selling.
           Best selling needs at least {formatCount(data.minimumDraws)} draws
           with a sold figure from {formatCount(data.minimumOperators)} or more
-          operators. Excludes the Games category.
+          operators. Excludes Instants. Most-run prizes above counts every draw
+          running this week; this view counts only draws closed in the period.
         </p>
       ) : null}
     </section>
