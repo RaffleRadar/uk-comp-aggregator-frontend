@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { PageHero } from "@/components/layout/page-hero";
 import { GetListedBanner } from "@/components/operators/get-listed-banner";
 import { OperatorSearch } from "@/components/operators/operator-search";
 import type { OperatorSearchItem } from "@/components/operators/operator-search";
@@ -184,39 +185,31 @@ export default async function OperatorsPage() {
 
   return (
     <main className="bg-rr-bg">
-      <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
-        <div className="container py-8 md:py-14">
-          <div className="mx-auto max-w-[1100px]">
-            <div className="max-w-[760px]">
-              <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-rr-green md:mb-4">
-                <span className="h-px w-8 bg-rr-green" />
-                Competition Operators
-              </p>
-              <h1 className="text-2xl font-medium leading-[1.1] tracking-[-0.03em] text-rr-primary md:text-6xl md:leading-[1.05]">
-                Compare the <span className="text-rr-green">operators</span>{" "}
-                behind the draws.
-              </h1>
-              <p className="mt-3 hidden max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:block md:text-lg">
-                {operatorsIntro}
-              </p>
-            </div>
-            <div className="mt-4 w-full rounded-xl border border-rr-border bg-rr-elevated p-4">
-              <p className="text-sm font-medium text-rr-primary">How Value Ratio works</p>
-              <p className="mt-2 text-sm leading-6 text-rr-muted md:hidden">
-                VR compares full-sellout ticket revenue against prize value. VR 1 is break-even, and lower is better for players.
-              </p>
-              <div className="mt-2 hidden gap-6 md:grid md:grid-cols-2">
-                <p className="text-sm leading-6 text-rr-muted">
-                  Value Ratio (VR) compares the total ticket revenue an operator would collect at full sellout against the value of the prize. VR 1 means ticket sales match the prize value exactly — the lower the VR, the better the deal for players.
-                </p>
-                <p className="text-sm leading-6 text-rr-muted">
-                  An operator&apos;s score is the median VR across competitions with a verifiable prize value, recalculated as competitions open and close, so rankings can shift over time.
-                </p>
-              </div>
-            </div>
+      <PageHero
+        eyebrow="Competition Operators"
+        title={
+          <>
+            Compare the <span className="text-rr-green">operators</span>{" "}
+            behind the draws.
+          </>
+        }
+        lead={operatorsIntro}
+      >
+        <div className="mt-4 w-full rounded-xl border border-rr-border bg-rr-elevated p-4">
+          <p className="text-sm font-medium text-rr-primary">How Value Ratio works</p>
+          <p className="mt-2 text-sm leading-6 text-rr-muted md:hidden">
+            VR compares full-sellout ticket revenue against prize value. VR 1 is break-even, and lower is better for players.
+          </p>
+          <div className="mt-2 hidden gap-6 md:grid md:grid-cols-2">
+            <p className="text-sm leading-6 text-rr-muted">
+              Value Ratio (VR) compares the total ticket revenue an operator would collect at full sellout against the value of the prize. VR 1 means ticket sales match the prize value exactly — the lower the VR, the better the deal for players.
+            </p>
+            <p className="text-sm leading-6 text-rr-muted">
+              An operator&apos;s score is the median VR across competitions with a verifiable prize value, recalculated as competitions open and close, so rankings can shift over time.
+            </p>
           </div>
         </div>
-      </section>
+      </PageHero>
 
       <section className="pb-12 pt-6 md:pb-16 md:pt-4">
         <div className="container">

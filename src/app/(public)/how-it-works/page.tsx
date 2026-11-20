@@ -1,5 +1,6 @@
 import { PortableText } from "@portabletext/react";
 import type { Metadata } from "next";
+import { PageHero, PAGE_HERO_TITLE_CLASS } from "@/components/layout/page-hero";
 import { RichTitle } from "@/components/sanity/RichTitle";
 import { FaqPageJsonLd } from "@/components/seo/structured-data";
 import { portableTextComponents } from "@/components/sanity/portableTextComponents";
@@ -50,38 +51,17 @@ export default async function HowItWorksPage() {
   return (
     <main className="bg-rr-bg">
       <FaqPageJsonLd entries={faqEntries} />
-      <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
-        <div className="container py-7 md:py-8">
-          <div className="mx-auto max-w-[760px] text-center">
-            {eyebrow ? (
-              <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-rr-green">
-                {eyebrow}
-              </p>
-            ) : null}
-
-            {hasRichTitle ? (
-              <RichTitle
-                value={richTitle}
-                as="h1"
-                className="text-4xl font-medium leading-tight tracking-[-0.03em] text-rr-primary md:text-5xl"
-              />
-            ) : (
-              <h1
-                className="text-4xl font-medium leading-tight tracking-[-0.03em] text-rr-primary md:text-5xl"
-                style={headingColor ? { color: headingColor } : undefined}
-              >
-                {title}
-              </h1>
-            )}
-
-            {lead ? (
-              <p className="mx-auto mt-5 max-w-[680px] text-base leading-7 text-rr-secondary md:text-lg">
-                {lead}
-              </p>
-            ) : null}
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow={eyebrow}
+        heading={
+          hasRichTitle ? (
+            <RichTitle value={richTitle} as="h1" className={PAGE_HERO_TITLE_CLASS} />
+          ) : undefined
+        }
+        title={title}
+        titleStyle={headingColor ? { color: headingColor } : undefined}
+        lead={lead}
+      />
 
       <section className="py-7">
         <div className="container">

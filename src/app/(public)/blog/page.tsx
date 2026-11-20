@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHero } from "@/components/layout/page-hero";
 import { FeaturedPostCard } from "@/components/sanity/FeaturedPostCard";
 import { PostCard } from "@/components/sanity/PostCard";
 import { ClassicPagination } from "@/components/ui/ClassicPagination";
@@ -70,24 +71,15 @@ export default async function BlogPage({
 
   return (
     <main className="bg-rr-bg">
-      <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
-        <div className="container py-8 md:py-14">
-          <div className="mx-auto max-w-[1100px]">
-            <div className="max-w-[760px]">
-            <p className="mb-3 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-rr-green md:mb-4">
-              <span className="h-px w-8 bg-rr-green" />
-              The RaffleRadar Blog
-            </p>
-            <h1 className="text-2xl font-medium leading-[1.1] tracking-[-0.03em] text-rr-primary md:text-6xl md:leading-[1.05]">
-              Read the <span className="text-rr-green">small print</span> before you buy a ticket.
-            </h1>
-            <p className="mt-3 hidden max-w-[600px] text-base leading-7 text-rr-secondary md:mt-6 md:block md:text-lg">
-              {blogIntro}
-            </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="The RaffleRadar Blog"
+        title={
+          <>
+            Read the <span className="text-rr-green">small print</span> before you buy a ticket.
+          </>
+        }
+        lead={blogIntro}
+      />
 
       <section className="pb-12 pt-6 md:pb-16 md:pt-4">
         <div className="container">

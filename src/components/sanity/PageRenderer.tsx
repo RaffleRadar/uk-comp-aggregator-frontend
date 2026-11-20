@@ -3,6 +3,7 @@ import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { IconArrowRight, IconInfoCircle } from "@tabler/icons-react";
 import { titleColorVar } from "@/lib/titleColor";
 import { Button } from "@/components/ui/button";
+import { PageHero, PAGE_HERO_TITLE_CLASS } from "@/components/layout/page-hero";
 import { CalloutBlock } from "./blocks/CalloutBlock";
 import { CardsBlock } from "./blocks/CardsBlock";
 import { CategoryNavBlock } from "./blocks/CategoryNavBlock";
@@ -63,60 +64,39 @@ export function PageRenderer({ page }: { page: PageData }) {
 
   return (
     <main className="bg-rr-bg">
-      <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
-        <div className="container py-7 md:py-8">
-          <div className="mx-auto max-w-[760px] text-center">
-            {page.heroEyebrow ? (
-              <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-rr-green">
-                {page.heroEyebrow}
-              </p>
-            ) : null}
-
-            {hasRichTitle ? (
-              <RichTitle
-                value={page.richTitle}
-                as="h1"
-                className="text-4xl font-medium leading-tight tracking-[-0.03em] text-rr-primary md:text-5xl"
+      <PageHero
+        eyebrow={page.heroEyebrow}
+        heading={
+          hasRichTitle ? (
+            <RichTitle value={page.richTitle} as="h1" className={PAGE_HERO_TITLE_CLASS} />
+          ) : undefined
+        }
+        title={page.heroHeading}
+        titleStyle={headingColor ? { color: headingColor } : undefined}
+        lead={page.heroLead}
+      >
+        {page.heroCtaPrimary || page.heroCtaSecondary ? (
+          <div className="mt-6 flex flex-wrap items-center gap-3 md:mt-8">
+            {page.heroCtaPrimary ? (
+              <CtaButton
+                href={page.heroCtaPrimary.href}
+                label={page.heroCtaPrimary.label}
+                variant="primary"
+                icon={<IconArrowRight size={16} />}
               />
-            ) : (
-              <h1
-                className="text-4xl font-medium leading-tight tracking-[-0.03em] text-rr-primary md:text-5xl"
-                style={headingColor ? { color: headingColor } : undefined}
-              >
-                {page.heroHeading}
-              </h1>
-            )}
-
-            {page.heroLead ? (
-              <p className="mx-auto mt-5 max-w-[680px] text-base leading-7 text-rr-secondary md:text-lg">
-                {page.heroLead}
-              </p>
             ) : null}
 
-            {page.heroCtaPrimary || page.heroCtaSecondary ? (
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                {page.heroCtaPrimary ? (
-                  <CtaButton
-                    href={page.heroCtaPrimary.href}
-                    label={page.heroCtaPrimary.label}
-                    variant="primary"
-                    icon={<IconArrowRight size={16} />}
-                  />
-                ) : null}
-
-                {page.heroCtaSecondary ? (
-                  <CtaButton
-                    href={page.heroCtaSecondary.href}
-                    label={page.heroCtaSecondary.label}
-                    variant="secondary"
-                    icon={<IconInfoCircle size={16} />}
-                  />
-                ) : null}
-              </div>
+            {page.heroCtaSecondary ? (
+              <CtaButton
+                href={page.heroCtaSecondary.href}
+                label={page.heroCtaSecondary.label}
+                variant="secondary"
+                icon={<IconInfoCircle size={16} />}
+              />
             ) : null}
           </div>
-        </div>
-      </section>
+        ) : null}
+      </PageHero>
 
       {sections.map((section, index) => {
         const key = section._key ?? `${section._type}-${index}`;
