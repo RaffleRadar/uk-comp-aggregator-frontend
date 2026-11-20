@@ -38,20 +38,22 @@ export async function CategoryNavBlock({
   return (
     <section className="py-5 md:py-6">
       <div className="container">
-        <h2 className="mb-4 text-xl font-medium tracking-[-0.02em] text-rr-primary">
-          {block.heading || "Browse by category"}
-        </h2>
+        <div className="mx-auto max-w-[1100px]">
+          <h2 className="mb-4 text-xl font-medium tracking-[-0.02em] text-rr-primary">
+            {block.heading || "Browse by category"}
+          </h2>
 
-        <div className="flex flex-wrap gap-2">
-          {pages.map((page) => (
-            <ScrollTopLink
-              key={page.slug}
-              href={`/${page.slug}`}
-              className="inline-flex items-center rounded-full border border-rr-border bg-rr-surface px-3 py-1.5 text-sm text-rr-secondary transition hover:bg-rr-elevated hover:text-rr-primary"
-            >
-              {page.label}
-            </ScrollTopLink>
-          ))}
+          <div className="flex flex-wrap gap-2">
+            {pages.map((page) => (
+              <ScrollTopLink
+                key={page.slug}
+                href={`/${page.slug}`}
+                className="inline-flex items-center rounded-full border border-rr-border bg-rr-surface px-3 py-1.5 text-sm text-rr-secondary transition hover:bg-rr-elevated hover:text-rr-primary"
+              >
+                {page.label}
+              </ScrollTopLink>
+            ))}
+          </div>
         </div>
       </div>
     </section>

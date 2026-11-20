@@ -138,69 +138,71 @@ export async function CompetitionListBlock({
   return (
     <section className="py-5 md:py-6">
       <div className="container">
-        {block.eyebrow ? (
-          <p className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-rr-green">
-            <span className="h-px w-6 bg-rr-green" />
-            {block.eyebrow}
-          </p>
-        ) : null}
+        <div className="mx-auto max-w-[1100px]">
+          {block.eyebrow ? (
+            <p className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-rr-green">
+              <span className="h-px w-6 bg-rr-green" />
+              {block.eyebrow}
+            </p>
+          ) : null}
 
-        {block.heading ? (
-          <h2 className="mb-6 max-w-[680px] text-3xl font-medium leading-tight tracking-[-0.03em] text-rr-primary">
-            {block.heading}
-          </h2>
-        ) : null}
-
-        {usedFallback ? (
-          <p className="mb-4 rounded-xl border border-rr-border bg-rr-surface px-4 py-3 text-sm text-rr-secondary">
-            {block.emptyMessage?.trim() ||
-              "Nothing closes in this window right now. These are the next competitions to close."}
-          </p>
-        ) : null}
-
-        <CompetitionGridClient
-          competitions={competitions}
-          featuredIds={featuredIds}
-          pageSize={limit}
-          embedded
-        />
-
-        {faqs.length > 0 ? (
-          <div className="mt-12">
-            <h2 className="mb-5 text-2xl font-medium tracking-[-0.02em] text-rr-primary">
-              Frequently asked questions
+          {block.heading ? (
+            <h2 className="mb-6 max-w-[680px] text-3xl font-medium leading-tight tracking-[-0.03em] text-rr-primary">
+              {block.heading}
             </h2>
+          ) : null}
 
-            <dl className="space-y-5">
-              {faqs.map((faq) => (
-                <div key={faq.key}>
-                  <dt className="text-base font-medium text-rr-primary">
-                    {faq.question}
-                  </dt>
-                  <dd className="mt-1 text-sm leading-6 text-rr-secondary">
-                    {faq.answer}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        ) : null}
+          {usedFallback ? (
+            <p className="mb-4 rounded-xl border border-rr-border bg-rr-surface px-4 py-3 text-sm text-rr-secondary">
+              {block.emptyMessage?.trim() ||
+                "Nothing closes in this window right now. These are the next competitions to close."}
+            </p>
+          ) : null}
 
-        {itemListJsonLd ? (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(itemListJsonLd),
-            }}
+          <CompetitionGridClient
+            competitions={competitions}
+            featuredIds={featuredIds}
+            pageSize={limit}
+            embedded
           />
-        ) : null}
 
-        {faqJsonLd ? (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-          />
-        ) : null}
+          {faqs.length > 0 ? (
+            <div className="mt-12">
+              <h2 className="mb-5 text-2xl font-medium tracking-[-0.02em] text-rr-primary">
+                Frequently asked questions
+              </h2>
+
+              <dl className="space-y-5">
+                {faqs.map((faq) => (
+                  <div key={faq.key}>
+                    <dt className="text-base font-medium text-rr-primary">
+                      {faq.question}
+                    </dt>
+                    <dd className="mt-1 text-sm leading-6 text-rr-secondary">
+                      {faq.answer}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ) : null}
+
+          {itemListJsonLd ? (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify(itemListJsonLd),
+              }}
+            />
+          ) : null}
+
+          {faqJsonLd ? (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+          ) : null}
+        </div>
       </div>
     </section>
   );

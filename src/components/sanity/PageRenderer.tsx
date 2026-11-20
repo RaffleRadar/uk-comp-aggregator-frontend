@@ -98,30 +98,32 @@ export function PageRenderer({ page }: { page: PageData }) {
         ) : null}
       </PageHero>
 
-      {sections.map((section, index) => {
-        const key = section._key ?? `${section._type}-${index}`;
+      <div className="[&>section:first-child]:pt-6 md:[&>section:first-child]:pt-4">
+        {sections.map((section, index) => {
+          const key = section._key ?? `${section._type}-${index}`;
 
-        switch (section._type) {
-          case "richTextBlock":
-            return <RichTextBlock key={key} block={section} />;
-          case "statsBlock":
-            return <StatsBlock key={key} block={section} />;
-          case "cardsBlock":
-            return <CardsBlock key={key} block={section} />;
-          case "stepsBlock":
-            return <StepsBlock key={key} block={section} />;
-          case "calloutBlock":
-            return <CalloutBlock key={key} block={section} />;
-          case "operatorsBlock":
-            return <OperatorsBlock key={key} block={section} />;
-          case "competitionListBlock":
-            return <CompetitionListBlock key={key} block={section} />;
-          case "categoryNavBlock":
-            return <CategoryNavBlock key={key} block={section} />;
-          default:
-            return null;
-        }
-      })}
+          switch (section._type) {
+            case "richTextBlock":
+              return <RichTextBlock key={key} block={section} />;
+            case "statsBlock":
+              return <StatsBlock key={key} block={section} />;
+            case "cardsBlock":
+              return <CardsBlock key={key} block={section} />;
+            case "stepsBlock":
+              return <StepsBlock key={key} block={section} />;
+            case "calloutBlock":
+              return <CalloutBlock key={key} block={section} />;
+            case "operatorsBlock":
+              return <OperatorsBlock key={key} block={section} />;
+            case "competitionListBlock":
+              return <CompetitionListBlock key={key} block={section} />;
+            case "categoryNavBlock":
+              return <CategoryNavBlock key={key} block={section} />;
+            default:
+              return null;
+          }
+        })}
+      </div>
     </main>
   );
 }

@@ -58,12 +58,14 @@ export function RichTextBlock({
   return (
     <section className="py-5 md:py-6">
       <div className="container">
-        <PortableText
-          value={block.content ?? []}
-          components={
-            variant === "compact" ? compactTextComponents : portableTextComponents
-          }
-        />
+        <div className="mx-auto max-w-[1100px] [&>*:first-child]:mt-0">
+          <PortableText
+            value={block.content ?? []}
+            components={
+              variant === "compact" ? compactTextComponents : portableTextComponents
+            }
+          />
+        </div>
       </div>
     </section>
   );

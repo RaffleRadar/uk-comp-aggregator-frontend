@@ -63,9 +63,9 @@ export default async function HowItWorksPage() {
         lead={lead}
       />
 
-      <section className="py-7">
+      <section className="pb-7 pt-6 md:pt-4">
         <div className="container">
-          <div className="mx-auto max-w-[1100px]">
+          <div className="mx-auto max-w-[1100px] [&>*:first-child]:mt-0">
             {hasBody ? (
               <PortableText value={body} components={portableTextComponents} />
             ) : (
