@@ -55,8 +55,24 @@ type FunnelStep = {
 };
 
 type FunnelRow = {
+  today?: FunnelStep;
   last7Days: FunnelStep;
   last30Days: FunnelStep;
+};
+
+type FunnelWindow = "today" | "7d" | "30d";
+
+const FUNNEL_WINDOWS: { value: FunnelWindow; label: string }[] = [
+  { value: "today", label: "Today" },
+  { value: "7d", label: "7 days" },
+  { value: "30d", label: "30 days" },
+];
+
+const EMPTY_FUNNEL_STEP: FunnelStep = {
+  signups: 0,
+  verified: 0,
+  wishlisted: 0,
+  clicked: 0,
 };
 
 type NewsletterRow = {
@@ -169,7 +185,7 @@ export function ClickStats() {
   const [isResolved, setIsResolved] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [funnelWindow, setFunnelWindow] = useState<"7d" | "30d">("30d");
+  const [funnelWindow, setFunnelWindow] = useState<FunnelWindow>("today");
 
   const requestStats = useCallback(async (): Promise<LoadResult> => {
     try {
@@ -350,7 +366,11 @@ export function ClickStats() {
   }
 
   const funnelStep =
-    funnelWindow === "7d" ? data.funnel.last7Days : data.funnel.last30Days;
+    funnelWindow === "today"
+      ? (data.funnel.today ?? EMPTY_FUNNEL_STEP)
+      : funnelWindow === "7d"
+        ? data.funnel.last7Days
+        : data.funnel.last30Days;
   const funnelLabels = {
     signups: "Signups",
     verified: "Verified",
@@ -517,14 +537,13 @@ export function ClickStats() {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-sm font-medium text-rr-primary">Funnel</h3>
           <div className="inline-flex items-center rounded-xl border border-rr-border overflow-hidden">
-            {(["7d", "30d"] as const).map((option) => {
-              const active = funnelWindow === option;
-              const label = option === "7d" ? "7 days" : "30 days";
+            {FUNNEL_WINDOWS.map(({ value, label }) => {
+              const active = funnelWindow === value;
               return (
                 <button
-                  key={option}
+                  key={value}
                   type="button"
-                  onClick={() => setFunnelWindow(option)}
+                  onClick={() => setFunnelWindow(value)}
                   className={cn(
                     "px-3 py-1.5 text-xs transition",
                     active
