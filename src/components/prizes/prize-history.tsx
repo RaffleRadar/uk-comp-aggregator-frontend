@@ -34,20 +34,20 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-xl border border-rr-border bg-rr-surface p-3 md:p-4">
-      <div className="mb-3 flex items-start gap-3">
+    <section className="flex min-w-0 flex-col rounded-xl border border-rr-border bg-rr-surface p-3 md:p-4">
+      <div className="mb-3 flex flex-wrap items-start gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rr-green-bg text-rr-green">
           <Icon size={18} aria-hidden="true" />
         </span>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-[180px]">
           <h2 className="text-lg font-semibold leading-tight text-rr-primary">
             {title}
           </h2>
           <p className="mt-0.5 text-xs leading-snug text-rr-muted">{lead}</p>
         </div>
-        {aside}
+        {aside ? <div className="ml-auto shrink-0">{aside}</div> : null}
       </div>
-      {children}
+      <div className="flex flex-1 flex-col">{children}</div>
     </section>
   );
 }
@@ -116,8 +116,8 @@ function PeriodSwitch({
   prizeKey: string;
   history: PrizeHistory;
 }) {
-  const periods =
-    history.availableDays.length > 0 ? history.availableDays : [history.days];
+  const available = history.availableDays ?? [];
+  const periods = available.length > 0 ? available : [history.days];
 
   return (
     <nav
@@ -186,15 +186,13 @@ export function PrizeHistoryBlocks({
           icon={IconHistory}
           title="Prize History"
           lead={`How this prize has run across operators over the last ${period}.`}
+          aside={<PeriodSwitch prizeKey={prizeKey} history={history} />}
         >
-          <div className="mb-3 flex justify-end">
-            <PeriodSwitch prizeKey={prizeKey} history={history} />
-          </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-4">
             <Figure
               label="Times prize has run"
               value={formatCount(history.timesRun)}
-              note="Competitions listed"
+              note="Draws listed"
             />
             <Figure
               label="Unique operators"
@@ -224,7 +222,7 @@ export function PrizeHistoryBlocks({
           lead={`How the cheapest live entry compares with the typical price over the last ${period}.`}
         >
           {priceComparison ? (
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid flex-1 grid-cols-3 gap-2">
               <Figure
                 label="Typical price"
                 value={formatTicketPrice(priceComparison.typicalPrice)}

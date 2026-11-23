@@ -59,7 +59,7 @@ export type HistoryDays = (typeof HISTORY_PERIODS)[number];
 
 export type PrizeHistory = {
   days: number;
-  availableDays: number[];
+  availableDays?: number[];
   firstSeenAt: string | null;
   timesRun: number;
   uniqueOperators: number;
