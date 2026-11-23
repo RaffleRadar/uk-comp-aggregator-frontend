@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PrizeHeader } from "@/components/prizes/prize-header";
+import { PrizeHistoryBlocks } from "@/components/prizes/prize-history";
 import { PrizeSummaryTiles } from "@/components/prizes/prize-summary-tiles";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { getPrizePage, prizePageDescription } from "@/lib/prizes";
@@ -52,6 +53,10 @@ export default async function PrizePageRoute({ params }: PageProps) {
     <main className="bg-rr-bg">
       <PrizeHeader page={page} lead={prizePageDescription(page)} />
       <PrizeSummaryTiles page={page} />
+      <PrizeHistoryBlocks
+        history={page.history}
+        priceComparison={page.priceComparison}
+      />
     </main>
   );
 }
