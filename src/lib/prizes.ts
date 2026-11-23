@@ -161,3 +161,38 @@ export function prizePageDescription(page: PrizePage): string {
 
   return `Compare ${liveDraws} live ${label} competitions from ${operatorText}. See entry prices, odds and how many entries your spend gets.`;
 }
+
+export type PrizeComparisonLink = {
+  key: string;
+  label: string;
+  operators: number;
+};
+
+export async function getPrizeComparisonForCompetition(
+  idOrSlug: string,
+): Promise<PrizeComparisonLink | null> {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/prizes/competition/${encodeURIComponent(idOrSlug)}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        next: { revalidate: PRIZE_PAGE_TTL },
+      },
+    );
+
+    if (!res.ok) return null;
+
+    const body = (await res.json()) as { prize: PrizePage["prize"] | null };
+
+    if (!body?.prize || !isPrizeKey(body.prize.key)) return null;
+
+    return {
+      key: body.prize.key,
+      label: body.prize.label,
+      operators: body.prize.operators,
+    };
+  } catch {
+    return null;
+  }
+}

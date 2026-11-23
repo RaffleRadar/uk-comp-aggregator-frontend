@@ -47,6 +47,11 @@ import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { sanityClient } from "@/sanity/client";
 import { ShareBar } from "@/components/ui/ShareBar";
 import { CANONICAL_ORIGIN } from "@/lib/site";
+import { getPrizeComparisonForCompetition } from "@/lib/prizes";
+import {
+  MIN_OPERATORS_FOR_COMPARISON,
+  PrizeComparisonCard,
+} from "@/components/prizes/prize-comparison-card";
 import {
   OPERATOR_PROFILE_BY_ID,
   OPERATOR_PROFILE_BY_NAME,
@@ -215,6 +220,7 @@ async function fetchCompetitionData(slug: string) {
       .catch(() => []);
     const similarPromise = getSimilarCompetitions(slug, 8).catch(() => []);
     const projectionPromise = getCompetitionProjection(slug);
+    const prizeComparisonPromise = getPrizeComparisonForCompetition(slug);
     const moreFromOperatorPromise = competitionPromise.then((value) => {
       if (!value || typeof value !== "object") return [];
       const comp = value as Competition;
@@ -234,6 +240,7 @@ async function fetchCompetitionData(slug: string) {
       similarData,
       comments,
       projection,
+      prizeComparison,
     ] = await Promise.all([
       competitionPromise,
       historyPromise,
@@ -241,6 +248,7 @@ async function fetchCompetitionData(slug: string) {
       similarPromise,
       commentsPromise,
       projectionPromise,
+      prizeComparisonPromise,
     ]);
     if (!competition || typeof competition !== "object") {
       notFound();
@@ -360,6 +368,7 @@ async function fetchCompetitionData(slug: string) {
       finalSoldValue,
       finalPercentValue,
       projection,
+      prizeComparison,
     };
   } catch (error) {
     if (!isCompetitionNotFoundError(error)) {
@@ -1040,6 +1049,12 @@ export default async function Page({
                 />
                 <SaveActions competitionId={compId} />
               </div>
+              {!hasEnded &&
+              data.prizeComparison &&
+              data.prizeComparison.operators >=
+                MIN_OPERATORS_FOR_COMPARISON ? (
+                <PrizeComparisonCard comparison={data.prizeComparison} />
+              ) : null}
               <div className="mt-1.5 rounded-lg border border-rr-border bg-rr-elevated px-3 py-1.5">
                 <ShareBar
                   url={`${CANONICAL_ORIGIN}/competitions/${data.compSlug ?? slug}`}
