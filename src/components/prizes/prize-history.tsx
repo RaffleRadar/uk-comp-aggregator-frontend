@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import Link from "next/link";
 import {
   IconArrowDownRight,
   IconArrowUpRight,
@@ -7,7 +8,13 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
 import type { PrizeHistory, PrizePriceComparison } from "@/lib/prizes";
-import { formatCount, formatTicketPrice } from "@/lib/prizes";
+import {
+  DEFAULT_HISTORY_DAYS,
+  formatCount,
+  formatTicketPrice,
+  historyPeriodLabel,
+  historyPeriodNote,
+} from "@/lib/prizes";
 
 type PanelIcon = ComponentType<{ size?: number; className?: string }>;
 
@@ -17,13 +24,13 @@ function Panel({
   icon: Icon,
   title,
   lead,
-  badge,
+  aside,
   children,
 }: {
   icon: PanelIcon;
   title: string;
   lead: string;
-  badge?: string;
+  aside?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -38,11 +45,7 @@ function Panel({
           </h2>
           <p className="mt-0.5 text-xs leading-snug text-rr-muted">{lead}</p>
         </div>
-        {badge ? (
-          <span className="shrink-0 rounded-md border border-rr-border bg-rr-elevated px-2 py-0.5 text-[11px] font-semibold text-rr-secondary">
-            {badge}
-          </span>
-        ) : null}
+        {aside}
       </div>
       {children}
     </section>
@@ -101,15 +104,76 @@ function DifferenceValue({ comparison }: { comparison: PrizePriceComparison }) {
   );
 }
 
+function periodHref(prizeKey: string, days: number): string {
+  const path = `/prizes/${prizeKey}`;
+  return days === DEFAULT_HISTORY_DAYS ? path : `${path}?history=${days}`;
+}
+
+function PeriodSwitch({
+  prizeKey,
+  history,
+}: {
+  prizeKey: string;
+  history: PrizeHistory;
+}) {
+  const periods =
+    history.availableDays.length > 0 ? history.availableDays : [history.days];
+
+  return (
+    <nav
+      aria-label="History period"
+      className="grid w-[204px] shrink-0 gap-0.5 rounded-md border border-rr-border bg-rr-elevated p-0.5"
+      style={{
+        gridTemplateColumns: `repeat(${periods.length}, minmax(0, 1fr))`,
+      }}
+    >
+      {periods.map((days) => {
+        const active = days === history.days;
+        if (periods.length === 1) {
+          return (
+            <span
+              key={days}
+              className="whitespace-nowrap rounded px-1.5 py-1 text-center text-[11px] font-semibold leading-tight text-rr-secondary"
+            >
+              Last {historyPeriodLabel(days)}
+            </span>
+          );
+        }
+        return (
+          <Link
+            key={days}
+            href={periodHref(prizeKey, days)}
+            scroll={false}
+            replace
+            aria-current={active ? "true" : undefined}
+            className={cn(
+              "whitespace-nowrap rounded px-1.5 py-1 text-center text-[11px] font-semibold leading-tight transition-colors",
+              active
+                ? "bg-rr-green-bg text-rr-green"
+                : "text-rr-secondary hover:text-rr-primary",
+            )}
+          >
+            {historyPeriodLabel(days)}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 type PrizeHistoryBlocksProps = {
+  prizeKey: string;
   history: PrizeHistory;
   priceComparison: PrizePriceComparison | null;
 };
 
 export function PrizeHistoryBlocks({
+  prizeKey,
   history,
   priceComparison,
 }: PrizeHistoryBlocksProps) {
+  const period = historyPeriodLabel(history.days);
+
   const typicalPrice =
     history.typicalTicketPrice != null
       ? formatTicketPrice(history.typicalTicketPrice)
@@ -121,9 +185,11 @@ export function PrizeHistoryBlocks({
         <Panel
           icon={IconHistory}
           title="Prize History"
-          lead={`How this prize has run across operators over the last ${history.days} days.`}
-          badge={`Last ${history.days} days`}
+          lead={`How this prize has run across operators over the last ${period}.`}
         >
+          <div className="mb-3 flex justify-end">
+            <PeriodSwitch prizeKey={prizeKey} history={history} />
+          </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Figure
               label="Times prize has run"
@@ -155,14 +221,14 @@ export function PrizeHistoryBlocks({
         <Panel
           icon={IconScale}
           title="Price Comparison"
-          lead={`How the cheapest live entry compares with the typical price over the last ${history.days} days.`}
+          lead={`How the cheapest live entry compares with the typical price over the last ${period}.`}
         >
           {priceComparison ? (
             <div className="grid grid-cols-3 gap-2">
               <Figure
                 label="Typical price"
                 value={formatTicketPrice(priceComparison.typicalPrice)}
-                note={`${history.days}-day median`}
+                note={historyPeriodNote(history.days)}
               />
               <Figure
                 label="Lowest live price"

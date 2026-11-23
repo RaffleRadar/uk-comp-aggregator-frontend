@@ -4,12 +4,17 @@ import { PrizeHeader } from "@/components/prizes/prize-header";
 import { PrizeHistoryBlocks } from "@/components/prizes/prize-history";
 import { PrizeSummaryTiles } from "@/components/prizes/prize-summary-tiles";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
-import { getPrizePage, prizePageDescription } from "@/lib/prizes";
+import {
+  getPrizePage,
+  parseHistoryDays,
+  prizePageDescription,
+} from "@/lib/prizes";
 
 export const revalidate = 300;
 
 type PageProps = {
   params: Promise<{ key: string }>;
+  searchParams: Promise<{ history?: string | string[] }>;
 };
 
 export async function generateMetadata({
@@ -43,9 +48,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function PrizePageRoute({ params }: PageProps) {
+export default async function PrizePageRoute({
+  params,
+  searchParams,
+}: PageProps) {
   const { key } = await params;
-  const page = await getPrizePage(key);
+  const { history } = await searchParams;
+  const page = await getPrizePage(key, parseHistoryDays(history));
 
   if (!page) notFound();
 
@@ -54,6 +63,7 @@ export default async function PrizePageRoute({ params }: PageProps) {
       <PrizeHeader page={page} lead={prizePageDescription(page)} />
       <PrizeSummaryTiles page={page} />
       <PrizeHistoryBlocks
+        prizeKey={page.prize.key}
         history={page.history}
         priceComparison={page.priceComparison}
       />

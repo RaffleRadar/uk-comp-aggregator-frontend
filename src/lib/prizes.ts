@@ -52,8 +52,15 @@ export type PrizeSummary = {
   mostEntries: { drawId: string; entries: number; amount: number } | null;
 };
 
+export const HISTORY_PERIODS = [30, 90, 180] as const;
+export const DEFAULT_HISTORY_DAYS = 90;
+
+export type HistoryDays = (typeof HISTORY_PERIODS)[number];
+
 export type PrizeHistory = {
   days: number;
+  availableDays: number[];
+  firstSeenAt: string | null;
   timesRun: number;
   uniqueOperators: number;
   typicalTicketPrice: number | null;
@@ -91,14 +98,41 @@ export function isPrizeKey(value: string): boolean {
   return PRIZE_KEY_PATTERN.test(value);
 }
 
-export async function getPrizePage(key: string): Promise<PrizePage | null> {
+export function parseHistoryDays(
+  value: string | string[] | undefined,
+): HistoryDays | null {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (!raw) return null;
+  const parsed = Number(raw);
+  return (HISTORY_PERIODS as readonly number[]).includes(parsed)
+    ? (parsed as HistoryDays)
+    : null;
+}
+
+export function historyPeriodLabel(days: number): string {
+  return days === 180 ? "6 months" : `${days} days`;
+}
+
+export function historyPeriodNote(days: number): string {
+  return days === 180 ? "6-month median" : `${days}-day median`;
+}
+
+export async function getPrizePage(
+  key: string,
+  historyDays: HistoryDays | null = null,
+): Promise<PrizePage | null> {
   if (!isPrizeKey(key)) return null;
 
-  const res = await fetch(`${BASE_URL}/prizes/${encodeURIComponent(key)}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    next: { revalidate: PRIZE_PAGE_TTL },
-  });
+  const query = historyDays != null ? `?history=${historyDays}` : "";
+
+  const res = await fetch(
+    `${BASE_URL}/prizes/${encodeURIComponent(key)}${query}`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: PRIZE_PAGE_TTL },
+    },
+  );
 
   if (res.status === 404 || res.status === 400) return null;
 
