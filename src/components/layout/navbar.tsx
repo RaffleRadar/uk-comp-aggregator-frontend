@@ -9,6 +9,7 @@ import {
   IconChevronDown,
   IconDiscount,
   IconFileText,
+  IconGift,
   IconLogin,
   IconLogout,
   IconMail,
@@ -66,6 +67,7 @@ export function Navbar() {
   const dashboardLinkRef = useRef<HTMLAnchorElement | null>(null);
 
   const isCompetitionsActive = pathname === "/competitions" || pathname.startsWith("/competitions/");
+  const isPrizesActive = pathname === "/prizes" || pathname.startsWith("/prizes/");
   const isOperatorsActive = pathname === "/operators" || pathname.startsWith("/operators/");
   const isOffersActive = pathname === "/offers";
   const isReviewsActive = pathname === "/reviews" || pathname.startsWith("/reviews/");
@@ -228,6 +230,7 @@ export function Navbar() {
 
           <div className="ml-4 hidden xl:ml-8 xl:flex xl:gap-1">
             <ViewAllLink href="/competitions" aria-current={isCompetitionsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isCompetitionsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Competitions</ViewAllLink>
+            <Link href="/prizes" aria-current={isPrizesActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isPrizesActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Prizes</Link>
             <Link href="/operators" aria-current={isOperatorsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isOperatorsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Operators</Link>
             <Link href="/offers" aria-current={isOffersActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isOffersActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Offers</Link>
             <Link href="/reviews" aria-current={isReviewsActive ? "page" : undefined} className={cn("text-sm px-3 py-2 rounded-md no-underline whitespace-nowrap", isReviewsActive ? "bg-rr-green text-rr-on-accent" : "text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary")}>Reviews</Link>
@@ -368,6 +371,15 @@ export function Navbar() {
               <IconTrophy size={20} className={cn("shrink-0", isCompetitionsActive ? "text-rr-on-accent" : "text-rr-green")} />
               Competitions
             </ViewAllLink>
+            <Link
+              href="/prizes"
+              aria-current={isPrizesActive ? "page" : undefined}
+              className={cn(mobileItemBase, isPrizesActive ? mobileItemActive : mobileItemIdle)}
+              onClick={() => setMenuOpen(false)}
+            >
+              <IconGift size={20} className={cn("shrink-0", isPrizesActive ? "text-rr-on-accent" : "text-rr-green")} />
+              Prizes
+            </Link>
             <Link
               href="/operators"
               aria-current={isOperatorsActive ? "page" : undefined}

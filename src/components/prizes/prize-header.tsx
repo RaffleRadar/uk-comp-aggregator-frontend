@@ -1,5 +1,6 @@
 import { IconChevronRight, IconUsers } from "@tabler/icons-react";
 import { CompetitionImage } from "@/components/ui/CompetitionImage";
+import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import type { PrizePage } from "@/lib/prizes";
 import { formatCount } from "@/lib/prizes";
 
@@ -24,7 +25,14 @@ export function PrizeHeader({ page, lead }: PrizeHeaderProps) {
         <div className="mx-auto max-w-[1100px]">
           <nav aria-label="Breadcrumb" className="mb-4 text-xs md:mb-5">
             <ol className="flex flex-wrap items-center gap-1 text-rr-muted">
-              <li className="text-rr-green">Prize Database</li>
+              <li>
+                <ScrollTopLink
+                  href="/prizes"
+                  className="text-rr-green no-underline hover:underline"
+                >
+                  Prize Database
+                </ScrollTopLink>
+              </li>
               <li aria-hidden="true">
                 <IconChevronRight size={12} />
               </li>

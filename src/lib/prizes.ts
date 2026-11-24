@@ -275,6 +275,133 @@ export function prizePageDescription(page: PrizePage): string {
   return `Compare ${liveDraws} live ${label} competitions from ${operatorText}. See entry prices, odds and how many entries your spend gets.`;
 }
 
+export const PRIZE_LIST_CATEGORIES = [
+  { key: "all", label: "All" },
+  { key: "vehicles", label: "Vehicles" },
+  { key: "houses", label: "Houses" },
+  { key: "watches", label: "Watches & Jewellery" },
+  { key: "cash", label: "Cash" },
+  { key: "tech", label: "Tech" },
+  { key: "instants", label: "Instants" },
+  { key: "home", label: "Home" },
+  { key: "sports", label: "Sports" },
+  { key: "collectibles", label: "Collectibles" },
+  { key: "more", label: "More" },
+  { key: "free", label: "Free" },
+  { key: "christmas", label: "Christmas" },
+] as const;
+
+export type PrizeListCategory = (typeof PRIZE_LIST_CATEGORIES)[number]["key"];
+
+export const DEFAULT_PRIZE_LIST_CATEGORY: PrizeListCategory = "all";
+export const PRIZE_LIST_TOP = 20;
+export const PRIZE_LIST_ALL = 1000;
+export const PRIZE_QUERY_MAX_LENGTH = 80;
+
+export type PrizeListItem = {
+  key: string;
+  label: string;
+  imageUrl: string | null;
+  operators: number;
+  liveDraws: number;
+  fromPrice: number | null;
+  category: string | null;
+  categoryGroup: string;
+};
+
+export type PrizeList = {
+  stats: {
+    prizeListings: number;
+    uniquePrizes: number;
+    liveValue: number;
+    mostCommonThisWeek: { key: string; label: string } | null;
+  };
+  category: string;
+  query: string | null;
+  total: number;
+  prizes: PrizeListItem[];
+};
+
+export type PrizeListState = {
+  category: PrizeListCategory;
+  query: string | null;
+  showAll: boolean;
+};
+
+export function parsePrizeListCategory(
+  value: string | string[] | undefined,
+): PrizeListCategory {
+  const raw = firstValue(value)?.trim().toLowerCase() ?? "";
+  const match = PRIZE_LIST_CATEGORIES.find((item) => item.key === raw);
+  return match ? match.key : DEFAULT_PRIZE_LIST_CATEGORY;
+}
+
+export function parsePrizeQuery(
+  value: string | string[] | undefined,
+): string | null {
+  const raw = firstValue(value)?.replace(/\s+/g, " ").trim() ?? "";
+  return raw ? raw.slice(0, PRIZE_QUERY_MAX_LENGTH) : null;
+}
+
+export function parseShowAll(value: string | string[] | undefined): boolean {
+  return firstValue(value) === "all";
+}
+
+export function prizeDatabaseHref(state: PrizeListState): string {
+  const params = new URLSearchParams();
+  if (state.query) params.set("q", state.query);
+  if (state.category !== DEFAULT_PRIZE_LIST_CATEGORY) {
+    params.set("category", state.category);
+  }
+  if (state.showAll) params.set("view", "all");
+  const query = params.toString();
+  return query ? `/prizes?${query}` : "/prizes";
+}
+
+export function prizeCategoryLabel(category: PrizeListCategory): string {
+  return (
+    PRIZE_LIST_CATEGORIES.find((item) => item.key === category)?.label ?? ""
+  );
+}
+
+export async function getPrizeList(
+  state: PrizeListState,
+): Promise<PrizeList | null> {
+  const params = new URLSearchParams();
+  if (state.category !== DEFAULT_PRIZE_LIST_CATEGORY) {
+    params.set("category", state.category);
+  }
+  if (state.query) params.set("q", state.query);
+  params.set("limit", String(state.showAll ? PRIZE_LIST_ALL : PRIZE_LIST_TOP));
+
+  try {
+    const res = await fetch(`${BASE_URL}/prizes?${params.toString()}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      ...(state.query
+        ? { cache: "no-store" as const }
+        : { next: { revalidate: PRIZE_PAGE_TTL } }),
+    });
+
+    if (!res.ok) return null;
+
+    return (await res.json()) as PrizeList;
+  } catch {
+    return null;
+  }
+}
+
+export function formatPrizeValueTotal(value: number): string {
+  if (value >= 1_000_000) {
+    const millions = Math.round(value / 100_000) / 10;
+    return `£${millions.toLocaleString("en-GB")}m`;
+  }
+  if (value >= 10_000) {
+    return `£${Math.round(value / 1000).toLocaleString("en-GB")}k`;
+  }
+  return poundsFormat.format(Math.round(value));
+}
+
 export type PrizeComparisonLink = {
   key: string;
   label: string;
