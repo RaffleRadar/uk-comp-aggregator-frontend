@@ -4,6 +4,7 @@ import { PrizeCompareControls } from "@/components/prizes/prize-compare-controls
 import { PrizeComparisonTable } from "@/components/prizes/prize-comparison-table";
 import { PrizeHeader } from "@/components/prizes/prize-header";
 import { PrizeHistoryBlocks } from "@/components/prizes/prize-history";
+import { PrizeSearchAnother } from "@/components/prizes/prize-search-another";
 import { PrizeSummaryTiles } from "@/components/prizes/prize-summary-tiles";
 import { buildOpenGraph, buildTwitter } from "@/lib/og";
 import { getOperatorLogos } from "@/lib/operator-logos";
@@ -99,6 +100,7 @@ export default async function PrizePageRoute({
         history={page.history}
         priceComparison={page.priceComparison}
       />
+      <PrizeSearchAnother />
     </main>
   );
 }
