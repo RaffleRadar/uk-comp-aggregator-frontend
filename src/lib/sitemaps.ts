@@ -9,6 +9,7 @@ import { DEFAULT_PRIZE_LIST_CATEGORY, getPrizeList } from "@/lib/prizes";
 
 export const SITEMAP_REVALIDATE_SECONDS = 3600;
 export const FINISHED_CHUNK_SIZE = 40000;
+export const PRIZE_SITEMAP_MIN_OPERATORS = 2;
 
 export type ChangeFrequency =
   | "always"
@@ -187,7 +188,11 @@ export async function getPrizesSitemap(): Promise<SitemapUrl[]> {
 
   return dedupe(
     (list?.prizes ?? [])
-      .filter((prize) => prize.liveDraws > 0)
+      .filter(
+        (prize) =>
+          prize.liveDraws > 0 &&
+          prize.operators >= PRIZE_SITEMAP_MIN_OPERATORS,
+      )
       .map((prize) => ({
         loc: `${CANONICAL_ORIGIN}/prizes/${prize.key}`,
         lastModified: now,
