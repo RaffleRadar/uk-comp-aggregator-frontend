@@ -5,6 +5,7 @@ import {
 } from "@/lib/api";
 import { sanityClient } from "@/sanity/client";
 import { CANONICAL_ORIGIN } from "@/lib/site";
+import { DEFAULT_PRIZE_LIST_CATEGORY, getPrizeList } from "@/lib/prizes";
 
 export const SITEMAP_REVALIDATE_SECONDS = 3600;
 export const FINISHED_CHUNK_SIZE = 40000;
@@ -40,6 +41,7 @@ const STATIC_ROUTES: Array<{
   { path: "/recent-draws", changeFrequency: "daily", priority: 0.6 },
   { path: "/operators", changeFrequency: "weekly", priority: 0.7 },
   { path: "/offers", changeFrequency: "daily", priority: 0.7 },
+  { path: "/prizes", changeFrequency: "daily", priority: 0.7 },
   { path: "/reviews", changeFrequency: "weekly", priority: 0.7 },
   { path: "/blog", changeFrequency: "weekly", priority: 0.7 },
   { path: "/weekly-radar", changeFrequency: "weekly", priority: 0.7 },
@@ -172,6 +174,26 @@ export async function getReviewsSitemap(): Promise<SitemapUrl[]> {
       changeFrequency: "monthly",
       priority: 0.6,
     })),
+  );
+}
+
+export async function getPrizesSitemap(): Promise<SitemapUrl[]> {
+  const list = await getPrizeList({
+    category: DEFAULT_PRIZE_LIST_CATEGORY,
+    query: null,
+    showAll: true,
+  });
+  const now = new Date();
+
+  return dedupe(
+    (list?.prizes ?? [])
+      .filter((prize) => prize.liveDraws > 0)
+      .map((prize) => ({
+        loc: `${CANONICAL_ORIGIN}/prizes/${prize.key}`,
+        lastModified: now,
+        changeFrequency: "daily",
+        priority: 0.6,
+      })),
   );
 }
 

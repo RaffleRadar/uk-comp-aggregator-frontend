@@ -14,6 +14,7 @@ export async function GET() {
   const sitemaps = [
     { loc: `${CANONICAL_ORIGIN}/sitemap-pages.xml`, lastModified: now },
     { loc: `${CANONICAL_ORIGIN}/sitemap-live-competitions.xml`, lastModified: now },
+    { loc: `${CANONICAL_ORIGIN}/sitemap-prizes.xml`, lastModified: now },
     ...Array.from({ length: chunkCount }, (_, index) => ({
       loc: `${CANONICAL_ORIGIN}/sitemap-finished-competitions/${index + 1}.xml`,
       lastModified: now,
