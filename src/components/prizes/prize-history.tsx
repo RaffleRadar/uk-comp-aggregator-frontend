@@ -49,7 +49,9 @@ function Panel({
           </h2>
           <p className="mt-0.5 text-xs leading-snug text-rr-muted">{lead}</p>
         </div>
-        {aside ? <div className="ml-auto shrink-0">{aside}</div> : null}
+        {aside ? (
+          <div className="w-full shrink-0 sm:ml-auto sm:w-auto">{aside}</div>
+        ) : null}
       </div>
       <div className="flex flex-1 flex-col">{children}</div>
     </section>
@@ -123,7 +125,7 @@ function PeriodSwitch({
   return (
     <nav
       aria-label="History period"
-      className="grid w-[204px] shrink-0 gap-0.5 rounded-md border border-rr-border bg-rr-elevated p-0.5"
+      className="grid w-full shrink-0 gap-0.5 rounded-md border border-rr-border bg-rr-elevated p-0.5 sm:w-[204px]"
       style={{
         gridTemplateColumns: `repeat(${periods.length}, minmax(0, 1fr))`,
       }}
