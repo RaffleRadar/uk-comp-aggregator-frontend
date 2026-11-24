@@ -57,6 +57,14 @@ const sanityConfig = defineConfig({
                   ]),
               ),
             S.listItem()
+              .title("Prize pages")
+              .schemaType("prizePage")
+              .child(
+                S.documentTypeList("prizePage")
+                  .title("Prize pages")
+                  .defaultOrdering([{ field: "prizeKey", direction: "asc" }]),
+              ),
+            S.listItem()
               .title("Reviews")
               .schemaType("review")
               .child(S.documentTypeList("review")),

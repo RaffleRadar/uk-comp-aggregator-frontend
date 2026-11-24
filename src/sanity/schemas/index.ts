@@ -11,6 +11,7 @@ import { offer } from "./documents/offer";
 import { operatorProfile } from "./documents/operatorProfile";
 import { page } from "./documents/page";
 import { post } from "./documents/post";
+import { prizePage } from "./documents/prizePage";
 import { review } from "./documents/review";
 import { siteContent } from "./documents/siteContent";
 import { siteSettings } from "./documents/siteSettings";
@@ -23,6 +24,7 @@ export const schemaTypes = [
   post,
   operatorProfile,
   offer,
+  prizePage,
   siteContent,
   siteSettings,
   howItWorksPage,
