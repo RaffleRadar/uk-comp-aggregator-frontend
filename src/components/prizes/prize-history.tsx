@@ -7,13 +7,17 @@ import {
   IconScale,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/cn";
-import type { PrizeHistory, PrizePriceComparison } from "@/lib/prizes";
+import type {
+  PrizeHistory,
+  PrizePageState,
+  PrizePriceComparison,
+} from "@/lib/prizes";
 import {
-  DEFAULT_HISTORY_DAYS,
   formatCount,
   formatTicketPrice,
   historyPeriodLabel,
   historyPeriodNote,
+  prizePageHref,
 } from "@/lib/prizes";
 
 type PanelIcon = ComponentType<{ size?: number; className?: string }>;
@@ -104,16 +108,13 @@ function DifferenceValue({ comparison }: { comparison: PrizePriceComparison }) {
   );
 }
 
-function periodHref(prizeKey: string, days: number): string {
-  const path = `/prizes/${prizeKey}`;
-  return days === DEFAULT_HISTORY_DAYS ? path : `${path}?history=${days}`;
-}
-
 function PeriodSwitch({
   prizeKey,
+  state,
   history,
 }: {
   prizeKey: string;
+  state: PrizePageState;
   history: PrizeHistory;
 }) {
   const available = history.availableDays ?? [];
@@ -142,7 +143,7 @@ function PeriodSwitch({
         return (
           <Link
             key={days}
-            href={periodHref(prizeKey, days)}
+            href={prizePageHref(prizeKey, { ...state, history: days })}
             scroll={false}
             replace
             aria-current={active ? "true" : undefined}
@@ -163,12 +164,14 @@ function PeriodSwitch({
 
 type PrizeHistoryBlocksProps = {
   prizeKey: string;
+  state: PrizePageState;
   history: PrizeHistory;
   priceComparison: PrizePriceComparison | null;
 };
 
 export function PrizeHistoryBlocks({
   prizeKey,
+  state,
   history,
   priceComparison,
 }: PrizeHistoryBlocksProps) {
@@ -186,7 +189,9 @@ export function PrizeHistoryBlocks({
           icon={IconHistory}
           title="Prize History"
           lead={`How this prize has run across operators over the last ${period}.`}
-          aside={<PeriodSwitch prizeKey={prizeKey} history={history} />}
+          aside={
+            <PeriodSwitch prizeKey={prizeKey} state={state} history={history} />
+          }
         >
           <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-4">
             <Figure

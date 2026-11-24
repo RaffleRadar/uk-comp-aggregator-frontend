@@ -2,8 +2,28 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export const PRIZE_PAGE_TTL = 300;
 
-export type PrizeSort =
-  "best-overall" | "best-odds" | "lowest-entry" | "most-entries";
+export const PRIZE_SORTS = [
+  "best-overall",
+  "best-odds",
+  "lowest-entry",
+  "most-entries",
+] as const;
+
+export type PrizeSort = (typeof PRIZE_SORTS)[number];
+
+export const DEFAULT_PRIZE_SORT: PrizeSort = "best-overall";
+
+export const PRIZE_SORT_LABELS: Record<PrizeSort, string> = {
+  "best-overall": "Best Overall",
+  "best-odds": "Best Odds",
+  "lowest-entry": "Lowest Entry",
+  "most-entries": "Most Entries",
+};
+
+export const PRIZE_SPEND_OPTIONS = [5, 10, 20, 50] as const;
+
+export const MIN_PRIZE_SPEND = 1;
+export const MAX_PRIZE_SPEND = 1000;
 
 export type PrizeDrawEntries = {
   entries: number;
@@ -37,7 +57,7 @@ export type PrizeDraw = {
   instantPrizes: boolean;
   liveOdds: number | null;
   soldOutOdds: number | null;
-  forecast: PrizeDrawForecast | null;
+  forecast?: PrizeDrawForecast | null;
   entries: PrizeDrawEntries | null;
   isBestOverall: boolean;
   isCurrent: boolean;
@@ -92,21 +112,67 @@ export type PrizePage = {
   draws: PrizeDraw[];
 };
 
+export type PrizePageState = {
+  history: number | null;
+  spend: number | null;
+  sort: PrizeSort;
+};
+
 const PRIZE_KEY_PATTERN = /^[a-z0-9][a-z0-9-]{0,119}$/;
 
 export function isPrizeKey(value: string): boolean {
   return PRIZE_KEY_PATTERN.test(value);
 }
 
+function firstValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export function parseHistoryDays(
   value: string | string[] | undefined,
 ): HistoryDays | null {
-  const raw = Array.isArray(value) ? value[0] : value;
+  const raw = firstValue(value);
   if (!raw) return null;
   const parsed = Number(raw);
   return (HISTORY_PERIODS as readonly number[]).includes(parsed)
     ? (parsed as HistoryDays)
     : null;
+}
+
+export function normalizePrizeSpend(value: number): number | null {
+  if (!Number.isFinite(value)) return null;
+  const rounded = Math.round(value * 100) / 100;
+  if (rounded < MIN_PRIZE_SPEND || rounded > MAX_PRIZE_SPEND) return null;
+  return rounded;
+}
+
+export function parsePrizeSpend(
+  value: string | string[] | undefined,
+): number | null {
+  const raw = firstValue(value);
+  if (!raw) return null;
+  return normalizePrizeSpend(Number(raw));
+}
+
+export function parsePrizeSort(
+  value: string | string[] | undefined,
+): PrizeSort {
+  const raw = firstValue(value);
+  return (PRIZE_SORTS as readonly string[]).includes(raw ?? "")
+    ? (raw as PrizeSort)
+    : DEFAULT_PRIZE_SORT;
+}
+
+export function prizePageHref(key: string, state: PrizePageState): string {
+  const params = new URLSearchParams();
+  if (state.history != null && state.history !== DEFAULT_HISTORY_DAYS) {
+    params.set("history", String(state.history));
+  }
+  if (state.spend != null) params.set("spend", String(state.spend));
+  if (state.sort !== DEFAULT_PRIZE_SORT) params.set("sort", state.sort);
+  const query = params.toString();
+  const path = `/prizes/${key}`;
+  return query ? `${path}?${query}` : path;
 }
 
 export function historyPeriodLabel(days: number): string {
@@ -119,18 +185,29 @@ export function historyPeriodNote(days: number): string {
 
 export async function getPrizePage(
   key: string,
-  historyDays: HistoryDays | null = null,
+  state: Partial<PrizePageState> = {},
 ): Promise<PrizePage | null> {
   if (!isPrizeKey(key)) return null;
 
-  const query = historyDays != null ? `?history=${historyDays}` : "";
+  const params = new URLSearchParams();
+  if (state.history != null) params.set("history", String(state.history));
+  if (state.spend != null) params.set("spend", String(state.spend));
+  if (state.sort != null && state.sort !== DEFAULT_PRIZE_SORT) {
+    params.set("sort", state.sort);
+  }
+  const query = params.toString();
+  const customSpend =
+    state.spend != null &&
+    !(PRIZE_SPEND_OPTIONS as readonly number[]).includes(state.spend);
 
   const res = await fetch(
-    `${BASE_URL}/prizes/${encodeURIComponent(key)}${query}`,
+    `${BASE_URL}/prizes/${encodeURIComponent(key)}${query ? `?${query}` : ""}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
-      next: { revalidate: PRIZE_PAGE_TTL },
+      ...(customSpend
+        ? { cache: "no-store" as const }
+        : { next: { revalidate: PRIZE_PAGE_TTL } }),
     },
   );
 
@@ -156,7 +233,7 @@ const poundsFormat = new Intl.NumberFormat("en-GB", {
   style: "currency",
   currency: "GBP",
   minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
+  maximumFractionDigits: 0,
 });
 
 export function formatCount(value: number): string {
@@ -168,7 +245,9 @@ export function formatTicketPrice(value: number): string {
 }
 
 export function formatSpend(value: number): string {
-  return poundsFormat.format(value);
+  return Number.isInteger(value)
+    ? poundsFormat.format(value)
+    : penceFormat.format(value);
 }
 
 export function formatOdds(value: number): string {
