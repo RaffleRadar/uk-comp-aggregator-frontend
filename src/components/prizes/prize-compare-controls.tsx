@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   IconCheck,
@@ -29,8 +29,7 @@ const CUSTOM_LABEL = "Custom";
 
 function isPreset(spend: number | null): boolean {
   return (
-    spend == null ||
-    (PRIZE_SPEND_OPTIONS as readonly number[]).includes(spend)
+    spend == null || (PRIZE_SPEND_OPTIONS as readonly number[]).includes(spend)
   );
 }
 
@@ -212,7 +211,8 @@ function CustomSpendInput({
     const input = inputRef.current;
     if (input && input.offsetParent !== null) input.focus();
   }, []);
-  const parsed = draft.trim() === "" ? null : normalizePrizeSpend(Number(draft));
+  const parsed =
+    draft.trim() === "" ? null : normalizePrizeSpend(Number(draft));
   const invalid = draft.trim() !== "" && parsed == null;
 
   return (
@@ -250,6 +250,45 @@ function CustomSpendInput({
   );
 }
 
+function CustomSpendPopover({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+}) {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function closeOnOutside(event: PointerEvent) {
+      const root = rootRef.current;
+      if (!root || root.offsetParent === null) return;
+      const anchor = root.parentElement;
+      if (anchor && !anchor.contains(event.target as Node)) onClose();
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+
+    document.addEventListener("pointerdown", closeOnOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      ref={rootRef}
+      className="absolute right-0 top-full z-30 mt-1.5 w-[200px] rounded-lg border border-rr-border bg-rr-surface p-1.5 shadow-lg"
+    >
+      {children}
+    </div>
+  );
+}
+
 type PrizeCompareControlsProps = {
   prizeKey: string;
   state: PrizePageState;
@@ -269,6 +308,8 @@ export function PrizeCompareControls({
       router.replace(href, { scroll: false });
     });
   }
+
+  const closeCustom = useCallback(() => setCustomOpen(false), []);
 
   function selectSpend(spend: number | null) {
     setCustomOpen(false);
@@ -329,7 +370,7 @@ export function PrizeCompareControls({
               Your Spend
             </span>
             <Pill
-              active={state.spend == null && !customOpen}
+              active={state.spend == null && !customActive}
               disabled={pending}
               onClick={() => selectSpend(null)}
             >
@@ -338,29 +379,33 @@ export function PrizeCompareControls({
             {PRIZE_SPEND_OPTIONS.map((amount) => (
               <Pill
                 key={amount}
-                active={state.spend === amount && !customOpen}
+                active={state.spend === amount && !customActive}
                 disabled={pending}
                 onClick={() => selectSpend(amount)}
               >
                 {formatSpend(amount)}
               </Pill>
             ))}
-            <Pill
-              active={customActive}
-              disabled={pending}
-              onClick={() => setCustomOpen(true)}
-            >
-              {!isPreset(state.spend) && state.spend != null && !customOpen
-                ? formatSpend(state.spend)
-                : CUSTOM_LABEL}
-            </Pill>
-            {customOpen ? (
-              <CustomSpendInput
-                initial={isPreset(state.spend) ? null : state.spend}
+            <div className="relative">
+              <Pill
+                active={customActive}
                 disabled={pending}
-                onApply={(spend) => selectSpend(spend)}
-              />
-            ) : null}
+                onClick={() => setCustomOpen((open) => !open)}
+              >
+                {!isPreset(state.spend) && state.spend != null
+                  ? formatSpend(state.spend)
+                  : CUSTOM_LABEL}
+              </Pill>
+              {customOpen ? (
+                <CustomSpendPopover onClose={closeCustom}>
+                  <CustomSpendInput
+                    initial={isPreset(state.spend) ? null : state.spend}
+                    disabled={pending}
+                    onApply={(spend) => selectSpend(spend)}
+                  />
+                </CustomSpendPopover>
+              ) : null}
+            </div>
           </div>
 
           <div className="hidden shrink-0 items-center justify-end gap-1 lg:ml-auto lg:flex">
@@ -428,8 +473,8 @@ export function PrizeCompareControls({
             className="mt-px shrink-0"
             aria-hidden="true"
           />
-          Live Odds use tickets sold. If Sold Out uses the full ticket cap.
-          Both assume one ticket and one winner.
+          Live Odds use tickets sold. If Sold Out uses the full ticket cap. Both
+          assume one ticket and one winner.
         </p>
       </div>
     </section>
