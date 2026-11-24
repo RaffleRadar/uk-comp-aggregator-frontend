@@ -6,6 +6,7 @@ import {
   formatTicketPrice,
   historyPeriodLabel,
   prizePageDescription,
+  prizeWithArticle,
   type PrizePage,
 } from "@/lib/prizes";
 
@@ -68,7 +69,7 @@ export function defaultPrizeFaqs(page: PrizePage): PrizePageFaq[] {
     const period = historyPeriodLabel(history.days);
     faqs.push({
       key: "live",
-      question: `Is anyone running a ${label} competition right now?`,
+      question: `Is anyone running ${prizeWithArticle(label)} competition right now?`,
       answer:
         history.timesRun > 0
           ? `Not right now. It ran ${plural(history.timesRun, "time", "times")} across ${plural(history.uniqueOperators, "operator", "operators")} in the last ${period}. It comes back on this page as soon as an approved operator lists it again.`

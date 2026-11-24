@@ -9,8 +9,10 @@ import type { PrizeDraw, PrizePage } from "@/lib/prizes";
 import {
   formatCount,
   formatOdds,
+  formatPrizeValue,
   formatSpend,
   formatTicketPrice,
+  prizeWithArticle,
 } from "@/lib/prizes";
 
 const EMPTY = "–";
@@ -41,7 +43,7 @@ function entryPrice(draw: PrizeDraw): string {
 }
 
 function prizeValue(draw: PrizeDraw): string {
-  return draw.prizeValue != null ? formatTicketPrice(draw.prizeValue) : EMPTY;
+  return draw.prizeValue != null ? formatPrizeValue(draw.prizeValue) : EMPTY;
 }
 
 function ticketsText(draw: PrizeDraw): string {
@@ -124,8 +126,7 @@ function EntriesPill({ draw }: { draw: PrizeDraw }) {
   }
 
   return (
-    <span className="inline-flex min-w-[2.75rem] justify-center rounded-full border border-rr-green-border bg-rr-green-bg px-2.5 py-0.5 text-xs font-bold text-rr-green"
-    >
+    <span className="inline-flex min-w-[2.75rem] justify-center rounded-full border border-rr-green-border bg-rr-green-bg px-2.5 py-0.5 text-xs font-bold text-rr-green">
       {formatCount(draw.entries.entries)}
     </span>
   );
@@ -177,8 +178,8 @@ function DesktopTable({
           <col className="w-10" />
           <col />
           <col className="w-[72px]" />
-          <col className="w-[84px]" />
-          <col className="w-[170px]" />
+          <col className="w-[92px]" />
+          <col className="w-[184px]" />
           <col className="w-[192px]" />
           <col className="w-[80px]" />
           <col className="w-[128px]" />
@@ -357,8 +358,7 @@ function MobileCards({
                   · {formatPercent(percentSold(draw))} sold
                 </span>
                 <span className="block text-xs text-rr-secondary">
-                  Live odds{" "}
-                  <span className={live.className}>{live.value}</span>
+                  Live odds <span className={live.className}>{live.value}</span>
                 </span>
               </span>
               <IconChevronDown
@@ -431,7 +431,7 @@ export function PrizeComparisonTable({
               id="prize-operators-title"
               className="text-xl font-semibold leading-tight tracking-[-0.02em] text-rr-primary md:text-2xl"
             >
-              Who gives you the best shot at a {label}?
+              Who gives you the best shot at {prizeWithArticle(label)}?
             </h2>
             <p className="mt-1 text-sm text-rr-secondary">{lead}</p>
           </div>

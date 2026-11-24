@@ -250,6 +250,21 @@ export function formatSpend(value: number): string {
     : penceFormat.format(value);
 }
 
+export function formatPrizeValue(value: number): string {
+  return Number.isInteger(value)
+    ? poundsFormat.format(value)
+    : penceFormat.format(value);
+}
+
+const AN_SOUND =
+  /^(?:[aio]|e(?!u)|u(?!ni|se|k\b)|xbox|x\d|mx|hp|lg|mg|rtx|8|11|18)/i;
+
+export function prizeWithArticle(label: string): string {
+  const name = label.trim();
+  if (/^£/.test(name)) return name;
+  return `${AN_SOUND.test(name) ? "an" : "a"} ${name}`;
+}
+
 export function formatOdds(value: number): string {
   return `1 in ${countFormat.format(value)}`;
 }
@@ -266,7 +281,7 @@ export function prizePageDescription(page: PrizePage): string {
   const { label, operators, liveDraws } = page.prize;
 
   if (liveDraws === 0) {
-    return `Compare UK prize draws for a chance to win a ${label}. See ticket prices, odds and which operators have run this prize recently.`;
+    return `Compare UK prize draws for a chance to win ${prizeWithArticle(label)}. See ticket prices, odds and which operators have run this prize recently.`;
   }
 
   const operatorText =
