@@ -15,12 +15,20 @@ import { CompetitionImage } from "@/components/ui/CompetitionImage";
 import { ChristmasTreeIcon } from "@/components/ui/christmas-tree-icon";
 import { ScrollTopLink } from "@/components/ui/scroll-top-link";
 import { cn } from "@/lib/cn";
-import type { PrizeList, PrizeListItem, PrizeListState } from "@/lib/prizes";
+import type {
+  PrizeList,
+  PrizeListItem,
+  PrizeListState,
+  PrizeRecentItem,
+  PrizeRecentlyRun,
+} from "@/lib/prizes";
 import {
   DEFAULT_PRIZE_LIST_CATEGORY,
   PRIZE_LIST_CATEGORIES,
   PRIZE_QUERY_MAX_LENGTH,
+  PRIZE_RECENT_PATH,
   formatCount,
+  formatLastRun,
   formatPrizeValueTotal,
   formatTicketPrice,
   prizeCategoryLabel,
@@ -357,6 +365,125 @@ function PrizeListSection({
   );
 }
 
+function RecentRow({ prize }: { prize: PrizeRecentItem }) {
+  const lastRun = formatLastRun(prize.lastRunAt);
+
+  return (
+    <li className="border-b border-rr-border last:border-b-0">
+      <ScrollTopLink
+        href={`/prizes/${prize.key}`}
+        className="flex items-center gap-3 px-3 py-2 no-underline transition-colors hover:bg-rr-elevated"
+      >
+        <span className="relative h-9 w-14 shrink-0 overflow-hidden rounded-md border border-rr-border bg-rr-elevated">
+          <CompetitionImage
+            src={prize.imageUrl}
+            alt=""
+            fill
+            sizes="56px"
+            className="object-cover"
+            unoptimized
+          />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-rr-primary">
+            {prize.label}
+          </span>
+          <span className="block text-xs text-rr-secondary">
+            {plural(prize.operators, "operator", "operators")} •{" "}
+            {plural(prize.runs, "draw", "draws")}
+          </span>
+          {lastRun ? (
+            <span className="block text-xs text-rr-secondary sm:hidden">
+              Last run{" "}
+              <span className="font-semibold text-rr-primary">{lastRun}</span>
+            </span>
+          ) : null}
+        </span>
+        {lastRun ? (
+          <span className="hidden shrink-0 text-xs text-rr-secondary sm:block">
+            Last run{" "}
+            <span className="text-sm font-semibold text-rr-primary">
+              {lastRun}
+            </span>
+          </span>
+        ) : null}
+        <IconChevronRight
+          size={16}
+          aria-hidden="true"
+          className="shrink-0 text-rr-muted"
+        />
+      </ScrollTopLink>
+    </li>
+  );
+}
+
+function RecentColumn({ prizes }: { prizes: PrizeRecentItem[] }) {
+  if (prizes.length === 0) return null;
+
+  return (
+    <ul className="overflow-hidden rounded-xl border border-rr-border bg-rr-surface">
+      {prizes.map((prize) => (
+        <RecentRow key={prize.key} prize={prize} />
+      ))}
+    </ul>
+  );
+}
+
+export function RecentPrizeColumns({ prizes }: { prizes: PrizeRecentItem[] }) {
+  const half = Math.ceil(prizes.length / 2);
+
+  return (
+    <>
+      <div className="grid gap-2 lg:hidden">
+        <RecentColumn prizes={prizes} />
+      </div>
+      <div className="hidden gap-3 lg:grid lg:grid-cols-2 lg:items-start">
+        <RecentColumn prizes={prizes.slice(0, half)} />
+        <RecentColumn prizes={prizes.slice(half)} />
+      </div>
+    </>
+  );
+}
+
+function RecentlyRunSection({ recent }: { recent: PrizeRecentlyRun }) {
+  if (recent.prizes.length === 0) return null;
+
+  const hasMore = recent.total > recent.prizes.length;
+
+  return (
+    <section aria-labelledby="recently-run-title" className="container pb-10">
+      <div className="mx-auto max-w-[1100px]">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-rr-green">
+          Recently run
+        </p>
+        <h2
+          id="recently-run-title"
+          className="text-xl font-semibold leading-tight tracking-[-0.02em] text-rr-primary md:text-2xl"
+        >
+          Prizes with no live draws right now
+        </h2>
+        <p className="mb-3 mt-1 text-sm text-rr-secondary">
+          Run in the last {recent.days} days. Open a prize to see how its past
+          draws went.
+        </p>
+        <RecentPrizeColumns prizes={recent.prizes} />
+        {hasMore ? (
+          <div className="mt-3 flex justify-center">
+            <ScrollTopLink
+              href={PRIZE_RECENT_PATH}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-rr-green-border bg-rr-green-bg px-3.5 py-2.5 text-sm font-semibold text-rr-green no-underline transition-colors hover:bg-rr-green hover:text-rr-on-accent sm:w-auto sm:py-2"
+            >
+              View All {recent.total.toLocaleString("en-GB")} Recently Run
+              Prizes
+              <IconArrowRight size={16} aria-hidden="true" />
+            </ScrollTopLink>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 function BrowseAll({ state }: { state: PrizeListState }) {
   return (
     <section aria-label="Browse all prizes" className="container pb-10">
@@ -427,6 +554,9 @@ export function PrizeDatabaseBody({
       <StatTiles stats={list.stats} />
       <PrizeListSection list={list} state={state} />
       {hasMore ? <BrowseAll state={state} /> : <div className="pb-4" />}
+      {list.recentlyRun ? (
+        <RecentlyRunSection recent={list.recentlyRun} />
+      ) : null}
     </>
   );
 }

@@ -5,11 +5,14 @@ import {
 } from "@/lib/api";
 import { sanityClient } from "@/sanity/client";
 import { CANONICAL_ORIGIN } from "@/lib/site";
-import { DEFAULT_PRIZE_LIST_CATEGORY, getPrizeList } from "@/lib/prizes";
+import {
+  DEFAULT_PRIZE_LIST_CATEGORY,
+  getPrizeList,
+  PRIZE_RECENT_PATH,
+} from "@/lib/prizes";
 
 export const SITEMAP_REVALIDATE_SECONDS = 3600;
 export const FINISHED_CHUNK_SIZE = 40000;
-export const PRIZE_SITEMAP_MIN_OPERATORS = 2;
 
 export type ChangeFrequency =
   | "always"
@@ -43,6 +46,7 @@ const STATIC_ROUTES: Array<{
   { path: "/operators", changeFrequency: "weekly", priority: 0.7 },
   { path: "/offers", changeFrequency: "daily", priority: 0.7 },
   { path: "/prizes", changeFrequency: "daily", priority: 0.7 },
+  { path: PRIZE_RECENT_PATH, changeFrequency: "daily", priority: 0.5 },
   { path: "/reviews", changeFrequency: "weekly", priority: 0.7 },
   { path: "/blog", changeFrequency: "weekly", priority: 0.7 },
   { path: "/weekly-radar", changeFrequency: "weekly", priority: 0.7 },
@@ -179,27 +183,35 @@ export async function getReviewsSitemap(): Promise<SitemapUrl[]> {
 }
 
 export async function getPrizesSitemap(): Promise<SitemapUrl[]> {
-  const list = await getPrizeList({
-    category: DEFAULT_PRIZE_LIST_CATEGORY,
-    query: null,
-    showAll: true,
-  });
+  const list = await getPrizeList(
+    {
+      category: DEFAULT_PRIZE_LIST_CATEGORY,
+      query: null,
+      showAll: true,
+    },
+    { allRecent: true },
+  );
   const now = new Date();
 
-  return dedupe(
-    (list?.prizes ?? [])
-      .filter(
-        (prize) =>
-          prize.liveDraws > 0 &&
-          prize.operators >= PRIZE_SITEMAP_MIN_OPERATORS,
-      )
-      .map((prize) => ({
-        loc: `${CANONICAL_ORIGIN}/prizes/${prize.key}`,
-        lastModified: now,
-        changeFrequency: "daily",
-        priority: 0.6,
-      })),
+  const live: SitemapUrl[] = (list?.prizes ?? [])
+    .filter((prize) => prize.liveDraws > 0)
+    .map((prize) => ({
+      loc: `${CANONICAL_ORIGIN}/prizes/${prize.key}`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.6,
+    }));
+
+  const past: SitemapUrl[] = (list?.recentlyRun?.prizes ?? []).map(
+    (prize) => ({
+      loc: `${CANONICAL_ORIGIN}/prizes/${prize.key}`,
+      lastModified: toDate(prize.lastRunAt),
+      changeFrequency: "weekly",
+      priority: 0.4,
+    }),
   );
+
+  return dedupe([...live, ...past]);
 }
 
 export async function getLiveCompetitionsSitemap(): Promise<SitemapUrl[]> {

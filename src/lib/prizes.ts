@@ -310,6 +310,7 @@ export const DEFAULT_PRIZE_LIST_CATEGORY: PrizeListCategory = "all";
 export const PRIZE_LIST_TOP = 20;
 export const PRIZE_LIST_ALL = 1000;
 export const PRIZE_QUERY_MAX_LENGTH = 80;
+export const PRIZE_RECENT_PATH = "/prizes/recently-run";
 
 export type PrizeListItem = {
   key: string;
@@ -320,6 +321,23 @@ export type PrizeListItem = {
   fromPrice: number | null;
   category: string | null;
   categoryGroup: string;
+};
+
+export type PrizeRecentItem = {
+  key: string;
+  label: string;
+  imageUrl: string | null;
+  operators: number;
+  runs: number;
+  lastRunAt: string | null;
+  category: string | null;
+  categoryGroup: string;
+};
+
+export type PrizeRecentlyRun = {
+  days: number;
+  total: number;
+  prizes: PrizeRecentItem[];
 };
 
 export type PrizeList = {
@@ -333,6 +351,7 @@ export type PrizeList = {
   query: string | null;
   total: number;
   prizes: PrizeListItem[];
+  recentlyRun?: PrizeRecentlyRun;
 };
 
 export type PrizeListState = {
@@ -377,8 +396,21 @@ export function prizeCategoryLabel(category: PrizeListCategory): string {
   );
 }
 
+const lastRunFormatter = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  timeZone: "Europe/London",
+});
+
+export function formatLastRun(value: string | null): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : lastRunFormatter.format(date);
+}
+
 export async function getPrizeList(
   state: PrizeListState,
+  options: { allRecent?: boolean } = {},
 ): Promise<PrizeList | null> {
   const params = new URLSearchParams();
   if (state.category !== DEFAULT_PRIZE_LIST_CATEGORY) {
@@ -386,6 +418,7 @@ export async function getPrizeList(
   }
   if (state.query) params.set("q", state.query);
   params.set("limit", String(state.showAll ? PRIZE_LIST_ALL : PRIZE_LIST_TOP));
+  if (options.allRecent) params.set("recentLimit", String(PRIZE_LIST_ALL));
 
   try {
     const res = await fetch(`${BASE_URL}/prizes?${params.toString()}`, {
