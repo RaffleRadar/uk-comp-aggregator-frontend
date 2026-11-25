@@ -23,10 +23,10 @@ export function PrizeComparisonCard({ comparison }: PrizeComparisonCardProps) {
         </p>
         <p className="text-sm font-semibold leading-snug text-rr-primary">
           This prize is available from{" "}
-          <span className="text-rr-green">{operators} operators</span>.
+          <span className="text-rr-green">{operators} operators.</span>
         </p>
       </div>
-      <p className="col-span-2 text-xs leading-snug text-rr-muted md:col-span-1 md:col-start-2 md:self-start">
+      <p className="col-span-2 text-xs leading-snug text-rr-secondary md:col-span-1 md:col-start-2 md:self-start">
         Compare ticket prices, odds and value.
       </p>
       <ScrollTopLink
