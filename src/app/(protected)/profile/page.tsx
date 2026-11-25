@@ -61,6 +61,7 @@ function toCompetition(item: CompetitionDetail): Competition {
     ticketPrice: item.ticketPrice,
     ticketsTotal: item.ticketsTotal,
     ticketsLeft: item.ticketsLeft,
+    ticketsSold: item.ticketsSold,
     percentSold: item.percentSold,
     finalPercentSold: item.finalPercentSold,
     endsAt: item.endsAt,
