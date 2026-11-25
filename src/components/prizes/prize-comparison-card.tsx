@@ -10,32 +10,31 @@ type PrizeComparisonCardProps = {
 };
 
 export function PrizeComparisonCard({ comparison }: PrizeComparisonCardProps) {
+  const operators = formatCount(comparison.operators);
+
   return (
-    <div className="mt-1.5 flex items-center gap-3 rounded-lg border border-rr-border bg-rr-elevated px-3 py-2.5">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rr-green-bg text-rr-green">
+    <div className="mt-1.5 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 rounded-lg border border-rr-border bg-rr-elevated px-3 py-2.5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-y-0.5">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rr-green-bg text-rr-green md:row-span-2">
         <IconScale size={18} aria-hidden="true" />
       </span>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 md:self-end">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-green">
           Prize comparison
         </p>
         <p className="text-sm font-semibold leading-snug text-rr-primary">
-          This prize is currently being run by{" "}
-          <span className="text-rr-green">
-            {formatCount(comparison.operators)} operators
-          </span>{" "}
-          right now.
-        </p>
-        <p className="mt-0.5 text-xs leading-snug text-rr-muted">
-          Compare ticket prices, odds and value across all operators to find the
-          best option.
+          This prize is available from{" "}
+          <span className="text-rr-green">{operators} operators</span>.
         </p>
       </div>
+      <p className="col-span-2 text-xs leading-snug text-rr-muted md:col-span-1 md:col-start-2 md:self-start">
+        Compare ticket prices, odds and value.
+      </p>
       <ScrollTopLink
         href={`/prizes/${comparison.key}`}
-        className="inline-flex shrink-0 items-center gap-1 rounded-md border border-rr-green-border bg-rr-green-bg px-3 py-1.5 text-sm font-semibold text-rr-green transition-colors hover:bg-rr-green hover:text-rr-on-accent"
+        className="col-span-2 flex items-center justify-center gap-1 rounded-md border border-rr-green-border bg-rr-green-bg px-3 py-2.5 text-sm font-semibold text-rr-green transition-colors hover:bg-rr-green hover:text-rr-on-accent md:col-span-1 md:col-start-3 md:row-span-2 md:row-start-1 md:inline-flex md:py-1.5"
       >
-        Compare
+        <span className="md:hidden">Compare All {operators} Operators</span>
+        <span className="hidden md:inline">Compare</span>
         <IconChevronRight size={16} aria-hidden="true" />
       </ScrollTopLink>
     </div>
