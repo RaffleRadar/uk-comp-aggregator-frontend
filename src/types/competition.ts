@@ -35,6 +35,11 @@ export type Competition = {
   description: string | null;
   sourceUrl: string | null;
   commentCount?: number;
+  forecast?: {
+    percent: number;
+    tickets: number;
+    odds: number;
+  } | null;
   spend?: {
     amount: number;
     entries: number;

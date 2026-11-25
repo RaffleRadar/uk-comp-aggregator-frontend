@@ -22,6 +22,7 @@ import {
   getEndsLabel,
 } from "@/lib/competition-display";
 import { formatSpendAmount } from "@/lib/competition-sort";
+import { getOddsPerTicket, getPercentTextClass } from "@/lib/odds-forecast";
 
 function PlaceholderIcon({ category }: { category: string | null }) {
   const cls = "text-rr-border";
@@ -92,6 +93,8 @@ export function CompetitionCard({
     category,
     instantPrizes,
     availableToBuy,
+    numWinners,
+    forecast,
   } = competition;
 
   const isEnded = variant === "ended";
@@ -108,6 +111,11 @@ export function CompetitionCard({
           : null
         : null;
   const price = ticketPrice !== null ? Number(ticketPrice) : null;
+  const winners = numWinners && numWinners > 0 ? numWinners : 1;
+  const liveOdds =
+    typeof ticketsSold === "number" ? getOddsPerTicket(ticketsSold, winners) : null;
+  const showOdds = !isEnded;
+  const showForecast = forecast !== undefined;
   const statusBadge = isEnded
     ? null
     : getStatusBadge(endsAt, availableToBuy, featured, null);
@@ -246,6 +254,43 @@ export function CompetitionCard({
           <div className="h-2">
             {percent !== null ? <ProgressBar value={percent} /> : null}
           </div>
+
+          {showOdds ? (
+            <div className="mt-2 space-y-1.5 border-t border-rr-border pt-2 text-[12px] leading-none">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-rr-muted">Live Odds</span>
+                <span
+                  className={
+                    liveOdds !== null
+                      ? "font-semibold tabular-nums text-rr-green"
+                      : "font-medium text-rr-muted"
+                  }
+                >
+                  {liveOdds !== null
+                    ? `1 in ${ticketCountFormatter.format(liveOdds)}`
+                    : typeof ticketsSold === "number"
+                      ? "No sales yet"
+                      : "—"}
+                </span>
+              </div>
+              {showForecast ? (
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-rr-muted">Forecasted Odds</span>
+                  <span
+                    className={
+                      forecast
+                        ? `font-semibold tabular-nums ${getPercentTextClass(forecast.percent)}`
+                        : "font-medium text-rr-muted"
+                    }
+                  >
+                    {forecast
+                      ? `1 in ${ticketCountFormatter.format(forecast.odds)}`
+                      : "—"}
+                  </span>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
           {showSpend ? (
             <div className="mt-2 rounded-lg border border-rr-border bg-rr-elevated px-2 py-1.5">
