@@ -264,12 +264,12 @@ function DesktopTable({
                 <TicketsBar draw={draw} />
               </td>
               <td className="px-2 py-2">
-                <div className="grid grid-cols-[auto_auto] justify-start gap-x-3 gap-y-0.5 text-xs leading-tight">
+                <div className="grid grid-cols-[5.75rem_auto] justify-start gap-x-3 gap-y-0.5 text-xs leading-tight">
                   {oddsLines(draw).map((line) => (
                     <div key={line.label} className="contents">
                       <span
                         className={cn(
-                          "whitespace-nowrap text-right",
+                          "whitespace-nowrap text-right tabular-nums",
                           line.className,
                         )}
                       >
