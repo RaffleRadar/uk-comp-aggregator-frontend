@@ -294,15 +294,12 @@ export function prizePageDescription(page: PrizePage): string {
 export const PRIZE_LIST_CATEGORIES = [
   { key: "all", label: "All" },
   { key: "vehicles", label: "Vehicles" },
-  { key: "houses", label: "Houses" },
   { key: "watches", label: "Watches & Jewellery" },
   { key: "cash", label: "Cash" },
   { key: "tech", label: "Tech" },
-  { key: "instants", label: "Instants" },
   { key: "home", label: "Home" },
   { key: "sports", label: "Sports" },
   { key: "collectibles", label: "Collectibles" },
-  { key: "more", label: "More" },
   { key: "free", label: "Free" },
   { key: "christmas", label: "Christmas" },
 ] as const;

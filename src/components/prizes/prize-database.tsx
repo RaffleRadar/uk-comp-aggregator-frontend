@@ -66,42 +66,57 @@ function SearchBox({ state }: { state: PrizeListState }) {
   );
 }
 
+const PILL_ROW_SIZES = [3, 4];
+
+function pillRows<T>(items: readonly T[]): T[][] {
+  const rows: T[][] = [];
+  let from = 0;
+  for (const size of PILL_ROW_SIZES) {
+    rows.push(items.slice(from, from + size));
+    from += size;
+  }
+  rows.push(items.slice(from));
+  return rows.filter((row) => row.length > 0);
+}
+
 function CategoryPills({ state }: { state: PrizeListState }) {
   return (
     <nav
       aria-label="Prize categories"
-      className="mt-4 grid grid-cols-3 gap-1.5 sm:flex sm:flex-wrap"
+      className="mt-4 flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:gap-1.5"
     >
-      {PRIZE_LIST_CATEGORIES.map((item) => {
-        const active = item.key === state.category;
-        const christmas = item.key === "christmas";
-        const wide = item.key === "watches" || christmas;
+      {pillRows(PRIZE_LIST_CATEGORIES).map((row, rowIndex) => (
+        <div key={rowIndex} className="flex gap-1 sm:contents">
+          {row.map((item) => {
+            const active = item.key === state.category;
+            const christmas = item.key === "christmas";
 
-        return (
-          <Link
-            key={item.key}
-            href={prizeDatabaseHref({
-              ...state,
-              category: item.key,
-              showAll: false,
-            })}
-            scroll={false}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium no-underline transition sm:py-1",
-              wide ? "col-span-2 sm:col-auto" : undefined,
-              active
-                ? "border-transparent bg-rr-green text-rr-on-accent"
-                : christmas
-                  ? "border-red-500/60 bg-red-500/5 text-rr-primary hover:bg-red-500/10"
-                  : "border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
-            )}
-          >
-            {christmas ? <ChristmasTreeIcon active={active} /> : null}
-            {item.label}
-          </Link>
-        );
-      })}
+            return (
+              <Link
+                key={item.key}
+                href={prizeDatabaseHref({
+                  ...state,
+                  category: item.key,
+                  showAll: false,
+                })}
+                scroll={false}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "inline-flex flex-auto items-center justify-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-medium leading-[18px] no-underline transition sm:flex-none sm:px-3 sm:text-xs",
+                  active
+                    ? "border-transparent bg-rr-green text-rr-on-accent"
+                    : christmas
+                      ? "border-red-500/60 bg-red-500/5 text-rr-primary hover:bg-red-500/10"
+                      : "border-rr-border text-rr-secondary hover:bg-rr-elevated hover:text-rr-primary",
+                )}
+              >
+                {christmas ? <ChristmasTreeIcon active={active} /> : null}
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
     </nav>
   );
 }
