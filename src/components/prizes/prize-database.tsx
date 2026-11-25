@@ -360,22 +360,20 @@ function PrizeListSection({
 function BrowseAll({ state }: { state: PrizeListState }) {
   return (
     <section aria-label="Browse all prizes" className="container pb-10">
-      <div className="mx-auto flex max-w-[1100px] flex-wrap items-center gap-3 rounded-xl border border-rr-border bg-rr-surface px-3 py-3 md:px-4">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rr-green-bg text-rr-green">
+      <div className="mx-auto grid max-w-[1100px] grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 rounded-xl border border-rr-border bg-rr-surface px-3 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-y-0.5 md:px-4">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rr-green-bg text-rr-green sm:row-span-2">
           <IconDatabase size={18} aria-hidden="true" />
         </span>
-        <div className="min-w-0 flex-1 basis-[200px]">
-          <h2 className="text-base font-semibold leading-tight text-rr-primary">
-            Browse All Prizes
-          </h2>
-          <p className="mt-0.5 text-xs leading-snug text-rr-muted">
-            See the full prize directory, including prizes outside the top 20.
-          </p>
-        </div>
+        <h2 className="min-w-0 text-base font-semibold leading-tight text-rr-primary sm:self-end">
+          Browse All Prizes
+        </h2>
+        <p className="col-span-2 text-xs leading-snug text-rr-muted sm:col-span-1 sm:col-start-2 sm:self-start">
+          See the full prize directory, including prizes outside the top 20.
+        </p>
         <Link
           href={prizeDatabaseHref({ ...state, showAll: true })}
           scroll={false}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-rr-green px-3.5 py-2 text-sm font-semibold text-rr-on-accent no-underline transition-opacity hover:opacity-90"
+          className="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-rr-green px-3.5 py-2.5 text-sm font-semibold text-rr-on-accent no-underline transition-opacity hover:opacity-90 sm:col-span-1 sm:col-start-3 sm:row-span-2 sm:row-start-1 sm:py-2"
         >
           View All Prizes
           <IconArrowRight size={16} aria-hidden="true" />
