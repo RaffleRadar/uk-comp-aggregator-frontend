@@ -68,6 +68,7 @@ export type PrizeSummary = {
   operators: number;
   bestOverall: { drawId: string; valueRatio: number | null } | null;
   cheapestEntry: { drawId: string; ticketPrice: number } | null;
+  freeEntry?: { drawId: string } | null;
   bestOdds: { drawId: string; liveOdds: number } | null;
   mostEntries: { drawId: string; entries: number; amount: number } | null;
 };

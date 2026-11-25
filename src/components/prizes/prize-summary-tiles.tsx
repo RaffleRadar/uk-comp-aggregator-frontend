@@ -68,11 +68,15 @@ export function PrizeSummaryTiles({ page }: PrizeSummaryTilesProps) {
         <SummaryTile
           icon={IconCoins}
           label="Cheapest entry"
-          prefix={summary.cheapestEntry ? "From" : undefined}
+          prefix={
+            !summary.freeEntry && summary.cheapestEntry ? "From" : undefined
+          }
           value={
-            summary.cheapestEntry
-              ? formatTicketPrice(summary.cheapestEntry.ticketPrice)
-              : "No live draws"
+            summary.freeEntry
+              ? "Free"
+              : summary.cheapestEntry
+                ? formatTicketPrice(summary.cheapestEntry.ticketPrice)
+                : "No live draws"
           }
         />
         <SummaryTile
