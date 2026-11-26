@@ -130,8 +130,7 @@ const BIG_THREE: BigThreePanel[] = [
     shortText: "Closed with the most tickets unsold.",
     badge: (item) => formatCount(item.ticketsUnsold),
     badgeNote: "unsold",
-    detail: (item) =>
-      `${formatPercent(item.percentSold)} sold · ${formatCount(item.ticketsUnsold)} unsold`,
+    detail: (item) => `${formatPercent(item.percentSold)} sold`,
   },
   {
     key: "spend",
@@ -265,17 +264,14 @@ function formatShortWeekRange(weekStart: string, weekEnd: string): string {
   return `${shortDayFormat.format(start)} – ${shortDayFormat.format(end)} ${weekEnd.slice(0, 4)}`;
 }
 
-const panelClass = "rounded-2xl border border-rr-border bg-rr-surface";
-const liftClass =
-  "transition-[border-color,transform] duration-200 ease-out hover:border-rr-green-border motion-safe:hover:-translate-y-0.5";
-const eyebrowClass = "text-xs font-bold uppercase tracking-[0.08em] text-rr-green";
-const sectionEyebrowClass = cn(eyebrowClass, "lg:text-base lg:tracking-[0.02em]");
-const sectionTitleClass = "text-2xl font-extrabold leading-tight tracking-[-0.01em] text-rr-primary lg:text-[1.4rem]";
+const panelClass = "rounded-xl border border-rr-border bg-rr-surface";
+const eyebrowClass = "text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-green";
+const sectionTitleClass = "text-xl font-bold leading-tight text-rr-primary lg:text-2xl";
 const accentBarClass = "shrink-0 rounded-full bg-rr-green";
-const dividerClass = "w-0.5 shrink-0 rounded-full";
-const glowClass = "shadow-[0_0_24px_-8px_var(--accent)]";
-const glowHoverClass = "hover:shadow-[0_0_34px_-4px_var(--accent)] focus-visible:shadow-[0_0_34px_-4px_var(--accent)]";
-const iconGrowClass = "transition-transform duration-300 ease-out motion-safe:group-hover/tile:scale-110";
+const iconTileClass = "flex shrink-0 items-center justify-center rounded-lg bg-rr-green-bg text-rr-green";
+const valueBoxClass = "rounded-lg border border-rr-border bg-rr-elevated";
+const rowBadgeClass =
+  "flex min-w-[3.75rem] shrink-0 flex-col items-center justify-center rounded-md border border-rr-green-border bg-rr-green-bg px-1.5 py-1 text-center";
 
 function BarsGlyph() {
   return (
@@ -298,20 +294,24 @@ function CalendarGlyph() {
   );
 }
 
+function ClockGlyph() {
+  return (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </>
+  );
+}
+
 function ChevronIcon({ direction }: { direction: "left" | "right" }) {
   return (
     <svg
       aria-hidden="true"
       viewBox="0 0 20 20"
-      className={cn(
-        "h-4 w-4 shrink-0 text-rr-green transition-transform duration-200 ease-out xl:h-6 xl:w-6",
-        direction === "left"
-          ? "motion-safe:group-hover:-translate-x-1"
-          : "motion-safe:group-hover:translate-x-1",
-      )}
+      className="h-4 w-4 shrink-0 text-rr-secondary"
       fill="none"
       stroke="currentColor"
-      strokeWidth="3"
+      strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -328,7 +328,7 @@ function CalendarIcon({ className }: { className?: string }) {
       className={cn("h-4 w-4 shrink-0 text-rr-green", className)}
       fill="none"
       stroke="currentColor"
-      strokeWidth="2.2"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -356,63 +356,55 @@ function ArrowUpRightIcon({ className }: { className?: string }) {
 
 function HeadlineIconGlyph({ icon }: { icon: HeadlineIcon }) {
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      className={cn(
-        "h-10 w-10 shrink-0 text-rr-green sm:h-11 sm:w-11 xl:h-[3.25rem] xl:w-[3.25rem]",
-        iconGrowClass,
-      )}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {icon === "target" ? (
-        <>
-          <path d="M20.3 11.2A8.4 8.4 0 1 1 12.8 3.7" strokeWidth="2.8" />
-          <path d="M16.1 11.6a4.2 4.2 0 1 1-3.7-3.7" strokeWidth="2.8" />
-          <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
-          <path d="M12 12 18 6" />
-          <path d="M16 8 16.6 3.2 19 2.8 18.6 5.4 21.2 5 20.8 7.4Z" fill="currentColor" strokeWidth="1.2" />
-        </>
-      ) : null}
-      {icon === "trophy" ? (
-        <>
-          <path d="M7.5 3.5h9v5.5a4.5 4.5 0 0 1-9 0V3.5Z" />
-          <path d="M7.5 5.5H4.5v1a3.5 3.5 0 0 0 3.2 3.5M16.5 5.5h3v1a3.5 3.5 0 0 1-3.2 3.5M12 13.5v4M8 20.5h8M9.5 17.5h5" />
-        </>
-      ) : null}
-      {icon === "bars" ? <BarsGlyph /> : null}
-      {icon === "star" ? (
-        <path d="m12 3 2.75 5.6 6.15.9-4.45 4.33 1.05 6.12L12 17.06l-5.5 2.89 1.05-6.12L3.1 9.5l6.15-.9L12 3Z" />
-      ) : null}
-    </svg>
+    <span className={cn(iconTileClass, "h-9 w-9 lg:h-10 lg:w-10")}>
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-5 w-5 lg:h-6 lg:w-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {icon === "target" ? (
+          <>
+            <circle cx="12" cy="12" r="8.5" />
+            <circle cx="12" cy="12" r="4.5" />
+            <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
+          </>
+        ) : null}
+        {icon === "trophy" ? (
+          <>
+            <path d="M7.5 3.5h9v5.5a4.5 4.5 0 0 1-9 0V3.5Z" />
+            <path d="M7.5 5.5H4.5v1a3.5 3.5 0 0 0 3.2 3.5M16.5 5.5h3v1a3.5 3.5 0 0 1-3.2 3.5M12 13.5v4M8 20.5h8M9.5 17.5h5" />
+          </>
+        ) : null}
+        {icon === "bars" ? <BarsGlyph /> : null}
+        {icon === "star" ? (
+          <path d="m12 3 2.75 5.6 6.15.9-4.45 4.33 1.05 6.12L12 17.06l-5.5 2.89 1.05-6.12L3.1 9.5l6.15-.9L12 3Z" />
+        ) : null}
+      </svg>
+    </span>
   );
 }
 
 function InsightIconGlyph({ icon }: { icon: InsightIcon }) {
   return (
-    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rr-green-bg text-rr-green lg:h-auto lg:w-auto lg:bg-transparent">
+    <span className={cn(iconTileClass, "h-9 w-9")}>
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
-        className={cn("h-7 w-7 lg:h-10 lg:w-10", iconGrowClass)}
+        className="h-5 w-5"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2.1"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
         shapeRendering="geometricPrecision"
       >
         {icon === "calendar" ? <CalendarGlyph /> : null}
-        {icon === "clock" ? (
-          <>
-            <circle cx="12" cy="12" r="8.5" />
-            <path d="M12 7.5V12l3 2" />
-          </>
-        ) : null}
+        {icon === "clock" ? <ClockGlyph /> : null}
         {icon === "bars" ? <BarsGlyph /> : null}
         {icon === "gift" ? (
           <>
@@ -433,11 +425,11 @@ function InsightIconGlyph({ icon }: { icon: InsightIcon }) {
 
 function BigThreeIcon({ panel }: { panel: BigThreeKey }) {
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rr-green-bg text-rr-green lg:h-[3.25rem] lg:w-[3.25rem] lg:bg-rr-green lg:text-rr-on-accent">
+    <span className={cn(iconTileClass, "h-9 w-9")}>
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
-        className="h-6 w-6 lg:h-9 lg:w-9"
+        className="h-5 w-5"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
@@ -445,7 +437,7 @@ function BigThreeIcon({ panel }: { panel: BigThreeKey }) {
         strokeLinejoin="round"
         shapeRendering="geometricPrecision"
       >
-        {panel === "undersold" ? <path d="M6.5 6.5 17 17M17 9.5V17H9.5" strokeWidth="2.4" /> : null}
+        {panel === "undersold" ? <path d="M6.5 6.5 17 17M17 9.5V17H9.5" strokeWidth="2.2" /> : null}
         {panel === "spend" ? (
           <>
             <ellipse cx="9" cy="6.5" rx="5" ry="2.2" />
@@ -482,7 +474,7 @@ function BiggestPrizeThumb({
     <span
       className={cn(
         "relative block shrink-0 overflow-hidden rounded-md bg-rr-elevated",
-        size === "pill" ? "min-h-[2.75rem] w-12 self-stretch" : "h-10 w-14",
+        size === "pill" ? "h-9 w-11" : "h-10 w-14",
       )}
     >
       <CompetitionImage
@@ -501,7 +493,7 @@ function BiggestPrizeThumb({
       href={`/competitions/${prize.slug}`}
       aria-label={`${prize.prize}, ${prize.operatorName}`}
       title={`${prize.prize} · ${prize.operatorName}`}
-      className={cn("block shrink-0 no-underline transition-opacity hover:opacity-90", className)}
+      className={cn("block shrink-0 no-underline hover:opacity-90", className)}
     >
       {image}
     </ScrollTopLink>
@@ -525,9 +517,8 @@ function WeekNavButton({
     </>
   );
   const base = cn(
-    "group inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-2 py-2.5 text-[13px] font-semibold no-underline transition-[background-color,box-shadow,transform] duration-200 ease-out",
-    "lg:gap-2 lg:rounded-full lg:px-4 lg:py-1 lg:text-sm lg:font-bold xl:gap-2.5 xl:px-9 xl:text-base",
-    direction === "left" ? "lg:order-1 lg:justify-self-end" : "lg:order-5 lg:justify-self-start",
+    "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-rr-border bg-rr-elevated px-3 py-2 text-[13px] font-semibold no-underline lg:px-4 lg:py-1.5",
+    direction === "left" ? "lg:order-1 lg:justify-self-start" : "lg:order-3 lg:justify-self-end",
   );
 
   if (!href) {
@@ -535,7 +526,7 @@ function WeekNavButton({
       <span
         aria-disabled="true"
         aria-label={children}
-        className={cn(base, "cursor-not-allowed border-rr-border text-rr-muted opacity-50")}
+        className={cn(base, "cursor-not-allowed text-rr-muted opacity-50")}
       >
         {content}
       </span>
@@ -546,10 +537,7 @@ function WeekNavButton({
     <ScrollTopLink
       href={href}
       aria-label={children}
-      className={cn(
-        base,
-        "border-rr-green-border text-rr-primary hover:bg-rr-green-bg hover:shadow-[0_0_18px_-6px_var(--accent)] focus-visible:shadow-[0_0_18px_-6px_var(--accent)] active:scale-[0.97] lg:border-rr-green",
-      )}
+      className={cn(base, "text-rr-primary hover:border-rr-green-border")}
     >
       {content}
     </ScrollTopLink>
@@ -560,21 +548,25 @@ function SectionHeading({
   eyebrow,
   title,
   titleClassName,
+  eyebrowClassName,
+  accent = false,
   className,
   children,
 }: {
   eyebrow: string;
   title?: string;
   titleClassName?: string;
+  eyebrowClassName?: string;
+  accent?: boolean;
   className?: string;
   children?: ReactNode;
 }) {
   return (
     <div className={cn("flex items-stretch gap-2.5", className)}>
-      <span aria-hidden="true" className={cn(accentBarClass, "w-1 lg:w-1.5")} />
+      {accent ? <span aria-hidden="true" className={cn(accentBarClass, "w-1")} /> : null}
       <div className="min-w-0">
-        <p className={sectionEyebrowClass}>{eyebrow}</p>
-        {title ? <h2 className={cn(sectionTitleClass, titleClassName)}>{title}</h2> : null}
+        <p className={cn(eyebrowClass, eyebrowClassName)}>{eyebrow}</p>
+        {title ? <h2 className={cn(sectionTitleClass, "mt-0.5", titleClassName)}>{title}</h2> : null}
         {children}
       </div>
     </div>
@@ -594,25 +586,21 @@ function ScheduleCta({
     <ScrollTopLink
       href={href}
       className={cn(
-        "group/cta items-center justify-center gap-2 rounded-2xl bg-rr-green px-5 py-3.5 text-center text-base font-extrabold leading-tight text-rr-on-accent no-underline transition-[transform,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.98]",
-        glowClass,
-        glowHoverClass,
+        "items-center justify-center gap-2 rounded-xl bg-rr-green px-5 py-3.5 text-center text-base font-bold leading-tight text-rr-on-accent no-underline hover:opacity-90",
         className,
       )}
     >
       <span>
         {children}
-        <ArrowUpRightIcon className="ml-1.5 inline-block h-5 w-5 align-[-4px] transition-transform duration-200 ease-out motion-safe:group-hover/cta:-translate-y-0.5 motion-safe:group-hover/cta:translate-x-0.5" />
+        <ArrowUpRightIcon className="ml-1.5 inline-block h-5 w-5 align-[-4px]" />
       </span>
     </ScrollTopLink>
   );
 }
 
 const bigThreeRowClass = "flex min-w-0 items-center gap-2 px-0.5 py-1.5 no-underline";
-const bigThreeRankClass = "w-4 shrink-0 text-sm font-bold";
+const bigThreeRankClass = "w-4 shrink-0 text-sm font-semibold";
 const bigThreeImageClass = "h-10 w-14 shrink-0 overflow-hidden rounded-md bg-rr-elevated";
-const bigThreeBadgeClass =
-  "flex min-w-[3.75rem] shrink-0 flex-col items-center justify-center rounded-lg border px-1.5 py-1 text-center";
 
 function BigThreeRow({
   rank,
@@ -626,14 +614,14 @@ function BigThreeRow({
   const href = item.slug ? `/competitions/${item.slug}` : null;
   const body = (
     <>
-      <span className={cn(bigThreeRankClass, "text-rr-primary")}>{rank}.</span>
+      <span className={cn(bigThreeRankClass, "text-rr-green")}>{rank}</span>
       <span className={cn(bigThreeImageClass, "relative")}>
         <CompetitionImage
           src={item.imageUrl}
           alt=""
           fill
           sizes="56px"
-          className="object-cover transition-transform duration-300 ease-out motion-safe:group-hover/row:scale-110"
+          className="object-cover"
           unoptimized
         />
       </span>
@@ -651,13 +639,8 @@ function BigThreeRow({
           {panel.detail(item)}
         </span>
       </span>
-      <span
-        className={cn(
-          bigThreeBadgeClass,
-          "border-rr-green transition-[background-color,box-shadow] duration-200 group-hover/row:bg-rr-green-bg group-hover/row:shadow-[0_0_14px_-4px_var(--accent)]",
-        )}
-      >
-        <span className="whitespace-nowrap text-xs font-bold leading-tight text-rr-primary">
+      <span className={rowBadgeClass}>
+        <span className="whitespace-nowrap text-xs font-bold leading-tight text-rr-green">
           {panel.badge(item)}
         </span>
         {panel.badgeNote ? (
@@ -677,13 +660,7 @@ function BigThreeRow({
 
   return (
     <li className="min-w-0">
-      <ScrollTopLink
-        href={href}
-        className={cn(
-          bigThreeRowClass,
-          "group/row rounded-lg transition-[background-color,transform] duration-200 ease-out hover:bg-rr-elevated motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0",
-        )}
-      >
+      <ScrollTopLink href={href} className={cn(bigThreeRowClass, "rounded-lg hover:bg-rr-elevated")}>
         {body}
       </ScrollTopLink>
     </li>
@@ -693,12 +670,10 @@ function BigThreeRow({
 function BigThreePlaceholderRow({ rank }: { rank: number }) {
   return (
     <li className={bigThreeRowClass}>
-      <span className={cn(bigThreeRankClass, "text-rr-secondary")}>{rank}.</span>
+      <span className={cn(bigThreeRankClass, "text-rr-secondary")}>{rank}</span>
       <span className={bigThreeImageClass} />
       <span className="h-3 flex-1 rounded bg-rr-elevated" />
-      <span className={cn(bigThreeBadgeClass, "border-rr-green-border text-xs text-rr-muted")}>
-        {placeholderValue}
-      </span>
+      <span className={cn(rowBadgeClass, "text-xs text-rr-muted")}>{placeholderValue}</span>
     </li>
   );
 }
@@ -725,13 +700,13 @@ function TopPrizesSection({
 }) {
   return (
     <section aria-label={title}>
-      <SectionHeading eyebrow={eyebrow} title={title} className="mb-1.5 lg:mb-2">
+      <SectionHeading eyebrow={eyebrow} title={title} className="mb-2">
         <p className="mt-0.5 text-xs leading-snug text-rr-secondary lg:text-[13px]">{text}</p>
       </SectionHeading>
       <ol className={cn(panelClass, "divide-y divide-rr-border px-3 py-1 lg:hidden")}>
         {items.map((item, index) => (
           <li key={item.key} className="flex min-w-0 items-center gap-2.5 py-2">
-            <span className={cn(bigThreeRankClass, "text-rr-primary")}>{index + 1}.</span>
+            <span className={cn(bigThreeRankClass, "text-rr-green")}>{index + 1}</span>
             <span className="min-w-0 flex-1">
               <span className="line-clamp-2 text-[13px] font-semibold leading-[1.2] text-rr-primary">
                 {item.label}
@@ -740,8 +715,8 @@ function TopPrizesSection({
                 {topPrizeDetail(item)}
               </span>
             </span>
-            <span className={cn(bigThreeBadgeClass, "border-rr-green")}>
-              <span className="whitespace-nowrap text-xs font-bold leading-tight text-rr-primary">
+            <span className={rowBadgeClass}>
+              <span className="whitespace-nowrap text-xs font-bold leading-tight text-rr-green">
                 {formatCount(item.operators)}
               </span>
               <span className="text-[10px] leading-tight text-rr-secondary">
@@ -751,26 +726,21 @@ function TopPrizesSection({
           </li>
         ))}
       </ol>
-      <ol className="hidden gap-4 lg:grid lg:grid-cols-5">
+      <ol className="hidden gap-3 lg:grid lg:grid-cols-5">
         {items.map((item, index) => (
-          <li
-            key={item.key}
-            className={cn(panelClass, liftClass, "group/tile flex min-w-0 flex-col gap-2 px-3 py-2.5")}
-          >
+          <li key={item.key} className={cn(panelClass, "flex min-w-0 flex-col gap-2 px-3 py-2.5")}>
             <div className="flex min-w-0 items-start gap-2">
-              <span className="text-2xl font-extrabold leading-none text-rr-green">{index + 1}</span>
+              <span className="text-sm font-semibold leading-tight text-rr-green">{index + 1}</span>
               <h3
-                className="line-clamp-2 min-h-[2.5em] text-sm font-bold leading-tight text-rr-primary"
+                className="line-clamp-2 min-h-[2.5em] text-sm font-semibold leading-tight text-rr-primary"
                 title={item.label}
               >
                 {item.label}
               </h3>
             </div>
-            <div className="flex min-h-[2.75rem] flex-col items-center justify-center rounded-2xl bg-rr-green px-3 py-1 text-center text-rr-on-accent">
-              <p className="w-full truncate text-base font-bold leading-tight">{topPrizeOperators(item)}</p>
-              <p className="w-full truncate text-[10.5px] font-semibold leading-tight opacity-85">
-                {topPrizeDetail(item)}
-              </p>
+            <div className={cn(valueBoxClass, "px-3 py-1.5")}>
+              <p className="truncate text-base font-bold leading-tight text-rr-green">{topPrizeOperators(item)}</p>
+              <p className="truncate text-[11px] leading-tight text-rr-secondary">{topPrizeDetail(item)}</p>
             </div>
           </li>
         ))}
@@ -792,27 +762,23 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
   const schedulePeak = peakDay(schedule);
 
   return (
-    <main className="-mb-6 bg-rr-bg bg-gradient-to-b from-rr-surface to-rr-bg bg-[length:100%_22rem] bg-no-repeat pb-3 pt-8 md:-mb-14 md:bg-[length:100%_26rem] md:pb-4 md:pt-14">
-      <div className="container space-y-3 lg:space-y-3.5">
+    <main className="-mb-6 bg-rr-bg pb-3 pt-8 md:-mb-14 md:pb-4 md:pt-12">
+      <div className="container space-y-4">
         <header>
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-5 lg:gap-y-3">
-            <div className="grid gap-3 lg:col-start-1 lg:row-start-1 lg:flex lg:items-center lg:gap-4">
-              <div className="lg:shrink-0">
-                <p className={cn(eyebrowClass, "flex items-center gap-2 text-[11px] lg:text-sm lg:tracking-[0.02em]")}>
-                  <span aria-hidden="true" className={cn(accentBarClass, "h-4 w-1 lg:h-6 lg:w-1.5")} />
-                  <span>
-                    UK Competition Market –{" "}
-                    <span className="whitespace-nowrap">Weekly Round-up</span>
-                  </span>
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-6 lg:gap-y-3">
+            <div className="grid gap-3 lg:col-start-1 lg:row-start-1 lg:gap-0">
+              <div>
+                <p className={eyebrowClass}>
+                  UK Competition Market –{" "}
+                  <span className="whitespace-nowrap">Weekly Round-up</span>
                 </p>
-                <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-[-0.02em] text-rr-primary md:text-5xl lg:mt-1 lg:text-[2.4rem] xl:text-[2.6rem]">
+                <h1 className="mt-1.5 text-[2rem] font-bold leading-tight tracking-[-0.02em] text-rr-primary md:text-4xl lg:text-[2.5rem]">
                   The Weekly <span className="text-rr-green">Radar.</span>
                 </h1>
               </div>
-              <span aria-hidden="true" className={cn(dividerClass, "hidden self-stretch bg-rr-green lg:block")} />
-              <p className="text-sm leading-6 text-rr-secondary lg:min-w-0 lg:flex-1 lg:text-[13px] lg:leading-[1.65] xl:text-[13.5px]">
+              <p className="text-sm leading-6 text-rr-secondary lg:mt-1 lg:text-[15px]">
                 {introLines.map((line, index) => (
-                  <span key={line} className={introLines.length > 1 ? "xl:block xl:whitespace-nowrap" : undefined}>
+                  <span key={line} className={introLines.length > 1 ? "lg:block" : undefined}>
                     {index > 0 ? " " : null}
                     {line}
                   </span>
@@ -823,7 +789,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   <CalendarIcon />
                   <span>New round-up every Monday</span>
                 </p>
-                <span className="shrink-0 rounded-full border border-rr-green-border bg-rr-green-bg px-3 py-1 text-xs font-semibold text-rr-primary">
+                <span className="shrink-0 rounded-full border border-rr-border bg-rr-elevated px-3 py-1 text-xs font-semibold text-rr-primary">
                   5 min read
                 </span>
               </div>
@@ -831,35 +797,48 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
 
             <div
               className={cn(
-                "hidden rotate-[4deg] rounded-2xl border-[3px] border-rr-green bg-gradient-to-br from-rr-green-bg to-rr-bg px-4 py-2.5 text-center transition-transform duration-300 ease-out motion-safe:hover:rotate-[1deg] motion-safe:hover:scale-[1.04] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:block",
-                glowClass,
+                panelClass,
+                "hidden items-center gap-3 px-4 py-3 lg:col-start-2 lg:row-start-1 lg:flex",
               )}
             >
-              <p className="text-xs font-extrabold uppercase tracking-[0.06em] text-rr-primary xl:text-sm">
-                Your weekly fix
-              </p>
-              <p className="text-4xl font-black leading-none tracking-[-0.02em] text-rr-primary xl:text-5xl">
-                5 min
-              </p>
-              <p className="mt-1 text-[11px] font-semibold text-rr-primary xl:text-xs">
-                All the numbers worth knowing
-              </p>
+              <span className={cn(iconTileClass, "h-10 w-10")}>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <ClockGlyph />
+                </svg>
+              </span>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-secondary">
+                  Your weekly fix
+                </p>
+                <p className="text-2xl font-bold leading-tight text-rr-primary">5 min</p>
+                <p className="text-xs text-rr-secondary">All the numbers worth knowing</p>
+              </div>
             </div>
 
             <nav
               aria-label="Weekly Radar weeks"
-              className="rounded-2xl border border-rr-green-border bg-rr-surface p-3 lg:col-start-1 lg:row-start-2 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] lg:items-center lg:gap-x-4 lg:rounded-full lg:border-2 lg:border-rr-green lg:bg-rr-bg lg:px-3 lg:py-1.5 xl:gap-x-8"
+              className={cn(
+                panelClass,
+                "p-3 lg:col-span-2 lg:row-start-2 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-x-4 lg:px-2 lg:py-1.5",
+              )}
             >
-              <div className="text-center lg:order-3 lg:min-w-0">
-                <p className="inline-flex items-center gap-2 text-base font-semibold text-rr-primary lg:whitespace-nowrap lg:font-bold xl:gap-2.5 xl:text-xl">
-                  <CalendarIcon className="lg:h-5 lg:w-5 xl:h-6 xl:w-6" />
+              <div className="text-center lg:order-2 lg:min-w-0">
+                <p className="inline-flex items-center gap-2 text-base font-semibold text-rr-primary lg:whitespace-nowrap lg:text-lg">
+                  <CalendarIcon className="lg:h-5 lg:w-5" />
                   <span className="lg:hidden">{shortWeekLabel}</span>
                   <span className="hidden lg:inline">{weekLabel}</span>
                 </p>
                 <p className="mt-0.5 text-xs text-rr-secondary lg:hidden">{copy.weekNote}</p>
               </div>
-              <span aria-hidden="true" className={cn(dividerClass, "hidden h-8 bg-rr-green lg:order-2 lg:block")} />
-              <span aria-hidden="true" className={cn(dividerClass, "hidden h-8 bg-rr-green lg:order-4 lg:block")} />
               <div className="mt-3 grid grid-cols-2 gap-2 lg:contents">
                 <WeekNavButton href={weekHref(issue?.previousWeekStart ?? null)} direction="left">
                   Previous Week
@@ -872,32 +851,24 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
           </div>
         </header>
 
-        <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <section aria-label="Headline numbers" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {HEADLINES.map((item) => (
-            <div
-              key={item.label}
-              className={cn(
-                panelClass,
-                liftClass,
-                "group/tile flex min-w-0 items-center gap-2.5 px-3 py-2 sm:px-3.5 xl:gap-3",
-              )}
-            >
+            <div key={item.label} className={cn(panelClass, "flex min-w-0 items-center gap-3 px-3 py-2.5 lg:px-4")}>
               <HeadlineIconGlyph icon={item.icon} />
-              <span aria-hidden="true" className={cn(dividerClass, "hidden h-12 bg-rr-border sm:block")} />
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase leading-tight tracking-[0.02em] text-rr-primary sm:text-[11px] sm:tracking-[0.04em] lg:text-xs xl:whitespace-nowrap">
+                <p className="text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] text-rr-secondary sm:text-[11px] xl:whitespace-nowrap">
                   {item.label}
                 </p>
-                <p className="mt-0.5 flex flex-col xl:flex-row xl:items-baseline xl:gap-2">
+                <p className="mt-1 flex flex-col xl:flex-row xl:items-baseline xl:gap-1.5">
                   <span
                     className={cn(
-                      "text-2xl font-extrabold leading-none sm:text-3xl xl:text-[2.1rem]",
+                      "text-xl font-bold leading-none sm:text-2xl",
                       item.accent ? "text-rr-green" : "text-rr-primary",
                     )}
                   >
                     {item.value(headline)}
                   </span>
-                  <span className="mt-1 whitespace-nowrap text-xs text-rr-secondary xl:mt-0 xl:text-[15px]">
+                  <span className="mt-1 whitespace-nowrap text-xs text-rr-secondary xl:mt-0 xl:text-sm">
                     {item.unit}
                   </span>
                 </p>
@@ -911,24 +882,25 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
             eyebrow={copy.bigThree}
             title={copy.bigThreeTitle}
             titleClassName="lg:hidden"
-            className="mb-1.5 lg:mb-2"
+            eyebrowClassName="lg:text-2xl lg:font-bold lg:normal-case lg:tracking-normal lg:text-rr-primary"
+            className="mb-2"
           />
-          <div className="grid min-w-0 gap-3 lg:grid-cols-3 lg:gap-4">
+          <div className="grid min-w-0 gap-3 lg:grid-cols-3">
             {BIG_THREE.map((panel, panelIndex) => {
               const items = bigThree?.[panel.key] ?? [];
               return (
                 <div key={panel.key} className={cn(panelClass, "min-w-0 px-3 pb-1.5 pt-3")}>
-                  <div className="flex items-start gap-3 border-b border-rr-border pb-2.5 lg:items-center lg:border-0 lg:pb-0">
+                  <div className="flex items-start gap-3 border-b border-rr-border pb-2.5 lg:border-0 lg:pb-0">
                     <BigThreeIcon panel={panel.key} />
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-rr-green lg:hidden">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-rr-green lg:hidden">
                         0{panelIndex + 1} / The Big Three
                       </p>
-                      <h3 className="text-sm font-extrabold uppercase leading-tight tracking-[0.02em] text-rr-primary lg:text-base xl:text-lg">
+                      <h3 className="text-sm font-semibold capitalize leading-tight text-rr-primary lg:text-base">
                         <span className="hidden lg:inline">{panelIndex + 1}. </span>
                         {panel.title}
                       </h3>
-                      <p className="mt-0.5 text-xs leading-snug text-rr-secondary lg:text-[13px]">
+                      <p className="mt-0.5 text-xs leading-snug text-rr-secondary">
                         <span className="lg:hidden">{panel.shortText}</span>
                         <span className="hidden lg:inline">{panel.text}</span>
                       </p>
@@ -948,7 +920,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
         </section>
 
         <section aria-label={copy.insightsTitle}>
-          <SectionHeading eyebrow={copy.insightsEyebrow} title={copy.insightsTitle} className="mb-1.5 lg:mb-2" />
+          <SectionHeading eyebrow={copy.insightsEyebrow} title={copy.insightsTitle} className="mb-2" />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {INSIGHTS.map((item, index) => {
               const value = item.value(insights);
@@ -959,17 +931,15 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   key={item.key}
                   className={cn(
                     panelClass,
-                    liftClass,
-                    "group/tile flex min-w-0 items-center gap-3 px-3 py-2.5 lg:flex-col lg:items-stretch lg:gap-0 lg:py-2",
+                    "flex min-w-0 items-center gap-3 px-3 py-2.5 lg:flex-col lg:items-stretch lg:gap-0",
                     index === INSIGHTS.length - 1 && "sm:col-span-2 lg:col-span-1",
                   )}
                 >
-                  <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none lg:gap-2">
+                  <div className="flex min-w-0 flex-1 items-center gap-3 lg:flex-none lg:items-start lg:gap-2.5">
                     <InsightIconGlyph icon={item.icon} />
-                    <span aria-hidden="true" className={cn(dividerClass, "h-12 bg-rr-border lg:hidden")} />
                     <div className="min-w-0 flex-1">
                       <h3
-                        className="text-base font-bold leading-tight text-rr-primary lg:truncate lg:text-[13.5px] lg:tracking-tight xl:text-sm"
+                        className="text-sm font-semibold leading-tight text-rr-primary lg:truncate"
                         title={item.title}
                       >
                         {item.title}
@@ -979,7 +949,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                       </p>
                       <p
                         className={cn(
-                          "mt-1 font-extrabold leading-tight text-rr-green lg:hidden",
+                          "mt-1 font-bold leading-tight text-rr-green lg:hidden",
                           isPrize ? "line-clamp-2 text-[13px]" : "truncate text-[15px]",
                         )}
                       >
@@ -989,21 +959,21 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                     </div>
                   </div>
                   {isPrize ? <BiggestPrizeThumb insights={insights} className="lg:hidden" /> : null}
-                  <div className="hidden lg:mt-2 lg:flex lg:items-stretch lg:gap-2">
-                    <div
-                      className="flex min-h-[2.75rem] min-w-0 flex-1 flex-col items-center justify-center rounded-2xl bg-rr-green px-3 py-1 text-center text-rr-on-accent"
-                      title={note ? `${value} · ${note}` : value}
-                    >
+                  <div
+                    className={cn(valueBoxClass, "hidden min-h-[3.25rem] lg:mt-2 lg:flex lg:items-center lg:gap-2 lg:px-3 lg:py-1.5")}
+                    title={note ? `${value} · ${note}` : value}
+                  >
+                    <div className="min-w-0 flex-1">
                       <p
                         className={cn(
-                          "w-full font-bold",
-                          isPrize ? "line-clamp-2 text-[11px] leading-[1.15]" : "truncate text-base leading-tight",
+                          "w-full font-bold text-rr-green",
+                          isPrize ? "line-clamp-2 text-[11px] leading-[1.15]" : "truncate text-lg leading-tight",
                         )}
                       >
                         {value}
                       </p>
                       {note ? (
-                        <p className="w-full truncate text-[10.5px] font-semibold leading-tight opacity-85">{note}</p>
+                        <p className="w-full truncate text-[11px] leading-tight text-rr-secondary">{note}</p>
                       ) : null}
                     </div>
                     {isPrize ? <BiggestPrizeThumb insights={insights} size="pill" /> : null}
@@ -1033,7 +1003,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
             <SectionHeading
               eyebrow={copy.scheduleEyebrow}
               title={copy.scheduleTitle}
-              titleClassName="lg:text-[1.6rem] xl:text-[1.4rem]"
+              accent
               className="lg:col-span-2 xl:col-span-1"
             >
               <p
@@ -1054,10 +1024,9 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                   <li
                     key={day}
                     className={cn(
-                      liftClass,
-                      "rounded-xl border px-3 py-1.5 text-center motion-safe:hover:-translate-y-1 lg:min-w-[4.25rem] lg:px-2 xl:min-w-[3.75rem]",
+                      "rounded-lg border px-3 py-1.5 text-center lg:min-w-[4.25rem] lg:px-2 xl:min-w-[3.75rem]",
                       index === WEEK_DAYS.length - 1 && "col-span-2 lg:col-span-1",
-                      isPeak ? "border-2 border-rr-green bg-rr-green-bg" : "border-rr-border",
+                      isPeak ? "border-rr-green bg-rr-green-bg" : "border-rr-border",
                     )}
                   >
                     <p className={cn("text-xs lg:text-sm", labelClass)}>
@@ -1066,7 +1035,7 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
                     </p>
                     <p
                       className={cn(
-                        "text-2xl font-extrabold leading-tight lg:text-[1.65rem]",
+                        "text-2xl font-bold leading-tight",
                         isPeak ? "text-rr-green" : "text-rr-primary",
                       )}
                     >
