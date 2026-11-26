@@ -267,7 +267,7 @@ function formatShortWeekRange(weekStart: string, weekEnd: string): string {
 const panelClass = "rounded-xl border border-rr-border bg-rr-surface";
 const eyebrowClass = "text-[11px] font-semibold uppercase tracking-[0.14em] text-rr-green";
 const sectionTitleClass = "text-xl font-bold leading-tight text-rr-primary lg:text-2xl";
-const accentBarClass = "shrink-0 rounded-full bg-rr-green";
+const eyebrowLineClass = "h-px w-8 shrink-0 bg-rr-green";
 const iconTileClass = "flex shrink-0 items-center justify-center rounded-lg bg-rr-green-bg text-rr-green";
 const valueBoxClass = "rounded-lg border border-rr-border bg-rr-elevated";
 const rowBadgeClass =
@@ -560,13 +560,13 @@ function SectionHeading({
   children?: ReactNode;
 }) {
   return (
-    <div className={cn("flex items-stretch gap-2.5", className)}>
-      <span aria-hidden="true" className={cn(accentBarClass, "w-1")} />
-      <div className="min-w-0">
-        <p className={cn(eyebrowClass, eyebrowClassName)}>{eyebrow}</p>
-        {title ? <h2 className={cn(sectionTitleClass, "mt-0.5", titleClassName)}>{title}</h2> : null}
-        {children}
-      </div>
+    <div className={cn("min-w-0", className)}>
+      <p className={cn(eyebrowClass, "flex items-center gap-3", eyebrowClassName)}>
+        <span aria-hidden="true" className={eyebrowLineClass} />
+        <span>{eyebrow}</span>
+      </p>
+      {title ? <h2 className={cn(sectionTitleClass, "mt-0.5", titleClassName)}>{title}</h2> : null}
+      {children}
     </div>
   );
 }
@@ -766,8 +766,8 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-6 lg:gap-y-3">
             <div className="grid gap-3 lg:col-start-1 lg:row-start-1 lg:gap-0">
               <div>
-                <p className={cn(eyebrowClass, "flex items-center gap-2.5")}>
-                  <span aria-hidden="true" className={cn(accentBarClass, "h-4 w-1")} />
+                <p className={cn(eyebrowClass, "flex items-center gap-3")}>
+                  <span aria-hidden="true" className={eyebrowLineClass} />
                   <span>
                     UK Competition Market –{" "}
                     <span className="whitespace-nowrap">Weekly Round-up</span>
