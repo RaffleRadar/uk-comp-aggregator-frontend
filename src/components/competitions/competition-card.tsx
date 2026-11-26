@@ -256,14 +256,16 @@ export function CompetitionCard({
           </div>
 
           {showOdds ? (
-            <div className="mt-2 space-y-1.5 border-t border-rr-border pt-2 text-[12px] leading-none">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="text-rr-muted">Live Odds</span>
+            <div className="mt-2 space-y-2 border-t border-rr-border pt-2 leading-none lg:space-y-1.5">
+              <div className="flex flex-col gap-1 lg:flex-row lg:items-baseline lg:justify-between lg:gap-2">
+                <span className="text-[10px] text-rr-muted lg:text-[12px]">
+                  Live Odds
+                </span>
                 <span
                   className={
                     liveOdds !== null
-                      ? "font-semibold tabular-nums text-rr-green"
-                      : "font-medium text-rr-muted"
+                      ? "whitespace-nowrap text-[13px] font-semibold tabular-nums text-rr-green lg:text-[12px]"
+                      : "text-[13px] font-medium text-rr-muted lg:text-[12px]"
                   }
                 >
                   {liveOdds !== null
@@ -274,13 +276,15 @@ export function CompetitionCard({
                 </span>
               </div>
               {showForecast ? (
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-rr-muted">Forecasted Odds</span>
+                <div className="flex flex-col gap-1 lg:flex-row lg:items-baseline lg:justify-between lg:gap-2">
+                  <span className="text-[10px] text-rr-muted lg:text-[12px]">
+                    Forecasted Odds
+                  </span>
                   <span
                     className={
                       forecast
-                        ? `font-semibold tabular-nums ${getPercentTextClass(forecast.percent)}`
-                        : "font-medium text-rr-muted"
+                        ? `whitespace-nowrap text-[13px] font-semibold tabular-nums lg:text-[12px] ${getPercentTextClass(forecast.percent)}`
+                        : "text-[13px] font-medium text-rr-muted lg:text-[12px]"
                     }
                   >
                     {forecast
