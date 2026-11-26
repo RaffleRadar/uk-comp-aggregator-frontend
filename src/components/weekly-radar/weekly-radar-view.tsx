@@ -549,7 +549,6 @@ function SectionHeading({
   title,
   titleClassName,
   eyebrowClassName,
-  accent = false,
   className,
   children,
 }: {
@@ -557,13 +556,12 @@ function SectionHeading({
   title?: string;
   titleClassName?: string;
   eyebrowClassName?: string;
-  accent?: boolean;
   className?: string;
   children?: ReactNode;
 }) {
   return (
     <div className={cn("flex items-stretch gap-2.5", className)}>
-      {accent ? <span aria-hidden="true" className={cn(accentBarClass, "w-1")} /> : null}
+      <span aria-hidden="true" className={cn(accentBarClass, "w-1")} />
       <div className="min-w-0">
         <p className={cn(eyebrowClass, eyebrowClassName)}>{eyebrow}</p>
         {title ? <h2 className={cn(sectionTitleClass, "mt-0.5", titleClassName)}>{title}</h2> : null}
@@ -768,9 +766,12 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-6 lg:gap-y-3">
             <div className="grid gap-3 lg:col-start-1 lg:row-start-1 lg:gap-0">
               <div>
-                <p className={eyebrowClass}>
-                  UK Competition Market –{" "}
-                  <span className="whitespace-nowrap">Weekly Round-up</span>
+                <p className={cn(eyebrowClass, "flex items-center gap-2.5")}>
+                  <span aria-hidden="true" className={cn(accentBarClass, "h-4 w-1")} />
+                  <span>
+                    UK Competition Market –{" "}
+                    <span className="whitespace-nowrap">Weekly Round-up</span>
+                  </span>
                 </p>
                 <h1 className="mt-1.5 text-[2rem] font-bold leading-tight tracking-[-0.02em] text-rr-primary md:text-4xl lg:text-[2.5rem]">
                   The Weekly <span className="text-rr-green">Radar.</span>
@@ -1003,7 +1004,6 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
             <SectionHeading
               eyebrow={copy.scheduleEyebrow}
               title={copy.scheduleTitle}
-              accent
               className="lg:col-span-2 xl:col-span-1"
             >
               <p
