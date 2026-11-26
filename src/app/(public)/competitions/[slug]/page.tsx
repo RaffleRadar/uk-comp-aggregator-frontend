@@ -1049,11 +1049,14 @@ export default async function Page({
                 />
                 <SaveActions competitionId={compId} />
               </div>
-              {!hasEnded &&
-              data.prizeComparison &&
-              data.prizeComparison.operators >=
-                MIN_OPERATORS_FOR_COMPARISON ? (
-                <PrizeComparisonCard comparison={data.prizeComparison} />
+              {data.prizeComparison &&
+              (hasEnded ||
+                data.prizeComparison.operators >=
+                  MIN_OPERATORS_FOR_COMPARISON) ? (
+                <PrizeComparisonCard
+                  comparison={data.prizeComparison}
+                  ended={hasEnded}
+                />
               ) : null}
               <div className="mt-1.5 rounded-lg border border-rr-border bg-rr-elevated px-3 py-1.5">
                 <ShareBar
