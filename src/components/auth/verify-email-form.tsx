@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { AuthClientError, authRequest, authFetchJson } from "@/lib/auth-client";
@@ -11,7 +11,7 @@ type VerifyEmailFormProps = {
   token: string | null;
 };
 
-type Status = "loading" | "idle" | "submitting" | "success" | "invalid" | "already-verified";
+type Status = "loading" | "failed" | "submitting" | "success" | "invalid" | "already-verified";
 
 const cardClass =
   "rounded-[24px] bg-rr-surface px-5 py-5 shadow-sm sm:px-7 sm:py-6";
@@ -20,30 +20,9 @@ export function VerifyEmailForm({ token }: VerifyEmailFormProps) {
   const router = useRouter();
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState("");
+  const hasStartedRef = useRef(false);
 
-  useEffect(() => {
-    async function checkStatus() {
-      try {
-        const user = await authFetchJson<AuthUser>("/me");
-        if (user.emailVerified) {
-          setStatus("already-verified");
-        } else if (!token) {
-          setStatus("invalid");
-        } else {
-          setStatus("idle");
-        }
-      } catch {
-        if (!token) {
-          setStatus("invalid");
-        } else {
-          setStatus("idle");
-        }
-      }
-    }
-    checkStatus();
-  }, [token]);
-
-  async function handleVerify() {
+  const handleVerify = useCallback(async () => {
     if (!token) {
       setStatus("invalid");
       return;
@@ -69,19 +48,50 @@ export function VerifyEmailForm({ token }: VerifyEmailFormProps) {
         setStatus("invalid");
       } else if (err instanceof AuthClientError && err.status === 429) {
         setError("Too many attempts. Please wait a moment and try again.");
-        setStatus("idle");
+        setStatus("failed");
       } else {
         setError("We could not verify your email right now. Please try again.");
-        setStatus("idle");
+        setStatus("failed");
       }
     }
-  }
+  }, [router, token]);
 
-  if (status === "loading") {
+  useEffect(() => {
+    if (hasStartedRef.current) {
+      return;
+    }
+
+    hasStartedRef.current = true;
+
+    async function checkAndVerify() {
+      try {
+        const user = await authFetchJson<AuthUser>("/me");
+        if (user.emailVerified) {
+          setStatus("already-verified");
+          return;
+        }
+      } catch {}
+
+      if (!token) {
+        setStatus("invalid");
+        return;
+      }
+
+      await handleVerify();
+    }
+
+    void checkAndVerify();
+  }, [handleVerify, token]);
+
+  if (status === "loading" || status === "submitting") {
     return (
       <div className={cn(cardClass, "space-y-4")}>
-        <div className="h-6 w-48 animate-pulse rounded bg-rr-elevated" />
-        <div className="h-4 w-full animate-pulse rounded bg-rr-elevated" />
+        <h2 className="text-xl font-medium tracking-[-0.03em] text-rr-primary">
+          Verifying your email...
+        </h2>
+        <p className="text-sm leading-6 text-rr-secondary">
+          This will only take a moment.
+        </p>
       </div>
     );
   }
@@ -148,10 +158,10 @@ export function VerifyEmailForm({ token }: VerifyEmailFormProps) {
   return (
     <div className={cn(cardClass, "space-y-4")}>
       <h2 className="text-xl font-medium tracking-[-0.03em] text-rr-primary">
-        Verify your email
+        Email not verified yet
       </h2>
       <p className="text-sm leading-6 text-rr-secondary">
-        Click the button below to verify your email address.
+        Something went wrong while verifying your email address.
       </p>
 
       {error ? (
@@ -166,10 +176,9 @@ export function VerifyEmailForm({ token }: VerifyEmailFormProps) {
       <Button
         type="button"
         className="w-full"
-        disabled={status === "submitting"}
-        onClick={handleVerify}
+        onClick={() => void handleVerify()}
       >
-        {status === "submitting" ? "Verifying..." : "Verify email"}
+        Try again
       </Button>
     </div>
   );
