@@ -518,8 +518,9 @@ export function PrizeDatabaseHero({ state }: { state: PrizeListState }) {
     >
       <div className="container pb-6 pt-6 md:pb-8 md:pt-10">
         <div className="mx-auto max-w-[1100px]">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-rr-green">
-            Prize Database
+          <p className="mb-2 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-rr-green">
+            <span aria-hidden="true" className="h-px w-8 shrink-0 bg-rr-green" />
+            <span>Prize Database</span>
           </p>
           <h1
             id="prize-database-title"
