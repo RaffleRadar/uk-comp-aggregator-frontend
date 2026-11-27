@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -505,7 +506,9 @@ export default async function OperatorPage({
             </div>
 
             {competitionsWithOperator.length ? (
-              <OperatorCompetitions competitions={competitionsWithOperator} />
+              <Suspense fallback={null}>
+                <OperatorCompetitions competitions={competitionsWithOperator} />
+              </Suspense>
             ) : (
               <div className="rounded-xl border border-rr-border bg-rr-surface px-4 py-8 text-center text-sm text-rr-muted">
                 No live competitions available for this operator right now.

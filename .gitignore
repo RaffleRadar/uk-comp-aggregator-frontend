@@ -28,6 +28,7 @@
 /rafflradar_mockups_all*.html
 
 # debug
+/.dbg/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
