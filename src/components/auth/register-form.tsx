@@ -9,6 +9,7 @@ import { getSafeRedirectTarget } from "@/lib/auth-redirect";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { AuthClientError } from "@/lib/auth-client";
+import { pushEvent } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 
 type FormValues = {
@@ -123,6 +124,7 @@ export function RegisterForm() {
         email: values.email.trim(),
         password: values.password,
       });
+      pushEvent("complete_registration", { method: "email" });
       router.replace(getSafeRedirectTarget(searchParams.get("next")));
     } catch (error) {
       if (error instanceof AuthClientError) {

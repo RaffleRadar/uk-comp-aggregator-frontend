@@ -9,6 +9,7 @@ import {
 type OauthExchangeResponse = {
   accessToken: string;
   refreshToken: string;
+  isNewUser?: boolean;
 };
 
 export async function POST(request: NextRequest) {
@@ -36,5 +37,5 @@ export async function POST(request: NextRequest) {
     refreshToken: data.refreshToken,
   });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, isNewUser: data.isNewUser === true });
 }
