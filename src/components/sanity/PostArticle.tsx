@@ -6,6 +6,7 @@ import { formatCategory } from "@/lib/blog-category";
 import { RelatedPosts } from "./RelatedPosts";
 import { portableTextComponents } from "./portableTextComponents";
 import { ShareBar } from "@/components/ui/ShareBar";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RichTitle } from "./RichTitle";
 
 type PostSlug = {
@@ -79,6 +80,11 @@ export function PostArticle({
       <section className="pt-10">
         <div className="container">
           <div className="mx-auto max-w-[1100px]">
+            <Breadcrumbs
+              className="mb-4"
+              parents={[{ label: "Blog", href: "/blog" }]}
+              current={{ label: post.title, href: shareUrl }}
+            />
             {imgSrc ? (
               <div
                 className="relative overflow-hidden rounded-xl border border-rr-border bg-rr-surface"

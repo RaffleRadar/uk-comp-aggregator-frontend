@@ -1,6 +1,6 @@
-import { IconChevronRight, IconUsers } from "@tabler/icons-react";
+import { IconUsers } from "@tabler/icons-react";
 import { CompetitionImage } from "@/components/ui/CompetitionImage";
-import { ScrollTopLink } from "@/components/ui/scroll-top-link";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import type { PrizePage } from "@/lib/prizes";
 import { formatCount } from "@/lib/prizes";
 
@@ -10,7 +10,7 @@ type PrizeHeaderProps = {
 };
 
 export function PrizeHeader({ page, lead }: PrizeHeaderProps) {
-  const { label, imageUrl, operators } = page.prize;
+  const { key, label, imageUrl, operators } = page.prize;
   const operatorText =
     operators === 1
       ? "1 operator running this prize"
@@ -23,24 +23,11 @@ export function PrizeHeader({ page, lead }: PrizeHeaderProps) {
     >
       <div className="container pb-4 pt-5 md:pb-6 md:pt-8">
         <div className="mx-auto max-w-[1100px]">
-          <nav aria-label="Breadcrumb" className="mb-4 text-xs md:mb-5">
-            <ol className="flex flex-wrap items-center gap-1 text-rr-muted">
-              <li>
-                <ScrollTopLink
-                  href="/prizes"
-                  className="text-rr-green no-underline hover:underline"
-                >
-                  Prize Database
-                </ScrollTopLink>
-              </li>
-              <li aria-hidden="true">
-                <IconChevronRight size={12} />
-              </li>
-              <li aria-current="page" className="truncate text-rr-secondary">
-                {label}
-              </li>
-            </ol>
-          </nav>
+          <Breadcrumbs
+            className="mb-4 md:mb-5"
+            parents={[{ label: "Prize Database", href: "/prizes" }]}
+            current={{ label, href: `/prizes/${key}` }}
+          />
 
           <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_340px] md:items-center md:gap-8">
             <div className="min-w-0">

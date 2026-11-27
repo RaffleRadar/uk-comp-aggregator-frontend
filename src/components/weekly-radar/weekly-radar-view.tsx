@@ -1,4 +1,5 @@
 import { ScrollTopLink } from "@/components/ui/scroll-top-link";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { CompetitionImage } from "@/components/ui/CompetitionImage";
@@ -763,6 +764,16 @@ export function WeeklyRadarView({ issue, mode }: WeeklyRadarViewProps) {
     <main className="-mb-6 bg-rr-bg pb-3 pt-8 md:-mb-14 md:pb-4 md:pt-12">
       <div className="container space-y-4">
         <header>
+          {mode === "archive" && issue ? (
+            <Breadcrumbs
+              className="mb-3"
+              parents={[{ label: "Weekly Radar", href: "/weekly-radar" }]}
+              current={{
+                label: `The Weekly Radar, ${weekLabel}`,
+                href: `/weekly-radar/${issue.weekStart}`,
+              }}
+            />
+          ) : null}
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-x-6 lg:gap-y-3">
             <div className="grid gap-3 lg:col-start-1 lg:row-start-1 lg:gap-0">
               <div>

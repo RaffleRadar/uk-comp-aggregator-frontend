@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 import {
@@ -721,22 +722,14 @@ export default async function Page({
           </div>
         ) : null}
         {endedOperatorCta}
-        <div className="mb-2 hidden md:block">
-          <nav className="flex items-center gap-2 text-sm text-rr-muted">
-            <Link href="/" className="hover:text-rr-primary transition-colors">
-              Home
-            </Link>
-            <span>›</span>
-            <Link
-              href="/competitions"
-              className="hover:text-rr-primary transition-colors"
-            >
-              Competitions
-            </Link>
-            <span>›</span>
-            <span className="text-rr-secondary">{prize}</span>
-          </nav>
-        </div>
+        <Breadcrumbs
+          className="mb-2"
+          parents={[{ label: "Competitions", href: "/competitions" }]}
+          current={{
+            label: prize,
+            href: `/competitions/${data.compSlug ?? slug}`,
+          }}
+        />
         <div className="mb-2 flex flex-col gap-1.5 md:mb-1.5 md:flex-row md:items-center md:justify-between md:gap-1.5">
           <h1 className="order-2 min-w-0 text-2xl font-semibold uppercase leading-tight text-rr-primary md:order-1 md:flex-1 md:truncate md:text-[clamp(1.125rem,2.6vw,1.875rem)]">
             {prize}

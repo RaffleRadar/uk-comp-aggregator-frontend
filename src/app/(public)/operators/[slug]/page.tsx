@@ -9,6 +9,7 @@ import { OperatorSectionEyebrow } from "@/components/operators/operator-section-
 import { VoluntaryCodeBadge } from "@/components/operators/voluntary-code-badge";
 import { Badge } from "@/components/ui/badge";
 import { OperatorJsonLd } from "@/components/seo/structured-data";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import {
   getCompetitions,
   getOperator,
@@ -327,6 +328,11 @@ export default async function OperatorPage({
       <section className="bg-gradient-to-b from-rr-surface to-rr-bg">
         <div className="container py-8 md:py-14">
           <div className="mx-auto max-w-[1100px]">
+            <Breadcrumbs
+              className="mb-5"
+              parents={[{ label: "Operators", href: "/operators" }]}
+              current={{ label: operator.name, href: `/operators/${operator.slug}` }}
+            />
             <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
               <div className="min-w-0">
                 <div className="flex items-start gap-4">

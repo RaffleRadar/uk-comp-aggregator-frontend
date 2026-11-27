@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RecentPrizeColumns } from "@/components/prizes/prize-database";
 import {
   DEFAULT_PRIZE_LIST_CATEGORY,
@@ -39,13 +38,11 @@ export default async function RecentlyRunPrizesPage() {
       >
         <div className="container pb-5 pt-6 md:pt-10">
           <div className="mx-auto max-w-[1100px]">
-            <Link
-              href="/prizes"
-              className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-rr-green no-underline hover:underline"
-            >
-              <IconArrowLeft size={14} aria-hidden="true" />
-              Prize Database
-            </Link>
+            <Breadcrumbs
+              className="mb-3"
+              parents={[{ label: "Prize Database", href: "/prizes" }]}
+              current={{ label: "Recently Run Prizes", href: PRIZE_RECENT_PATH }}
+            />
             <h1
               id="recently-run-page-title"
               className="text-3xl font-semibold leading-[1.05] tracking-[-0.03em] text-rr-primary md:text-5xl"

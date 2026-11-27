@@ -6,6 +6,7 @@ import { titleColorVar } from "@/lib/titleColor";
 import { RelatedReviews } from "./RelatedReviews";
 import { portableTextComponents } from "./portableTextComponents";
 import { ShareBar } from "@/components/ui/ShareBar";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { RichTitle } from "./RichTitle";
 
 type ReviewSlug = {
@@ -99,6 +100,11 @@ export function ReviewArticle({
       <section className="pt-10">
         <div className="container">
           <div className="mx-auto max-w-[1100px]">
+            <Breadcrumbs
+              className="mb-4"
+              parents={[{ label: "Reviews", href: "/reviews" }]}
+              current={{ label: review.title, href: shareUrl }}
+            />
             {imgSrc ? (
               <div
                 className="relative overflow-hidden rounded-xl border border-rr-border bg-rr-surface"
